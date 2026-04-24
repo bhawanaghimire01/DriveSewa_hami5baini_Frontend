@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Reports - Staff</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --bg: #F4F7FE;
+            --surface: #FFFFFF;
+            --primary: #4318FF;
+            --primary-light: #F4F7FE;
+            --secondary: #11047A;
+            --text: #2B3674;
+            --text-muted: #A3AED0;
+            --border: #E0E5F2;
+            --danger: #EE5D50;
+            --success: #01B574;
+            --shadow-soft: 0px 18px 40px rgba(112, 144, 176, 0.12);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { box-sizing: border-box; }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); margin: 0; min-height: 100vh; }
+        .dashboard { display: grid; grid-template-columns: 290px 1fr; min-height: 100vh; }
+
+        /* Sidebar Styles */
+        .sidebar { background: var(--surface); padding: 30px 20px; display: flex; flex-direction: column; border-right: 1px solid rgba(0,0,0,0.03); box-shadow: 14px 17px 40px 4px rgba(112, 144, 176, 0.04); z-index: 10; gap: 0;}
+        .brand { display: flex; align-items: center; gap: 12px; padding: 0 10px 30px; border-bottom: 1px solid var(--border); margin-bottom: 30px; }
+        .brand-logo { width: 42px; height: 42px; background: linear-gradient(135deg, var(--primary), #868CFF); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 15px rgba(67, 24, 255, 0.3); }
+        .brand-title { font-size: 26px; font-weight: 800; color: var(--secondary); letter-spacing: -0.5px; margin: 0;}
+        .brand-subtitle { font-size: 12px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+
+        .nav-link { display: flex; align-items: center; gap: 16px; padding: 14px 16px; border-radius: 12px; color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 15px; transition: var(--transition); margin-bottom: 8px; }
+        .nav-link svg { width: 22px; height: 22px; transition: var(--transition); }
+        .nav-link:hover { color: var(--primary); background: rgba(67, 24, 255, 0.04); }
+        .nav-link.active { background: var(--primary); color: white; box-shadow: 0 4px 15px rgba(67, 24, 255, 0.25); }
+        .nav-link.active svg { color: white; }
+        .nav-title { flex: 1; }
+
+        .main { flex: 1; display: flex; flex-direction: column; overflow-x: hidden; }
+        .topbar { height: 100px; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; background: rgba(244, 247, 254, 0.8); backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 5; border-bottom: none;}
+        .page-title { font-size: 32px; font-weight: 700; color: var(--secondary); letter-spacing: -0.5px; margin: 0;}
+        .top-actions { display: flex; align-items: center; gap: 20px; background: var(--surface); padding: 8px 12px 8px 24px; border-radius: 30px; box-shadow: var(--shadow-soft); }
+        .welcome { color: var(--text); font-weight: 600; font-size: 14px; }
+        .logout-btn { background: #FFECEB; color: var(--danger); border: none; padding: 10px 20px; border-radius: 20px; font-weight: 700; font-size: 13px; cursor: pointer; transition: var(--transition); }
+        .logout-btn:hover { background: var(--danger); color: white; }
+
+        .content { padding: 32px 40px; flex: 1; display: flex; flex-direction: column; gap: 32px; }
+        
+        .header-actions { display: flex; justify-content: space-between; align-items: center; }
+        
+        .filters { display: flex; gap: 12px; }
+        .btn-filter { padding: 12px 24px; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; transition: var(--transition); border: 1px solid var(--border); background: var(--surface); color: var(--text-muted); }
+        .btn-filter:hover { border-color: var(--primary); color: var(--primary); box-shadow: 0 4px 10px rgba(67, 24, 255, 0.05); }
+        .btn-filter.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 15px rgba(67, 24, 255, 0.2); }
+
+        .export-actions { display: flex; gap: 12px; }
+        .btn-export { padding: 12px 20px; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; transition: var(--transition); border: none; background: #fafafa; color: var(--secondary); display: flex; align-items: center; gap: 8px; border: 1px solid var(--border); }
+        .btn-export:hover { background: var(--secondary); color: white; border-color: var(--secondary); box-shadow: 0 4px 15px rgba(17, 4, 122, 0.2); }
+        .btn-print { background: var(--primary-light); color: var(--primary); border: 1px solid transparent; }
+        .btn-print:hover { background: var(--primary); color: white; }
+
+        .card { background: var(--surface); border-radius: 20px; padding: 40px; box-shadow: var(--shadow-soft); }
+        
+        /* Report Print Styling */
+        #reportContainer { width: 100%; }
+        .report-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; border-bottom: 2px solid var(--border); padding-bottom: 20px; }
+        .report-header h2 { margin: 0 0 8px 0; color: var(--secondary); font-size: 28px; }
+        .report-header p { margin: 0; color: var(--text-muted); font-size: 14px; }
+        .report-meta { text-align: right; color: var(--text-muted); font-size: 14px; font-weight: 500; }
+        .report-meta span { display: block; margin-top: 4px; color: var(--text); font-weight: 600; }
+
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 18px 20px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
+        th { color: var(--primary); font-weight: 700; text-transform: uppercase; font-size: 13px; letter-spacing: 0.5px; background: rgba(67, 24, 255, 0.03); }
+        th:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
+        th:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
+        td { color: var(--secondary); font-weight: 500; }
+        tbody tr { transition: var(--transition); }
+        tbody tr:hover { background: rgba(67, 24, 255, 0.02); }
+        
+        .currency { font-weight: 700; color: var(--success); }
+        .danger-text { color: var(--danger); font-weight: 700; background: rgba(238, 93, 80, 0.1); padding: 4px 10px; border-radius: 8px; }
+        .badge-count { background: #eaf2ff; color: var(--primary); padding: 4px 12px; border-radius: 8px; font-weight: 700; font-size: 14px; }
+
+        /* Print Media Query */
+        @media print {
+            body { background: white; }
+            .sidebar, .topbar, .header-actions { display: none !important; }
+            .dashboard { display: block; }
+            .content { padding: 0; }
+            .card { border: none; box-shadow: none; padding: 0; }
+            @page { margin: 1cm; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-logo">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path><path d="M2 12h20"></path></svg>
+                </div>
+                <div>
+                    <div class="brand-title">DriveSewa</div>
+                    <div class="brand-subtitle">Staff Operations</div>
+                </div>
+            </div>
+            <nav class="side-nav">
+                <a class="nav-link" href="staff-dashboard.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"></rect><rect x="14" y="3" width="7" height="5" rx="1"></rect><rect x="14" y="12" width="7" height="9" rx="1"></rect><rect x="3" y="16" width="7" height="5" rx="1"></rect></svg>
+                    <span class="nav-title">Dashboard</span>
+                </a>
+                <a class="nav-link" href="customer-list.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    <span class="nav-title">Customers</span>
+                </a>
+                <a class="nav-link" href="staff-vehicles.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"></path><circle cx="7" cy="17" r="2"></circle><path d="M9 17h6"></path><circle cx="17" cy="17" r="2"></circle></svg>
+                    <span class="nav-title">Vehicles</span>
+                </a>
+                <a class="nav-link" href="sales-invoice-list.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    <span class="nav-title">Sales Invoice</span>
+                </a>
+                <a class="nav-link" href="staff-customer-history.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <span class="nav-title">Purchase History</span>
+                </a>
+                <a class="nav-link active" href="staff-reports.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                    <span class="nav-title">Reports</span>
+                </a>
+                <a class="nav-link" href="staff-appointments.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    <span class="nav-title">Appointments</span>
+                </a>
+                <a class="nav-link" href="staff-part-requests.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                    <span class="nav-title">Part Requests</span>
+                </a>
+                <a class="nav-link" href="staff-ai-prediction.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                    <span class="nav-title">AI Prediction</span>
+                </a>
+                <a class="nav-link" href="staff-notifications.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                    <span class="nav-title">Notifications</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <h1 class="page-title">Reporting & Analytics</h1>
+                <div class="top-actions">
+                    <span class="welcome" id="welcomeText">Staff</span>
+                    <button class="logout-btn" onclick="logout()">Log Out</button>
+                </div>
+            </header>
+
+            <section class="content">
+                <div class="header-actions">
+                    <div class="filters">
+                        <button class="btn-filter active" onclick="loadReport('regular-customers', this, 'Regular Customers (Return Visits)')">Regular Customers</button>
+                        <button class="btn-filter" onclick="loadReport('high-spenders', this, 'High Spenders (Lifetime Value)')">High Spenders</button>
+                        <button class="btn-filter" onclick="loadReport('pending-credits', this, 'Pending Credit Customers')">Pending Credits</button>
+                    </div>
+
+                    <div class="export-actions">
+                        <button class="btn-export btn-print" onclick="window.print()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                            Print
+                        </button>
+                        <button class="btn-export" onclick="downloadCSV()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                            Export CSV
+                        </button>
+                        <button class="btn-export" onclick="downloadPDF()" style="background:var(--primary); color:white; border-color:var(--primary);">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+                            Download PDF
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div id="reportContainer">
+                        <div class="report-header">
+                            <div>
+                                <h2 id="reportTitle">Regular Customers</h2>
+                                <p>DriveSewa Automated System Report</p>
+                            </div>
+                            <div class="report-meta">
+                                Generated On
+                                <span id="reportDate">May 19, 2026</span>
+                            </div>
+                        </div>
+                        
+                        <table id="reportTable">
+                            <thead>
+                                <tr>
+                                    <th>Customer Name</th>
+                                    <th>Phone Number</th>
+                                    <th style="text-align: center;">Total Visits</th>
+                                    <th style="text-align: right;">Total Spent</th>
+                                    <th style="text-align: right;">Pending Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportBody">
+                                <tr><td colspan="5" style="text-align:center; padding: 40px;">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation: spin 1s linear infinite;"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>
+                                    Loading report data...
+                                </td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <style>@keyframes spin { 100% { transform: rotate(360deg); } }</style>
+
+    <script>
+        const API_URL = 'http://localhost:5178/api/reports';
+        let authToken = '';
+        let currentReportData = [];
+        let currentReportTitle = 'Regular Customers';
+
+        window.onload = () => {
+            const userData = localStorage.getItem("driveSewaUser");
+            if (!userData) { window.location.href = "../../public/login.html"; return; }
+            const user = JSON.parse(userData);
+            if (!user || user.role !== "Staff") { window.location.href = "../../public/login.html"; return; }
+            
+            authToken = user.token;
+            document.getElementById("welcomeText").textContent = user.fullName || "Staff";
+            
+            const now = new Date();
+            document.getElementById("reportDate").textContent = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' ' + now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+            // Load default report
+            loadReport('regular-customers', document.querySelector('.btn-filter.active'), 'Regular Customers');
+        };
+
+        function logout() {
+            localStorage.removeItem("driveSewaUser");
+            window.location.href = "../../public/login.html";
+        }
+
+        async function loadReport(endpoint, btnElement, title) {
+            // Update active state
+            document.querySelectorAll('.btn-filter').forEach(btn => btn.classList.remove('active'));
+            if(btnElement) btnElement.classList.add('active');
+            
+            currentReportTitle = title;
+            document.getElementById('reportTitle').textContent = title;
+            const tbody = document.getElementById('reportBody');
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:40px;">Loading data...</td></tr>';
+
+            try {
+                const res = await fetch(`${API_URL}/${endpoint}`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                if (res.ok) {
+                    currentReportData = await res.json();
+                    
+                    if (currentReportData.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 40px; color:var(--text-muted);">No records found for this report criteria.</td></tr>';
+                        return;
+                    }
+
+                    tbody.innerHTML = currentReportData.map(r => `
+                        <tr>
+                            <td><strong>${r.name}</strong></td>
+                            <td>${r.phone || 'N/A'}</td>
+                            <td style="text-align: center;"><span class="badge-count">${r.totalPurchases}</span></td>
+                            <td class="currency" style="text-align: right;">Rs. ${r.totalAmount.toFixed(2)}</td>
+                            <td style="text-align: right;"><span class="${r.pendingAmount > 0 ? 'danger-text' : ''}">${r.pendingAmount > 0 ? 'Rs. ' + r.pendingAmount.toFixed(2) : 'Clear'}</span></td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red; padding: 40px;">Error loading report data from server.</td></tr>';
+                }
+            } catch (err) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red; padding: 40px;">Network error connecting to backend.</td></tr>';
+            }
+        }
+
+        function downloadCSV() {
+            if (currentReportData.length === 0) {
+                alert("No data available to export.");
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Customer Name,Phone Number,Total Visits,Total Spent,Pending Balance\n";
+
+            currentReportData.forEach(row => {
+                const name = `"${row.name}"`;
+                const phone = row.phone || 'N/A';
+                const visits = row.totalPurchases;
+                const spent = row.totalAmount.toFixed(2);
+                const pending = row.pendingAmount.toFixed(2);
+                
+                csvContent += `${name},${phone},${visits},${spent},${pending}\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `${currentReportTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_report.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function downloadPDF() {
+            const element = document.getElementById('reportContainer');
+            const opt = {
+                margin:       10,
+                filename:     `${currentReportTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_report.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
+            };
+
+            // New Promise-based usage:
+            html2pdf().set(opt).from(element).save();
+        }
+    </script>
+</body>
+</html>
