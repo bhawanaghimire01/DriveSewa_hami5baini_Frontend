@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Purchase Invoice - DriveSewa Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #F4F7FE;
+            --surface: #FFFFFF;
+            --primary: #4318FF;
+            --primary-light: #F4F7FE;
+            --secondary: #11047A;
+            --text: #2B3674;
+            --text-muted: #A3AED0;
+            --border: #E0E5F2;
+            --danger: #EE5D50;
+            --success: #01B574;
+            --warning: #FFCE20;
+            --shadow-soft: 0px 18px 40px rgba(112, 144, 176, 0.12);
+            --shadow-hover: 0px 20px 40px rgba(67, 24, 255, 0.2);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; }
+
+        .sidebar { width: 290px; background: var(--surface); padding: 30px 20px; display: flex; flex-direction: column; border-right: 1px solid rgba(0,0,0,0.03); box-shadow: 14px 17px 40px 4px rgba(112, 144, 176, 0.04); z-index: 10; }
+        .brand { display: flex; align-items: center; gap: 12px; padding: 0 10px 30px; border-bottom: 1px solid var(--border); margin-bottom: 30px; }
+        .brand-logo { width: 42px; height: 42px; background: linear-gradient(135deg, var(--primary), #868CFF); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 15px rgba(67, 24, 255, 0.3); }
+        .brand-title { font-size: 26px; font-weight: 800; color: var(--secondary); letter-spacing: -0.5px; }
+        .brand-subtitle { font-size: 12px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+
+        .nav-link { display: flex; align-items: center; gap: 16px; padding: 14px 16px; border-radius: 12px; color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 15px; transition: var(--transition); margin-bottom: 8px; }
+        .nav-link svg { width: 22px; height: 22px; transition: var(--transition); }
+        .nav-link:hover { color: var(--primary); background: rgba(67, 24, 255, 0.04); }
+        .nav-link.active { background: var(--primary); color: white; box-shadow: 0 4px 15px rgba(67, 24, 255, 0.25); }
+        .nav-link.active svg { color: white; }
+
+        .main { flex: 1; display: flex; flex-direction: column; overflow-x: hidden; }
+        .topbar { height: 100px; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; background: rgba(244, 247, 254, 0.8); backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 5; }
+        .page-title { font-size: 32px; font-weight: 700; color: var(--secondary); letter-spacing: -0.5px; }
+        .top-actions { display: flex; align-items: center; gap: 20px; background: var(--surface); padding: 8px 12px 8px 24px; border-radius: 30px; box-shadow: var(--shadow-soft); }
+        .welcome { color: var(--text); font-weight: 600; font-size: 14px; }
+        .logout-btn { background: #FFECEB; color: var(--danger); border: none; padding: 10px 20px; border-radius: 20px; font-weight: 700; font-size: 13px; cursor: pointer; transition: var(--transition); }
+        .logout-btn:hover { background: var(--danger); color: white; }
+
+        .content { padding: 0 40px 40px; }
+
+        .card { background: var(--surface); border-radius: 20px; padding: 30px; box-shadow: var(--shadow-soft); margin-bottom: 30px; }
+        .card h2 { margin: 0 0 25px; font-size: 22px; color: var(--secondary); font-weight: 700; }
+        
+        .form-row { display: flex; gap: 20px; margin-bottom: 20px; }
+        .form-group { flex: 1; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: var(--text); }
+        .form-group select, .form-group input { width: 100%; padding: 12px 16px; border: 1px solid var(--border); border-radius: 12px; font-size: 15px; color: var(--secondary); outline: none; transition: var(--transition); background: var(--bg); font-family: 'Outfit', sans-serif; }
+        .form-group select:focus, .form-group input:focus { border-color: var(--primary); background: var(--surface); box-shadow: 0 0 0 4px rgba(67, 24, 255, 0.1); }
+
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th { text-align: left; padding: 16px; border-bottom: 1px solid var(--border); color: var(--text-muted); font-size: 14px; font-weight: 600; }
+        td { padding: 16px; border-bottom: 1px solid var(--border); font-size: 15px; }
+        tr:last-child td { border-bottom: none; }
+        
+        .item-part { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 14px; outline: none; transition: var(--transition); }
+        .item-part:focus { border-color: var(--primary); }
+        .item-qty, .item-price { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 14px; outline: none; transition: var(--transition); }
+        .item-qty:focus, .item-price:focus { border-color: var(--primary); }
+
+        .btn-primary { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; transition: var(--transition); text-decoration: none; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(67, 24, 255, 0.2); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(67, 24, 255, 0.3); }
+        .btn-primary:disabled { background: var(--text-muted); cursor: not-allowed; box-shadow: none; transform: none; }
+
+        .btn-add { background: rgba(67, 24, 255, 0.08); color: var(--primary); border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; gap: 6px; }
+        .btn-add:hover { background: var(--primary); color: white; }
+
+        .btn-delete { background: rgba(238, 93, 80, 0.08); color: var(--danger); border: none; padding: 8px 12px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; transition: var(--transition); }
+        .btn-delete:hover { background: var(--danger); color: white; }
+
+        .totals-section { display: flex; justify-content: flex-end; margin-top: 20px; font-size: 20px; font-weight: 700; color: var(--secondary); background: var(--primary-light); padding: 20px; border-radius: 12px; }
+        .grand-total { color: var(--primary); margin-left: 15px; font-size: 24px; font-weight: 800; }
+
+        .actions-bar { display: flex; justify-content: space-between; align-items: center; padding-top: 30px; margin-top: 10px; border-top: 1px solid var(--border); }
+        .btn-back { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 15px; transition: var(--transition); }
+        .btn-back:hover { color: var(--secondary); }
+
+        .message { padding: 15px 20px; border-radius: 12px; margin-bottom: 20px; font-size: 14px; font-weight: 500; display: none; }
+        .message.error { background: #FFECEB; color: var(--danger); border-left: 4px solid var(--danger); }
+        .message.success { background: #E5F8ED; color: var(--success); border-left: 4px solid var(--success); }
+
+        @media (max-width: 1024px) { .sidebar { width: 220px; } }
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; border-bottom: 1px solid var(--border); }
+            .topbar { padding: 20px; flex-direction: column; height: auto; gap: 20px; }
+            .content { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path><path d="M2 12h20"></path></svg>
+            </div>
+            <div>
+                <div class="brand-title">DriveSewa</div>
+                <div class="brand-subtitle">Administration</div>
+            </div>
+        </div>
+
+        <nav class="side-nav">
+            <a href="admin-dashboard.html" class="nav-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"></rect><rect x="14" y="3" width="7" height="5" rx="1"></rect><rect x="14" y="12" width="7" height="9" rx="1"></rect><rect x="3" y="16" width="7" height="5" rx="1"></rect></svg>
+                Dashboard
+            </a>
+            <a href="staff-management.html" class="nav-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                Staff Management
+            </a>
+            <a href="parts-inventory.html" class="nav-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                Parts Inventory
+            </a>
+            <a href="purchase-invoice-list.html" class="nav-link active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                Purchase Invoices
+            </a>
+            <a href="vendors.html" class="nav-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                Vendor Management
+            </a>
+            <a href="financial-reports.html" class="nav-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                Financial Reports
+            </a>
+        </nav>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <h1 class="page-title">Create Purchase Invoice</h1>
+            <div class="top-actions">
+                <span class="welcome" id="welcomeText">Admin</span>
+                <button class="logout-btn" id="logoutButton">Log Out</button>
+            </div>
+        </header>
+
+        <section class="content">
+            <div id="alertMsg" class="message"></div>
+
+            <form id="invoiceForm">
+                <div class="card">
+                    <h2>Invoice Details</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Select Vendor *</label>
+                            <select id="vendorSelect" required>
+                                <option value="">-- Loading vendors... --</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                        <h2 style="margin: 0;">Items & Stock Update</h2>
+                        <button type="button" class="btn-add" onclick="addNewRow()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            Add Part Item
+                        </button>
+                    </div>
+                    
+                    <table id="itemsTable">
+                        <thead>
+                            <tr>
+                                <th style="width: 35%">Select Part</th>
+                                <th style="width: 15%">Quantity</th>
+                                <th style="width: 20%">Unit Price ($)</th>
+                                <th style="width: 20%">Total ($)</th>
+                                <th style="width: 10%">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemsBody">
+                            <!-- Rows will be injected here -->
+                        </tbody>
+                    </table>
+
+                    <div class="totals-section">
+                        <span>Grand Total: </span>
+                        <span class="grand-total" id="grandTotalDisplay">$0.00</span>
+                    </div>
+
+                    <div class="actions-bar">
+                        <a href="purchase-invoice-list.html" class="btn-back">← Back to Invoices</a>
+                        <button type="submit" class="btn-primary" id="saveBtn">Save Invoice & Update Stock</button>
+                    </div>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        const API_URL = 'http://localhost:5178/api';
+        let authToken = '';
+        let partsList = [];
+
+        window.onload = async () => {
+            const userData = localStorage.getItem("driveSewaUser");
+            if (!userData) { window.location.href = "/public/login.html"; return; }
+            const user = JSON.parse(userData);
+            if (!user || user.role !== "Admin") { window.location.href = "/public/login.html"; return; }
+            
+            document.getElementById("welcomeText").textContent = user.fullName || "Admin";
+            authToken = user.token || ''; 
+            
+            document.getElementById("logoutButton").addEventListener("click", () => {
+                localStorage.removeItem("driveSewaUser");
+                window.location.href = "/public/login.html";
+            });
+
+            await Promise.all([loadVendors(), loadParts()]);
+            addNewRow(); 
+        };
+
+        function getHeaders() {
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
+            };
+        }
+
+        function showMessage(msg, type) {
+            const alertMsg = document.getElementById('alertMsg');
+            alertMsg.textContent = msg;
+            alertMsg.className = 'message ' + type;
+            alertMsg.style.display = 'block';
+            if(type !== 'error') {
+                setTimeout(() => { alertMsg.style.display = 'none'; }, 4000);
+            }
+        }
+
+        async function loadVendors() {
+            try {
+                const res = await fetch(`${API_URL}/vendors`, { headers: getHeaders() });
+                const vendors = await res.json();
+                const sel = document.getElementById('vendorSelect');
+                sel.innerHTML = '<option value="">-- Select a Vendor --</option>';
+                vendors.forEach(v => {
+                    const opt = document.createElement('option');
+                    opt.value = v.id;
+                    opt.textContent = `${v.vendorName} (${v.contactPerson})`;
+                    sel.appendChild(opt);
+                });
+            } catch (e) {
+                document.getElementById('vendorSelect').innerHTML = '<option value="">Error loading vendors</option>';
+            }
+        }
+
+        async function loadParts() {
+            try {
+                const res = await fetch(`${API_URL}/parts`, { headers: getHeaders() });
+                partsList = await res.json();
+            } catch (e) {
+                console.error("Could not load parts.");
+            }
+        }
+
+        function generatePartsOptions() {
+            return partsList.map(p => `<option value="${p.partId}">${p.partName} (Stock: ${p.quantity})</option>`).join('');
+        }
+
+        function addNewRow() {
+            const tbody = document.getElementById('itemsBody');
+            const rowId = 'row_' + Date.now();
+            const tr = document.createElement('tr');
+            tr.id = rowId;
+            tr.innerHTML = `
+                <td>
+                    <select class="item-part" required>
+                        <option value="">-- Select Part --</option>
+                        ${generatePartsOptions()}
+                    </select>
+                </td>
+                <td>
+                    <input type="number" class="item-qty" min="1" step="1" value="1" required onchange="calculateRow('${rowId}')" onkeyup="calculateRow('${rowId}')">
+                </td>
+                <td>
+                    <input type="number" class="item-price" min="0" step="0.01" value="0.00" required onchange="calculateRow('${rowId}')" onkeyup="calculateRow('${rowId}')">
+                </td>
+                <td>
+                    <strong class="item-total" style="color:var(--primary); font-size:16px;">$0.00</strong>
+                </td>
+                <td>
+                    <button type="button" class="btn-delete" onclick="removeRow('${rowId}')">Remove</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+            calculateGrandTotal();
+        }
+
+        function removeRow(rowId) {
+            const row = document.getElementById(rowId);
+            if(row) row.remove();
+            calculateGrandTotal();
+        }
+
+        function calculateRow(rowId) {
+            const row = document.getElementById(rowId);
+            if(!row) return;
+            const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+            const price = parseFloat(row.querySelector('.item-price').value) || 0;
+            const total = qty * price;
+            row.querySelector('.item-total').textContent = '$' + total.toFixed(2);
+            calculateGrandTotal();
+        }
+
+        function calculateGrandTotal() {
+            let grandTotal = 0;
+            document.querySelectorAll('#itemsBody tr').forEach(row => {
+                const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+                const price = parseFloat(row.querySelector('.item-price').value) || 0;
+                grandTotal += (qty * price);
+            });
+            document.getElementById('grandTotalDisplay').textContent = '$' + grandTotal.toFixed(2);
+        }
+
+        document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('saveBtn');
+            const vendorId = document.getElementById('vendorSelect').value;
+            
+            const rows = document.querySelectorAll('#itemsBody tr');
+            if(rows.length === 0) {
+                showMessage('Please add at least one part item.', 'error');
+                return;
+            }
+
+            const items = [];
+            for(let row of rows) {
+                const partId = row.querySelector('.item-part').value;
+                const qty = parseInt(row.querySelector('.item-qty').value);
+                const price = parseFloat(row.querySelector('.item-price').value);
+
+                if(!partId) { showMessage('Please select a part in all rows.', 'error'); return; }
+                if(qty <= 0) { showMessage('Quantity must be greater than zero.', 'error'); return; }
+                if(price < 0) { showMessage('Price cannot be negative.', 'error'); return; }
+
+                items.push({ partId: parseInt(partId, 10), quantity: parseInt(qty, 10), unitPrice: parseFloat(price) });
+            }
+
+            const payload = { vendorId: parseInt(vendorId, 10), items: items };
+
+            btn.disabled = true;
+            btn.textContent = 'Saving...';
+
+            try {
+                const res = await fetch(`${API_URL}/purchase-invoices`, {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify(payload)
+                });
+
+                if(res.ok) {
+                    showMessage('Purchase invoice saved! Stock updated successfully.', 'success');
+                    setTimeout(() => { window.location.href = 'purchase-invoice-list.html'; }, 1500);
+                } else {
+                    const errorText = await res.text();
+                    let errMsg = errorText;
+                    try {
+                        const errorJson = JSON.parse(errorText);
+                        if(errorJson.errors) {
+                            errMsg = Object.values(errorJson.errors).flat().join(', ');
+                        } else if(errorJson.message) {
+                            errMsg = errorJson.message;
+                        }
+                    } catch(jsonErr) {
+                        // ignore JSON parse error, use raw text log
+                    }
+                    showMessage('Error: ' + errMsg, 'error');
+                    btn.disabled = false;
+                    btn.textContent = 'Save Invoice & Update Stock';
+                }
+            } catch(e) {
+                showMessage('Network error. Is the backend running?', 'error');
+                btn.disabled = false;
+                btn.textContent = 'Save Invoice & Update Stock';
+            }
+        });
+    </script>
+</body>
+</html>
