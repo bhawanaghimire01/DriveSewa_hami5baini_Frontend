@@ -1,0 +1,297 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Appointments - Staff</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #F4F7FE;
+            --surface: #FFFFFF;
+            --primary: #4318FF;
+            --primary-light: #F4F7FE;
+            --secondary: #11047A;
+            --text: #2B3674;
+            --text-muted: #A3AED0;
+            --border: #E0E5F2;
+            --danger: #EE5D50;
+            --success: #01B574;
+            --warning: #FFCE20;
+            --shadow-soft: 0px 18px 40px rgba(112, 144, 176, 0.12);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { box-sizing: border-box; }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); margin: 0; min-height: 100vh; }
+        .dashboard { display: grid; grid-template-columns: 290px 1fr; min-height: 100vh; }
+
+        /* Sidebar Styles */
+        .sidebar { background: var(--surface); padding: 30px 20px; display: flex; flex-direction: column; border-right: 1px solid rgba(0,0,0,0.03); box-shadow: 14px 17px 40px 4px rgba(112, 144, 176, 0.04); z-index: 10; gap: 0;}
+        .brand { display: flex; align-items: center; gap: 12px; padding: 0 10px 30px; border-bottom: 1px solid var(--border); margin-bottom: 30px; }
+        .brand-logo { width: 42px; height: 42px; background: linear-gradient(135deg, var(--primary), #868CFF); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 15px rgba(67, 24, 255, 0.3); }
+        .brand-title { font-size: 26px; font-weight: 800; color: var(--secondary); letter-spacing: -0.5px; margin: 0;}
+        .brand-subtitle { font-size: 12px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+
+        .nav-link { display: flex; align-items: center; gap: 16px; padding: 14px 16px; border-radius: 12px; color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 15px; transition: var(--transition); margin-bottom: 8px; }
+        .nav-link svg { width: 22px; height: 22px; transition: var(--transition); }
+        .nav-link:hover { color: var(--primary); background: rgba(67, 24, 255, 0.04); }
+        .nav-link.active { background: var(--primary); color: white; box-shadow: 0 4px 15px rgba(67, 24, 255, 0.25); }
+        .nav-link.active svg { color: white; }
+        .nav-title { flex: 1; }
+
+        .main { flex: 1; display: flex; flex-direction: column; overflow-x: hidden; }
+        .topbar { height: 100px; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; background: rgba(244, 247, 254, 0.8); backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 5; border-bottom: none;}
+        .page-title { font-size: 32px; font-weight: 700; color: var(--secondary); letter-spacing: -0.5px; margin: 0;}
+        .top-actions { display: flex; align-items: center; gap: 20px; background: var(--surface); padding: 8px 12px 8px 24px; border-radius: 30px; box-shadow: var(--shadow-soft); }
+        .welcome { color: var(--text); font-weight: 600; font-size: 14px; }
+        .logout-btn { background: #FFECEB; color: var(--danger); border: none; padding: 10px 20px; border-radius: 20px; font-weight: 700; font-size: 13px; cursor: pointer; transition: var(--transition); }
+        .logout-btn:hover { background: var(--danger); color: white; }
+
+        .content { padding: 32px 40px; flex: 1; }
+        .card { background: var(--surface); border-radius: 20px; padding: 32px; box-shadow: var(--shadow-soft); }
+        
+        .action-bar { display: flex; justify-content: space-between; margin-bottom: 24px; }
+        .search-box { padding: 12px 20px; border: 1px solid var(--border); border-radius: 12px; width: 300px; font-family: 'Outfit'; font-size: 14px; outline: none; }
+        .search-box:focus { border-color: var(--primary); }
+
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 16px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
+        th { color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
+        td { color: var(--secondary); font-weight: 500; }
+        
+        .badge { padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+        .badge.pending { background: #fff8e6; color: #f59e0b; }
+        .badge.approved { background: #e6f7f1; color: var(--success); }
+        .badge.completed { background: #eaf2ff; color: var(--primary); }
+        .badge.rejected { background: #FFECEB; color: var(--danger); }
+
+        .btn-action { padding: 8px 16px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 12px; transition: var(--transition); margin-right: 8px; }
+        .btn-approve { background: rgba(1, 181, 116, 0.1); color: var(--success); }
+        .btn-approve:hover { background: var(--success); color: white; }
+        .btn-complete { background: rgba(67, 24, 255, 0.1); color: var(--primary); }
+        .btn-complete:hover { background: var(--primary); color: white; }
+        .btn-reject { background: rgba(238, 93, 80, 0.1); color: var(--danger); }
+        .btn-reject:hover { background: var(--danger); color: white; }
+
+        .alert-box { padding: 16px; border-radius: 12px; margin-bottom: 20px; font-weight: 500; display: none; }
+        .alert-success { background: #e6f7f1; color: var(--success); border: 1px solid #bbf7d0; }
+        .alert-error { background: #FFECEB; color: var(--danger); border: 1px solid #fecaca; }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-logo">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path><path d="M2 12h20"></path></svg>
+                </div>
+                <div>
+                    <div class="brand-title">DriveSewa</div>
+                    <div class="brand-subtitle">Staff Operations</div>
+                </div>
+            </div>
+            <nav class="side-nav">
+                <a class="nav-link" href="staff-dashboard.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"></rect><rect x="14" y="3" width="7" height="5" rx="1"></rect><rect x="14" y="12" width="7" height="9" rx="1"></rect><rect x="3" y="16" width="7" height="5" rx="1"></rect></svg>
+                    <span class="nav-title">Dashboard</span>
+                </a>
+                <a class="nav-link" href="customer-list.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    <span class="nav-title">Customers</span>
+                </a>
+                <a class="nav-link" href="staff-vehicles.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"></path><circle cx="7" cy="17" r="2"></circle><path d="M9 17h6"></path><circle cx="17" cy="17" r="2"></circle></svg>
+                    <span class="nav-title">Vehicles</span>
+                </a>
+                <a class="nav-link" href="sales-invoice-list.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    <span class="nav-title">Sales Invoice</span>
+                </a>
+                <a class="nav-link" href="staff-customer-history.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <span class="nav-title">Purchase History</span>
+                </a>
+                <a class="nav-link" href="staff-reports.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                    <span class="nav-title">Reports</span>
+                </a>
+                <a class="nav-link active" href="staff-appointments.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    <span class="nav-title">Appointments</span>
+                </a>
+                <a class="nav-link" href="staff-part-requests.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                    <span class="nav-title">Part Requests</span>
+                </a>
+                <a class="nav-link" href="staff-notifications.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                    <span class="nav-title">Notifications</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <h1 class="page-title">Manage Appointments</h1>
+                <div class="top-actions">
+                    <span class="welcome" id="welcomeText">Staff</span>
+                    <button class="logout-btn" onclick="logout()">Log Out</button>
+                </div>
+            </header>
+
+            <section class="content">
+                <div id="alertBox" class="alert-box"></div>
+                
+                <div class="card">
+                    <div class="action-bar">
+                        <input type="text" id="searchInput" class="search-box" placeholder="Search by customer or vehicle..." onkeyup="filterTable()">
+                    </div>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Customer</th>
+                                <th>Vehicle</th>
+                                <th>Service Type</th>
+                                <th>Issue</th>
+                                <th>Status</th>
+                                <th style="text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appointmentsBody">
+                            <tr><td colspan="7" style="text-align:center;">Loading appointments...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5178/api/appointments';
+        let authToken = '';
+        let allAppointments = [];
+
+        window.onload = () => {
+            const userData = localStorage.getItem("driveSewaUser");
+            if (!userData) { window.location.href = "../../public/login.html"; return; }
+            const user = JSON.parse(userData);
+            if (!user || user.role !== "Staff") { window.location.href = "../../public/login.html"; return; }
+            
+            authToken = user.token;
+            document.getElementById("welcomeText").textContent = user.fullName || "Staff";
+            
+            fetchAppointments();
+        };
+
+        function logout() {
+            localStorage.removeItem("driveSewaUser");
+            window.location.href = "../../public/login.html";
+        }
+
+        async function fetchAppointments() {
+            try {
+                const res = await fetch(API_URL, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                if (res.ok) {
+                    allAppointments = await res.json();
+                    renderTable(allAppointments);
+                } else {
+                    showAlert('Error loading appointments.', 'error');
+                }
+            } catch (err) {
+                showAlert('Network error connecting to server.', 'error');
+            }
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('appointmentsBody');
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--text-muted);">No appointments found.</td></tr>';
+                return;
+            }
+
+            // Sort by date (newest first or upcoming)
+            data.sort((a, b) => new Date(b.appointmentDate) - new Date(a.appointmentDate));
+
+            tbody.innerHTML = data.map(app => {
+                const dateObj = new Date(app.appointmentDate);
+                const formattedDate = dateObj.toLocaleDateString() + ' ' + dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                
+                let badgeClass = app.status.toLowerCase();
+                if(badgeClass !== 'pending' && badgeClass !== 'approved' && badgeClass !== 'completed') badgeClass = 'rejected';
+
+                let actionBtns = '';
+                if (app.status === 'Pending') {
+                    actionBtns = `
+                        <button class="btn-action btn-approve" onclick="updateStatus(${app.id}, 'Approved')">Approve</button>
+                        <button class="btn-action btn-reject" onclick="updateStatus(${app.id}, 'Rejected')">Reject</button>
+                    `;
+                } else if (app.status === 'Approved') {
+                    actionBtns = `<button class="btn-action btn-complete" onclick="updateStatus(${app.id}, 'Completed')">Mark Completed</button>`;
+                }
+
+                return `
+                    <tr>
+                        <td><strong>${formattedDate}</strong></td>
+                        <td>${app.customerName || 'N/A'}</td>
+                        <td>${app.vehicleName || 'N/A'}</td>
+                        <td>${app.serviceType}</td>
+                        <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${app.issueDescription || ''}">${app.issueDescription || '-'}</td>
+                        <td><span class="badge ${badgeClass}">${app.status}</span></td>
+                        <td style="text-align: right;">${actionBtns}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function filterTable() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allAppointments.filter(app => 
+                (app.customerName && app.customerName.toLowerCase().includes(query)) ||
+                (app.vehicleName && app.vehicleName.toLowerCase().includes(query)) ||
+                app.serviceType.toLowerCase().includes(query)
+            );
+            renderTable(filtered);
+        }
+
+        async function updateStatus(id, newStatus) {
+            if(!confirm(`Are you sure you want to mark this appointment as ${newStatus}?`)) return;
+
+            try {
+                const res = await fetch(`${API_URL}/${id}`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}` 
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                });
+
+                if (res.ok) {
+                    showAlert(`Appointment successfully marked as ${newStatus}`, 'success');
+                    fetchAppointments();
+                } else {
+                    const err = await res.json();
+                    showAlert(err.message || 'Error updating status', 'error');
+                }
+            } catch (err) {
+                showAlert('Network error', 'error');
+            }
+        }
+
+        function showAlert(msg, type) {
+            const box = document.getElementById('alertBox');
+            box.textContent = msg;
+            box.className = 'alert-box alert-' + type;
+            box.style.display = 'block';
+            setTimeout(() => { box.style.display = 'none'; }, 4000);
+        }
+    </script>
+</body>
+</html>
+
