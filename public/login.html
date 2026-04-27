@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,7 +28,7 @@
             align-items: center;
             justify-content: center;
             background-image: radial-gradient(circle at top right, rgba(59, 130, 246, 0.15), transparent 40%),
-                              radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.15), transparent 40%);
+                radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.15), transparent 40%);
         }
 
         .auth-container {
@@ -43,8 +44,15 @@
         }
 
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .brand-header {
@@ -158,6 +166,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="auth-container">
         <div class="brand-header">
@@ -176,7 +185,7 @@
                 <label class="form-label">Password</label>
                 <input type="password" id="password" class="form-control" placeholder="••••••••" required>
             </div>
-            
+
             <button type="submit" class="btn-primary" id="submitBtn">Sign In</button>
         </form>
 
@@ -192,7 +201,7 @@
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
             const alertMsg = document.getElementById('alertMessage');
-            
+
             btn.textContent = 'Signing in...';
             btn.disabled = true;
 
@@ -214,7 +223,7 @@
                     alertMsg.textContent = 'Login successful!';
                     alertMsg.className = 'message success';
                     alertMsg.style.display = 'block';
-                    
+
                     if (data.role === 'Customer') {
                         localStorage.setItem('driveSewaCustomer', JSON.stringify(data));
                         setTimeout(() => {
@@ -248,4 +257,5 @@
         });
     </script>
 </body>
+
 </html>
