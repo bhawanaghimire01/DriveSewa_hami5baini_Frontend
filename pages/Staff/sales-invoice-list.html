@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Invoices - DriveSewa Staff</title>
+    <style>
+        :root {
+            --bg: #f5f7fb;
+            --surface: #ffffff;
+            --surface-soft: #f8fafc;
+            --primary: #174ea6;
+            --primary-dark: #123f84;
+            --text: #172033;
+            --muted: #667085;
+            --border: #dfe5ef;
+            --danger: #c62828;
+            --success: #10b981;
+            --shadow: 0 16px 36px rgba(23, 32, 51, 0.08);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .dashboard { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
+
+        .sidebar { background: var(--surface); border-right: 1px solid var(--border); padding: 24px 18px; display: flex; flex-direction: column; gap: 26px; }
+        .brand { padding: 0 10px 20px; border-bottom: 1px solid var(--border); }
+        .brand-title { margin: 0; font-size: 24px; font-weight: 800; color: var(--primary); }
+        .brand-subtitle { margin: 6px 0 0; font-size: 13px; color: var(--muted); }
+
+        .side-nav { display: grid; gap: 10px; }
+        .nav-link { display: grid; grid-template-columns: 38px 1fr; gap: 12px; align-items: center; padding: 13px 12px; border-radius: 8px; color: var(--text); text-decoration: none; border: 1px solid transparent; }
+        .nav-link:hover { background: var(--surface-soft); border-color: var(--border); }
+        .nav-link.active { background: #eaf2ff; border-color: #b8d2ff; color: var(--primary); }
+        .nav-icon { width: 38px; height: 38px; border-radius: 8px; display: grid; place-items: center; background: var(--surface-soft); font-weight: 800; }
+        .nav-title { display: block; font-size: 15px; font-weight: 700; }
+        .nav-desc { display: block; margin-top: 3px; font-size: 12px; color: var(--muted); }
+
+        .main { display: flex; flex-direction: column; min-width: 0; }
+        .topbar { height: 76px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; }
+        .page-title { margin: 0; font-size: 24px; font-weight: 800; }
+        .top-actions { display: flex; align-items: center; gap: 14px; }
+        
+        .logout-btn { border: 1px solid #f1b9b9; background: #fff5f5; color: var(--danger); border-radius: 8px; padding: 11px 16px; font-size: 14px; font-weight: 800; cursor: pointer; }
+        .logout-btn:hover { background: var(--danger); color: #fff; }
+
+        .content { padding: 32px; flex: 1; display: flex; flex-direction: column; }
+
+        .table-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; box-shadow: var(--shadow); flex: 1; }
+        .table-header { padding: 18px 22px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+        .table-header h2 { margin: 0; font-size: 18px; }
+        
+        .btn-primary { background: var(--primary); color: #fff; border: none; text-decoration: none; padding: 10px 18px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-primary:hover { background: var(--primary-dark); }
+
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 16px 22px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
+        th { background: var(--surface-soft); color: var(--muted); font-size: 12px; text-transform: uppercase; }
+        tr:last-child td { border-bottom: 0; }
+        
+        .action-btns { display: flex; gap: 10px; }
+        .btn-view { color: var(--primary); background: #eaf2ff; border: 1px solid #b8d2ff; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 13px; text-decoration: none; }
+        .btn-view:hover { text-decoration: underline; }
+
+        .message { padding: 12px; border-radius: 6px; margin-bottom: 20px; font-size: 14px; display: none; }
+        .message.error { background: #fef2f2; color: #b91c1c; border: 1px solid #fca5a5; }
+        .message.success { background: #f0fdf4; color: #15803d; border: 1px solid #86efac; }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="brand">
+                <h2 class="brand-title">DriveSewa</h2>
+                <p class="brand-subtitle">Staff Operations Workspace</p>
+            </div>
+            <nav class="side-nav">
+                <a class="nav-link" href="staff-dashboard.html">
+                    <span class="nav-icon">🏠</span>
+                    <span><span class="nav-title">Dashboard</span><span class="nav-desc">Home overview</span></span>
+                </a>
+                <a class="nav-link" href="register-customer.html">
+                    <span class="nav-icon">👤</span>
+                    <span><span class="nav-title">Customers</span><span class="nav-desc">Manage clients</span></span>
+                </a>
+                <a class="nav-link active" href="sales-invoice-list.html">
+                    <span class="nav-icon">💰</span>
+                    <span><span class="nav-title">Sales</span><span class="nav-desc">Invoices & billing</span></span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <h1 class="page-title">Sales Invoices</h1>
+                <div class="top-actions">
+                    <span class="welcome" id="welcomeText">Welcome, Staff</span>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </header>
+
+            <section class="content">
+                <div id="alertMsg" class="message"></div>
+                <div class="table-card">
+                    <div class="table-header">
+                        <h2>Sales History</h2>
+                        <a href="create-sales-invoice.html" class="btn-primary">+ Create Sales Invoice</a>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Invoice #ID</th>
+                                <th>Customer Name</th>
+                                <th>Date</th>
+                                <th>Total ($)</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoiceTableBody">
+                            <tr><td colspan="6" style="text-align: center; color: var(--muted);">Loading invoices...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const apiBaseUrl = 'http://localhost:5178/api/sales-invoices';
+        let authToken = '';
+
+        window.onload = () => {
+            const userData = localStorage.getItem("driveSewaUser");
+            if (!userData) { window.location.href = "../../public/login.html"; return; }
+            const user = JSON.parse(userData);
+            if (!user || user.role !== "Staff") { window.location.href = "../../public/login.html"; return; }
+            
+            document.getElementById("welcomeText").textContent = "Welcome, " + (user.fullName || "Staff");
+            authToken = user.token || ''; 
+            
+            loadInvoices();
+        };
+
+        function logout() {
+            localStorage.removeItem("driveSewaUser");
+            window.location.href = "../../public/login.html";
+        }
+
+        function getAuthHeaders() {
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
+            };
+        }
+
+        function showMessage(msg, type) {
+            const alertMsg = document.getElementById('alertMsg');
+            alertMsg.textContent = msg;
+            alertMsg.className = 'message ' + type;
+            alertMsg.style.display = 'block';
+            setTimeout(() => { alertMsg.style.display = 'none'; }, 4000);
+        }
+
+        async function loadInvoices() {
+            try {
+                const res = await fetch(apiBaseUrl, { headers: getAuthHeaders() });
+                if (!res.ok) throw new Error('Failed to load invoices');
+                const invoices = await res.json();
+                renderTable(invoices);
+            } catch (error) {
+                document.getElementById('invoiceTableBody').innerHTML = `<tr><td colspan="6" style="text-align:center;color:red;">Error loading invoices. Is the backend running?</td></tr>`;
+            }
+        }
+
+        function renderTable(invoices) {
+            const tbody = document.getElementById('invoiceTableBody');
+            if(invoices.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">No sales invoices found. Create a new one.</td></tr>`;
+                return;
+            }
+            
+            tbody.innerHTML = invoices.map(inv => {
+                const dateObj = new Date(inv.saleDate);
+                const formattedDate = dateObj.toLocaleDateString() + ' ' + dateObj.toLocaleTimeString();
+                return `
+                <tr>
+                    <td><strong>#SAL-${inv.invoiceId.toString().padStart(4, '0')}</strong></td>
+                    <td>${inv.customerName}</td>
+                    <td>${formattedDate}</td>
+                    <td style="color:var(--primary); font-weight:bold;">$${inv.finalAmount.toFixed(2)}</td>
+                    <td><span style="color:var(--success); background:#ecfdf3; padding: 4px 8px; border-radius: 4px; font-size:12px;">${inv.paymentStatus}</span></td>
+                    <td class="action-btns">
+                        <a href="sales-invoice-details.html?id=${inv.invoiceId}" class="btn-view">View Details</a>
+                    </td>
+                </tr>
+            `}).join('');
+        }
+    </script>
+</body>
+</html>
