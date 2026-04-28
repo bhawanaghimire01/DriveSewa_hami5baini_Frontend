@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Invoice Details - DriveSewa Staff</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #F4F7FE;
+            --surface: #FFFFFF;
+            --primary: #4318FF;
+            --primary-light: #F4F7FE;
+            --secondary: #11047A;
+            --text: #2B3674;
+            --text-muted: #A3AED0;
+            --border: #E0E5F2;
+            --danger: #EE5D50;
+            --success: #01B574;
+            --shadow-soft: 0px 18px 40px rgba(112, 144, 176, 0.12);
+            --shadow-hover: 0px 20px 40px rgba(67, 24, 255, 0.2);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { box-sizing: border-box; }
+
+        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); margin: 0; min-height: 100vh; }
+        .dashboard { display: grid; grid-template-columns: 290px 1fr; min-height: 100vh; }
+
+        /* Sidebar Styles */
+        .sidebar { background: var(--surface); padding: 30px 20px; display: flex; flex-direction: column; border-right: 1px solid rgba(0,0,0,0.03); box-shadow: 14px 17px 40px 4px rgba(112, 144, 176, 0.04); z-index: 10; gap: 0;}
+        .brand { display: flex; align-items: center; gap: 12px; padding: 0 10px 30px; border-bottom: 1px solid var(--border); margin-bottom: 30px; }
+        .brand-logo { width: 42px; height: 42px; background: linear-gradient(135deg, var(--primary), #868CFF); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 15px rgba(67, 24, 255, 0.3); }
+        .brand-title { font-size: 26px; font-weight: 800; color: var(--secondary); letter-spacing: -0.5px; margin: 0;}
+        .brand-subtitle { font-size: 12px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+
+        .nav-link { display: flex; align-items: center; gap: 16px; padding: 14px 16px; border-radius: 12px; color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 15px; transition: var(--transition); margin-bottom: 8px; }
+        .nav-link svg { width: 22px; height: 22px; transition: var(--transition); }
+        .nav-link:hover { color: var(--primary); background: rgba(67, 24, 255, 0.04); }
+        .nav-link.active { background: var(--primary); color: white; box-shadow: 0 4px 15px rgba(67, 24, 255, 0.25); }
+        .nav-link.active svg { color: white; }
+        .nav-title { flex: 1; }
+
+        .main { flex: 1; display: flex; flex-direction: column; overflow-x: hidden; }
+        .topbar { height: 100px; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; background: rgba(244, 247, 254, 0.8); backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 5; border-bottom: none;}
+        .page-title { font-size: 32px; font-weight: 700; color: var(--secondary); letter-spacing: -0.5px; margin: 0;}
+        .top-actions { display: flex; align-items: center; gap: 20px; background: var(--surface); padding: 8px 12px 8px 24px; border-radius: 30px; box-shadow: var(--shadow-soft); }
+        .welcome { color: var(--text); font-weight: 600; font-size: 14px; }
+        .logout-btn { background: #FFECEB; color: var(--danger); border: none; padding: 10px 20px; border-radius: 20px; font-weight: 700; font-size: 13px; cursor: pointer; transition: var(--transition); }
+        .logout-btn:hover { background: var(--danger); color: white; }
+
+        .content { padding: 32px 40px; flex: 1; display: flex; flex-direction: column; }
+
+        .invoice-card { background: var(--surface); border: none; border-radius: 20px; padding: 50px; box-shadow: var(--shadow-soft); margin-bottom: 24px; position: relative; overflow: hidden;}
+        
+        .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); font-size: 150px; font-weight: 900; color: rgba(163, 174, 208, 0.05); pointer-events: none; z-index: 0; user-select: none; }
+        
+        .invoice-top { display: flex; justify-content: space-between; margin-bottom: 40px; position: relative; z-index: 1;}
+        .company-info h2 { margin: 0 0 5px 0; color: var(--primary); font-size: 28px; display: flex; align-items: center; gap: 10px;}
+        .company-info p { margin: 0; color: var(--text-muted); font-size: 14px; line-height: 1.6; }
+        
+        .invoice-header-info { text-align: right; }
+        .invoice-title { font-size: 32px; color: var(--secondary); margin: 0 0 10px 0; font-weight: 800; text-transform: uppercase;}
+        .barcode { height: 40px; margin-top: 10px; opacity: 0.8; }
+        
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 40px; position: relative; z-index: 1; }
+        .info-block { background: #fafafa; padding: 20px; border-radius: 12px; border: 1px solid var(--border); }
+        .info-block strong { display: block; font-size: 12px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px;}
+        .info-block span { font-size: 16px; font-weight: 600; color: var(--secondary); display: block; margin-bottom: 4px;}
+        .info-block p { margin: 0; color: var(--text); font-size: 14px; }
+        
+        .status-badge { display: inline-block; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-top: 8px; }
+        .status-paid { background: rgba(1, 181, 116, 0.1); color: var(--success); }
+        .status-pending { background: rgba(255, 206, 32, 0.15); color: #E5B200; }
+
+        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; position: relative; z-index: 1; }
+        th, td { padding: 18px 20px; text-align: left; border-bottom: 1px solid var(--border); font-size: 15px; }
+        th { background: var(--primary); color: white; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+        th:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
+        th:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
+        tr:last-child td { border-bottom: 0; }
+        tbody tr:nth-child(even) { background: #fafafa; }
+
+        .totals-section { display: flex; flex-direction: column; align-items: flex-end; padding-top: 20px; font-size: 16px; border-top: 2px dashed var(--border); gap: 12px; position: relative; z-index: 1; }
+        .totals-row { display: flex; justify-content: space-between; width: 300px; padding: 4px 0; }
+        .totals-row span:first-child { color: var(--text-muted); font-weight: 500; }
+        .totals-row span:last-child { font-weight: 700; color: var(--secondary); }
+        .grand-total { font-size: 24px; font-weight: 800; color: var(--primary); background: rgba(67, 24, 255, 0.05); padding: 16px; border-radius: 12px; margin-top: 8px;}
+        .discount-row span { color: var(--danger) !important; }
+
+        .footer-note { margin-top: 50px; text-align: center; color: var(--text-muted); font-size: 13px; position: relative; z-index: 1; border-top: 1px solid var(--border); padding-top: 20px; }
+
+        .actions-bar { margin-top: 24px; display: flex; gap: 16px; align-items: center; }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 600; font-size: 14px; padding: 14px 24px; border-radius: 12px; cursor: pointer; transition: var(--transition); border: none; text-decoration: none;}
+        .btn-back { background: var(--surface); border: 1px solid var(--border); color: var(--text); }
+        .btn-back:hover { background: #fafafa; transform: translateY(-2px); }
+        .btn-print { background: var(--secondary); color: white; }
+        .btn-print:hover { background: #0c025c; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(17, 4, 122, 0.2); }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), #868CFF); color: white; box-shadow: 0 4px 15px rgba(67,24,255,0.2); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(67,24,255,0.3); }
+        
+        @media print {
+            body { background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
+            .sidebar, .topbar, .actions-bar { display: none !important; }
+            .dashboard { display: block; }
+            .content { padding: 0; }
+            .invoice-card { border: none; box-shadow: none; padding: 20px; }
+            @page { margin: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-logo">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path><path d="M2 12h20"></path></svg>
+                </div>
+                <div>
+                    <div class="brand-title">DriveSewa</div>
+                    <div class="brand-subtitle">Staff Operations</div>
+                </div>
+            </div>
+            <nav class="side-nav">
+                <a class="nav-link" href="staff-dashboard.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"></rect><rect x="14" y="3" width="7" height="5" rx="1"></rect><rect x="14" y="12" width="7" height="9" rx="1"></rect><rect x="3" y="16" width="7" height="5" rx="1"></rect></svg>
+                    <span class="nav-title">Dashboard</span>
+                </a>
+                <a class="nav-link" href="customer-list.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    <span class="nav-title">Customers</span>
+                </a>
+                <a class="nav-link" href="staff-vehicles.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"></path><circle cx="7" cy="17" r="2"></circle><path d="M9 17h6"></path><circle cx="17" cy="17" r="2"></circle></svg>
+                    <span class="nav-title">Vehicles</span>
+                </a>
+                <a class="nav-link active" href="sales-invoice-list.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    <span class="nav-title">Sales Invoice</span>
+                </a>
+                <a class="nav-link" href="staff-customer-history.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <span class="nav-title">Purchase History</span>
+                </a>
+                <a class="nav-link" href="staff-reports.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                    <span class="nav-title">Reports</span>
+                </a>
+                <a class="nav-link" href="staff-appointments.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    <span class="nav-title">Appointments</span>
+                </a>
+                <a class="nav-link" href="staff-part-requests.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                    <span class="nav-title">Part Requests</span>
+                </a>
+                <a class="nav-link" href="staff-ai-prediction.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                    <span class="nav-title">AI Prediction</span>
+                </a>
+                <a class="nav-link" href="staff-notifications.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                    <span class="nav-title">Notifications</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <h1 class="page-title">Invoice Viewer</h1>
+                <div class="top-actions">
+                    <span class="welcome" id="welcomeText">Staff</span>
+                    <button class="logout-btn" onclick="logout()">Log Out</button>
+                </div>
+            </header>
+
+            <section class="content">
+                <div class="actions-bar" style="margin-bottom: 24px; margin-top: 0;">
+                    <a href="sales-invoice-list.html" class="btn btn-back">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                        Back to List
+                    </a>
+                    <button class="btn btn-print" onclick="window.print()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                        Print / Download PDF
+                    </button>
+                    <button class="btn btn-primary" onclick="emailInvoice()" id="emailBtn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                        Email to Customer
+                    </button>
+                </div>
+
+                <div class="invoice-card" id="printArea">
+                    <div class="watermark">PAID</div>
+                    
+                    <div class="invoice-top">
+                        <div class="company-info">
+                            <h2>
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path><path d="M2 12h20"></path></svg>
+                                DriveSewa
+                            </h2>
+                            <p>123 Auto Care Ave, Kathmandu, Nepal</p>
+                            <p>Email: support@drivesewa.com</p>
+                            <p>Phone: +977 9800000000</p>
+                            <p>VAT No: 300459392</p>
+                        </div>
+                        <div class="invoice-header-info">
+                            <h2 class="invoice-title">INVOICE</h2>
+                            <div style="font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 5px;" id="invTitleText">#SAL-0000</div>
+                            <svg class="barcode" viewBox="0 0 110 30" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="2" height="30" fill="var(--secondary)" x="0"/>
+                                <rect width="4" height="30" fill="var(--secondary)" x="5"/>
+                                <rect width="2" height="30" fill="var(--secondary)" x="12"/>
+                                <rect width="6" height="30" fill="var(--secondary)" x="17"/>
+                                <rect width="2" height="30" fill="var(--secondary)" x="26"/>
+                                <rect width="4" height="30" fill="var(--secondary)" x="31"/>
+                                <rect width="2" height="30" fill="var(--secondary)" x="38"/>
+                                <rect width="2" height="30" fill="var(--secondary)" x="43"/>
+                                <rect width="6" height="30" fill="var(--secondary)" x="48"/>
+                                <rect width="2" height="30" fill="var(--secondary)" x="57"/>
+                                <rect width="4" height="30" fill="var(--secondary)" x="62"/>
+                                <rect width="2" height="30" fill="var(--secondary)" x="69"/>
+                                <rect width="6" height="30" fill="var(--secondary)" x="74"/>
+                                <rect width="2" height="30" fill="var(--secondary)" x="83"/>
+                                <rect width="4" height="30" fill="var(--secondary)" x="88"/>
+                                <rect width="2" height="30" fill="var(--secondary)" x="95"/>
+                                <rect width="6" height="30" fill="var(--secondary)" x="100"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="info-grid">
+                        <div class="info-block">
+                            <strong>Billed To Customer</strong>
+                            <span id="invCustomer">Loading...</span>
+                            <p id="invCustomerPhone">Phone: N/A</p>
+                        </div>
+                        <div class="info-block" style="text-align: right;">
+                            <strong>Invoice Details</strong>
+                            <span>Date: <span id="invDate" style="display:inline; font-weight: 500; font-size: 15px; color: var(--text);">Loading...</span></span>
+                            <span>Status: <div class="status-badge status-paid" id="invStatus">Paid</div></span>
+                        </div>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Item #</th>
+                                <th>Part Description</th>
+                                <th style="text-align: center;">Qty</th>
+                                <th style="text-align: right;">Unit Price (Rs.)</th>
+                                <th style="text-align: right;">Total Amount (Rs.)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoiceItemsBody">
+                            <tr><td colspan="5" style="text-align: center;">Loading items...</td></tr>
+                        </tbody>
+                    </table>
+
+                    <div class="totals-section">
+                        <div class="totals-row">
+                            <span>Subtotal:</span>
+                            <span id="invSubTotal">Rs. 0.00</span>
+                        </div>
+                        <div class="totals-row discount-row" id="discountContainer" style="display:none;">
+                            <span>Loyalty Discount (10%):</span>
+                            <span id="invDiscount">-Rs. 0.00</span>
+                        </div>
+                        <div class="totals-row grand-total">
+                            <span style="color:var(--secondary);">Grand Total:</span>
+                            <span id="invTotal">Rs. 0.00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="footer-note">
+                        <p>Thank you for choosing DriveSewa! For any inquiries regarding this invoice, please contact support.</p>
+                        <p style="font-weight: 600;">System Generated Invoice - No signature required.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5178/api/sales-invoices';
+        let authToken = '';
+
+        window.onload = async () => {
+            const userData = localStorage.getItem("driveSewaUser");
+            if (!userData) { window.location.href = "../../public/login.html"; return; }
+            const user = JSON.parse(userData);
+            if (!user || user.role !== "Staff") { window.location.href = "../../public/login.html"; return; }
+            
+            document.getElementById("welcomeText").textContent = "Welcome, " + (user.fullName || "Staff");
+            authToken = user.token || ''; 
+            
+            const params = new URLSearchParams(window.location.search);
+            const invoiceId = params.get('id');
+            if(!invoiceId) {
+                alert("No invoice ID provided.");
+                window.location.href = "sales-invoice-list.html";
+                return;
+            }
+
+            loadInvoiceDetails(invoiceId);
+        };
+
+        function logout() {
+            localStorage.removeItem("driveSewaUser");
+            window.location.href = "../../public/login.html";
+        }
+
+        async function loadInvoiceDetails(id) {
+            try {
+                const res = await fetch(`${API_URL}/${id}`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if(!res.ok) {
+                    document.querySelector('.invoice-card').innerHTML = `<h3 style="color:red; text-align:center; margin-top:50px;">Invoice not found or error loading.</h3>`;
+                    return;
+                }
+
+                const inv = await res.json();
+                
+                const formattedId = `SAL-${inv.invoiceId.toString().padStart(4, '0')}`;
+                document.getElementById('invTitleText').textContent = `#${formattedId}`;
+                document.getElementById('invCustomer').textContent = inv.customerName;
+                document.getElementById('invCustomerPhone').textContent = `Phone: N/A`; // Real API may not send phone, fallback is N/A
+                
+                const statusEl = document.getElementById('invStatus');
+                statusEl.textContent = inv.paymentStatus;
+                statusEl.className = 'status-badge ' + (inv.paymentStatus === 'Paid' ? 'status-paid' : 'status-pending');
+                
+                if (inv.paymentStatus === 'Paid') {
+                    document.querySelector('.watermark').textContent = 'PAID';
+                    document.querySelector('.watermark').style.color = 'rgba(1, 181, 116, 0.05)';
+                } else {
+                    document.querySelector('.watermark').textContent = 'PENDING';
+                    document.querySelector('.watermark').style.color = 'rgba(238, 93, 80, 0.05)';
+                }
+
+                const d = new Date(inv.saleDate);
+                document.getElementById('invDate').textContent = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) + ' ' + d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                
+                document.getElementById('invSubTotal').textContent = 'Rs. ' + inv.totalAmount.toFixed(2);
+                document.getElementById('invTotal').textContent = 'Rs. ' + inv.finalAmount.toFixed(2);
+
+                if(inv.discountAmount > 0) {
+                    document.getElementById('discountContainer').style.display = 'flex';
+                    document.getElementById('invDiscount').textContent = '-Rs. ' + inv.discountAmount.toFixed(2);
+                }
+
+                const tbody = document.getElementById('invoiceItemsBody');
+                if(inv.items && inv.items.length > 0) {
+                    tbody.innerHTML = inv.items.map((item, index) => `
+                        <tr>
+                            <td>${(index + 1).toString().padStart(2, '0')}</td>
+                            <td><strong style="color: var(--secondary);">${item.partName}</strong></td>
+                            <td style="text-align: center;">${item.quantity}</td>
+                            <td style="text-align: right;">Rs. ${item.unitPrice.toFixed(2)}</td>
+                            <td style="text-align: right; font-weight: 600;">Rs. ${item.totalPrice.toFixed(2)}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 30px;">No items found in this invoice.</td></tr>`;
+                }
+                
+            } catch(e) {
+                document.querySelector('.invoice-card').innerHTML = `<h3 style="color:red; text-align:center;">Network Error. Is Backend Running?</h3>`;
+            }
+        }
+
+        async function emailInvoice() {
+            const params = new URLSearchParams(window.location.search);
+            const invoiceId = params.get('id');
+            if(!invoiceId) return;
+
+            try {
+                const btn = document.getElementById('emailBtn');
+                const origHTML = btn.innerHTML;
+                btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite;"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg> Sending...`;
+                btn.disabled = true;
+
+                // Create a style element for animation
+                if (!document.getElementById('spinStyle')) {
+                    const style = document.createElement('style');
+                    style.id = 'spinStyle';
+                    style.innerHTML = '@keyframes spin { 100% { transform: rotate(360deg); } }';
+                    document.head.appendChild(style);
+                }
+
+                const res = await fetch(`${API_URL}/${invoiceId}/email`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if(res.ok) {
+                    btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Sent Successfully`;
+                    btn.style.background = 'var(--success)';
+                    setTimeout(() => {
+                        btn.innerHTML = origHTML;
+                        btn.style.background = '';
+                        btn.disabled = false;
+                    }, 3000);
+                } else {
+                    const error = await res.text();
+                    alert('Failed to send email: ' + error);
+                    btn.innerHTML = origHTML;
+                    btn.disabled = false;
+                }
+            } catch(e) {
+                alert('Network error while sending email.');
+                const btn = document.getElementById('emailBtn');
+                btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg> Email to Customer`;
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
