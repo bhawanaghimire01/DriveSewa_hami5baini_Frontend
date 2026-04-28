@@ -1,10 +1,77 @@
-﻿<!DOCTYPE html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveSewa - Login</title>
+    <link rel="stylesheet" href="../assets/Css/style.css">
 </head>
 <body>
+    <div class="auth-wrapper">
+        <div class="auth-left">
+            <h1>DriveSewa</h1>
+            <p>Your premium vehicle parts and service management system. Experience top-tier quality care for your automotive needs.</p>
+        </div>
+        <div class="auth-right">
+            <div class="auth-card">
+                <h2>Login</h2>
+                <div id="errorMessage" class="error-msg"></div>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <input type="email" id="email" class="form-control" placeholder="Email Address" required />
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="password" class="form-control" placeholder="Password" required />
+                    </div>
+                    <button type="submit" class="btn-primary">Login</button>
+                </form>
+                <div class="auth-links">
+                    <p style="margin-top: 15px;">Don't have an account? <a href="register.html">Register here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <script>
+        const API_BASE_URL = 'https://localhost:7011/api'; // Ensure this matches your backend port
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.style.display = 'none';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/Auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.message || 'Login failed. Invalid credentials.');
+                }
+                
+                // Store user data
+                localStorage.setItem('driveSewaUser', JSON.stringify(data));
+                
+                // Redirect based on role
+                if (data.role === 'Admin') {
+                    window.location.href = '../pages/admin/admin-dashboard.html';
+                } else if (data.role === 'Staff') {
+                    window.location.href = '../pages/staff/staff-dashboard.html';
+                } else {
+                    window.location.href = '../pages/customer/customer-dashboard.html';
+                }
+                
+            } catch (err) {
+                errorDiv.textContent = err.message;
+                errorDiv.style.display = 'block';
+            }
+        });
+    </script>
 </body>
 </html>

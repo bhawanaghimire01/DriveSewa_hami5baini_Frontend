@@ -1,10 +1,95 @@
-﻿<!DOCTYPE html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveSewa - Register</title>
+    <link rel="stylesheet" href="../assets/Css/style.css">
 </head>
 <body>
+    <div class="auth-wrapper">
+        <div class="auth-left">
+            <h1>DriveSewa</h1>
+            <p>Your premium vehicle parts and service management system. Experience top-tier quality care for your automotive needs.</p>
+        </div>
+        <div class="auth-right">
+            <div class="auth-card">
+                <h2>Customer Registration</h2>
+                <div id="errorMessage" class="error-msg"></div>
+                <div id="successMessage" class="success-msg"></div>
+                <form id="registerForm">
+                    <div class="form-group">
+                        <input type="text" id="fullName" class="form-control" placeholder="Full Name" required />
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="email" class="form-control" placeholder="Email Address" required />
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="password" class="form-control" placeholder="Password" required />
+                    </div>
+                    <div class="form-group">
+                        <input type="tel" id="phone" class="form-control" placeholder="Phone Number" required />
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="address" class="form-control" placeholder="Physical Address" required />
+                    </div>
+                    <button type="submit" class="btn-success">Register</button>
+                </form>
+                <div class="auth-links">
+                    <p style="margin-top: 15px;">Already have an account? <a href="login.html">Login here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <script>
+        const API_BASE_URL = 'https://localhost:7011/api'; // Ensure this matches your backend port
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+            
+            const formData = {
+                fullName: document.getElementById('fullName').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                phone: document.getElementById('phone').value,
+                address: document.getElementById('address').value
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/Auth/register-customer`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.message || 'Registration failed. Check your data.');
+                }
+                
+                // Show success message
+                successDiv.textContent = 'Registration successful! Redirecting to login...';
+                successDiv.style.display = 'block';
+                
+                // Clear form
+                document.getElementById('registerForm').reset();
+                
+                // Redirect user to login automatically
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2000);
+                
+            } catch (err) {
+                errorDiv.textContent = err.message;
+                errorDiv.style.display = 'block';
+            }
+        });
+    </script>
 </body>
 </html>
