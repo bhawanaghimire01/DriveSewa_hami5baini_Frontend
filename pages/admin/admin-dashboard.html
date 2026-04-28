@@ -4,983 +4,591 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Admin Dashboard - DriveSewa</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f7f6;
-            color: #1a1a1a;
+        :root {
+            --bg: #f5f7fb;
+            --surface: #ffffff;
+            --surface-soft: #f8fafc;
+            --primary: #174ea6;
+            --primary-dark: #123f84;
+            --text: #172033;
+            --muted: #667085;
+            --border: #dfe5ef;
+            --danger: #c62828;
+            --shadow: 0 16px 36px rgba(23, 32, 51, 0.08);
         }
 
-        .app-layout {
-            display: flex;
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 280px 1fr;
             min-height: 100vh;
         }
 
         .sidebar {
-            width: 240px;
-            background: linear-gradient(135deg, #3d5c7b, #44678a);
-            color: #fff;
-            padding: 24px 16px;
-            box-sizing: border-box;
-            position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            box-shadow: 2px 0 18px rgba(0, 0, 0, 0.12);
-            z-index: 10;
-        }
-
-        .sidebar-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin: 0 0 28px;
-            letter-spacing: 1px;
-        }
-
-        .sidebar-nav {
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 24px 18px;
             display: flex;
             flex-direction: column;
+            gap: 26px;
+        }
+
+        .brand {
+            padding: 0 10px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand-title {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .brand-subtitle {
+            margin: 6px 0 0;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .side-nav {
+            display: grid;
+            gap: 10px;
+        }
+
+        .nav-link {
+            display: grid;
+            grid-template-columns: 38px 1fr;
             gap: 12px;
+            align-items: center;
+            padding: 13px 12px;
+            border-radius: 8px;
+            color: var(--text);
+            text-decoration: none;
+            border: 1px solid transparent;
+            transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
         }
 
-        .sidebar-tab {
-            width: 100%;
-            padding: 14px 16px;
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.08);
-            color: #fff;
-            cursor: pointer;
-            text-align: left;
+        .nav-link:hover {
+            background: var(--surface-soft);
+            border-color: var(--border);
+        }
+
+        .nav-link.active {
+            background: #eaf2ff;
+            border-color: #b8d2ff;
+            color: var(--primary);
+        }
+
+        .nav-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            background: var(--surface-soft);
+            color: currentColor;
+            font-weight: 800;
+        }
+
+        .nav-title {
+            display: block;
             font-size: 15px;
-            font-weight: 600;
-            transition: all 0.25s ease;
+            font-weight: 700;
         }
 
-            .sidebar-tab:hover {
-                background: rgba(255, 255, 255, 0.18);
-                transform: translateX(3px);
-            }
-
-            .sidebar-tab.active {
-                background: #fff;
-                color: #3d5c7b;
-                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-            }
-
-        .content-area {
-            margin-left: 240px;
-            width: calc(100% - 240px);
-            box-sizing: border-box;
+        .nav-desc {
+            display: block;
+            margin-top: 3px;
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.35;
         }
 
-        .page-wrapper {
-            min-height: 100vh;
-            padding: 40px 20px;
-            box-sizing: border-box;
+        .main {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
         }
 
-        .container {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-            max-width: 1100px;
-            margin: 0 auto;
-            box-sizing: border-box;
+        .topbar {
+            height: 76px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
         }
 
-        h1 {
-            color: #1a1a1a;
-            margin: 0 0 10px;
-            font-size: 2.2rem;
-        }
-
-        h2 {
-            color: #343a40;
-            font-weight: 600;
-            margin: 0 0 20px;
-        }
-
-        h3.card-title {
-            margin: 0 0 16px;
-            font-size: 1.2rem;
-            color: #343a40;
-        }
-
-        p {
-            color: #495057;
-            line-height: 1.6;
-        }
-
-        hr {
-            margin: 24px 0;
-            border: 0;
-            height: 1px;
-            background: #e1e5eb;
+        .page-title {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 800;
         }
 
         .top-actions {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            gap: 16px;
-            flex-wrap: wrap;
+            gap: 14px;
         }
 
-        .btn-primary,
-        .btn-danger,
-        .btn-secondary {
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 15px;
+        .welcome {
+            color: var(--muted);
+            font-size: 14px;
             font-weight: 600;
-            padding: 12px 18px;
-            transition: all 0.2s ease;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #0056b3, #007bff);
-            color: white;
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, #c82333, #dc3545);
-            color: white;
-        }
-
-        .btn-secondary {
-            background: #e9ecef;
-            color: #343a40;
-        }
-
-            .btn-primary:hover,
-            .btn-danger:hover,
-            .btn-secondary:hover {
-                transform: translateY(-1px);
-            }
-
-        .dashboard-grid {
+        .icon-button {
+            width: 42px;
+            height: 42px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--surface);
+            color: var(--text);
+            cursor: pointer;
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 24px;
-            margin-top: 24px;
+            place-items: center;
+            position: relative;
         }
 
-        .card {
-            border: 1px solid #e9ecef;
-            border-radius: 12px;
+        .notification-dot {
+            position: absolute;
+            top: 9px;
+            right: 10px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--danger);
+            border: 2px solid var(--surface);
+        }
+
+        .logout-btn {
+            border: 1px solid #f1b9b9;
+            background: #fff5f5;
+            color: var(--danger);
+            border-radius: 8px;
+            padding: 11px 16px;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background: var(--danger);
+            border-color: var(--danger);
+            color: #ffffff;
+        }
+
+        .content {
+            padding: 32px;
+        }
+
+        .welcome-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
             padding: 24px;
-            background: #fff;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            margin-bottom: 24px;
         }
 
-        .form-grid {
+        .welcome-panel h2 {
+            margin: 0 0 8px;
+            font-size: 22px;
+        }
+
+        .welcome-panel p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .status-pill {
+            flex: 0 0 auto;
+            border-radius: 999px;
+            background: #ecfdf3;
+            color: #087443;
+            border: 1px solid #b7e4c7;
+            padding: 9px 14px;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .module-grid {
             display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .module-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 22px;
+            color: inherit;
+            text-decoration: none;
+            box-shadow: 0 10px 28px rgba(23, 32, 51, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .module-card:hover {
+            transform: translateY(-3px);
+            border-color: #9bc2ff;
+            box-shadow: var(--shadow);
+        }
+
+        .card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .card-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            background: #eaf2ff;
+            color: var(--primary);
+            font-size: 18px;
+            font-weight: 900;
+        }
+
+        .open-label {
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .module-card h3 {
+            margin: 0 0 8px;
+            font-size: 18px;
+        }
+
+        .module-card p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.55;
+            font-size: 14px;
+        }
+
+        .table-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 18px 22px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             gap: 16px;
         }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+        .table-header h2 {
+            margin: 0;
+            font-size: 18px;
         }
 
-            .form-group label {
-                font-weight: 600;
-                color: #495057;
-                font-size: 14px;
-            }
-
-        .form-control {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid #e1e5eb;
-            border-radius: 8px;
-            font-size: 15px;
-            background-color: #f8f9fa;
-            box-sizing: border-box;
-        }
-
-            .form-control:focus {
-                border-color: #0056b3;
-                background-color: #ffffff;
-                outline: none;
-                box-shadow: 0 0 0 4px rgba(0, 86, 179, 0.1);
-            }
-
-        .full-width {
-            grid-column: 1 / -1;
-        }
-
-        .message {
-            display: none;
-            margin-bottom: 16px;
-            padding: 14px 16px;
-            border-radius: 8px;
-            font-weight: 500;
-        }
-
-            .message.error {
-                color: #842029;
-                background: #f8d7da;
-                border: 1px solid #f5c2c7;
-            }
-
-            .message.success {
-                color: #0f5132;
-                background: #d1e7dd;
-                border: 1px solid #badbcc;
-            }
-
-        .table-wrapper {
-            overflow-x: auto;
+        .table-header span {
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 600;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 800px;
         }
 
         th,
         td {
+            padding: 16px 22px;
             text-align: left;
-            padding: 14px 12px;
-            border-bottom: 1px solid #e9ecef;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
             vertical-align: top;
         }
 
         th {
-            color: #343a40;
-            font-size: 14px;
-            background: #f8f9fa;
+            background: var(--surface-soft);
+            color: var(--muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
         }
 
-        td {
-            color: #495057;
-            font-size: 14px;
+        tr:last-child td {
+            border-bottom: 0;
         }
 
-        .action-buttons {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
+        .table-link {
+            color: var(--primary);
+            font-weight: 800;
+            text-decoration: none;
         }
 
-        .row-input {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #ced4da;
-            border-radius: 6px;
-            font-size: 14px;
-            box-sizing: border-box;
-            background: #fff;
+        .table-link:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
         }
 
-            .row-input:focus {
-                outline: none;
-                border-color: #0056b3;
-                box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.1);
-            }
-
-        .section-panel {
-            transition: opacity 0.2s ease, transform 0.2s ease;
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
         }
 
-            .section-panel.hidden {
-                display: none;
-            }
-
-        .empty-state {
-            padding: 18px;
-            background: #f8f9fa;
-            border: 1px dashed #ced4da;
-            border-radius: 8px;
-            color: #6c757d;
-        }
-
-        @media (max-width: 900px) {
-            .app-layout {
-                flex-direction: column;
+        @media (max-width: 1024px) {
+            .dashboard {
+                grid-template-columns: 1fr;
             }
 
             .sidebar {
-                position: relative;
-                width: 100%;
-                height: auto;
-                bottom: auto;
-                box-shadow: none;
+                border-right: 0;
+                border-bottom: 1px solid var(--border);
             }
 
-            .content-area {
-                margin-left: 0;
-                width: 100%;
+            .side-nav,
+            .module-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
             }
         }
 
-        @media (max-width: 768px) {
-            .page-wrapper {
-                padding: 16px;
+        @media (max-width: 760px) {
+            .topbar,
+            .welcome-panel {
+                align-items: flex-start;
+                flex-direction: column;
+                height: auto;
             }
 
-            .container {
-                padding: 24px;
+            .topbar {
+                padding: 20px;
             }
 
-            .form-grid {
+            .content {
+                padding: 20px;
+            }
+
+            .side-nav,
+            .module-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .welcome {
+                width: 100%;
+            }
+
+            .table-card {
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 720px;
             }
         }
     </style>
 </head>
 
 <body>
-    <div class="app-layout">
-        <aside class="sidebar">
-            <div class="sidebar-title">DriveSewa</div>
-            <nav class="sidebar-nav">
-                <button type="button" class="sidebar-tab active" data-tab="add-staff">Add Staff</button>
-                <button type="button" class="sidebar-tab" data-tab="staff-list">Staff List</button>
-                <button type="button" class="sidebar-tab" data-tab="manage-parts">Manage Parts</button>
+    <div class="dashboard">
+        <aside class="sidebar" aria-label="Admin navigation">
+            <div class="brand">
+                <h2 class="brand-title">DriveSewa</h2>
+                <p class="brand-subtitle">Administration workspace</p>
+            </div>
+
+            <nav class="side-nav">
+                <a class="nav-link active" href="admin-dashboard.html" aria-current="page">
+                    <span class="nav-icon">AD</span>
+                    <span>
+                        <span class="nav-title">Admin Dashboard</span>
+                        <span class="nav-desc">Overview and module access</span>
+                    </span>
+                </a>
+                <a class="nav-link" href="staff-management.html">
+                    <span class="nav-icon">SM</span>
+                    <span>
+                        <span class="nav-title">Staff Management</span>
+                        <span class="nav-desc">Manage staff registration and roles</span>
+                    </span>
+                </a>
+                <a class="nav-link" href="parts-inventory.html">
+                    <span class="nav-icon">PI</span>
+                    <span>
+                        <span class="nav-title">Parts Inventory</span>
+                        <span class="nav-desc">Manage vehicle parts</span>
+                    </span>
+                </a>
+                <a class="nav-link" href="purchase-invoice-list.html">
+                    <span class="nav-icon">IN</span>
+                    <span>
+                        <span class="nav-title">Purchase Invoices</span>
+                        <span class="nav-desc">Create invoices and update stock</span>
+                    </span>
+                </a>
             </nav>
         </aside>
 
-        <main class="content-area">
-            <div class="page-wrapper">
-                <div class="container">
-                    <div class="top-actions">
-                        <div>
-                            <h1>Admin Dashboard</h1>
-                            <h2 id="welcomeText">Welcome Admin</h2>
-                            <p>Here you can manage System Users, Appointments, Inventory, Reviews, and Staff.</p>
-                        </div>
-                        <button class="btn-danger" onclick="logout()">Logout</button>
-                    </div>
-
-                    <hr />
-
-                    <div class="dashboard-grid">
-                        <section id="add-staff-section" class="card section-panel">
-                            <h3 class="card-title">Staff Management</h3>
-                            <div id="staffMessage" class="message"></div>
-                            <form id="staffForm">
-                                <input type="hidden" id="staffId" value="" />
-                                <div class="form-grid">
-                                    <div class="form-group">
-                                        <label for="fullName">Full Name</label>
-                                        <input type="text" id="fullName" class="form-control" placeholder="Full Name" required />
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="email">Email</label>
-                                        <input type="email" id="email" class="form-control" placeholder="Email Address" required />
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="password">Password</label>
-                                        <input type="password" id="password" class="form-control" placeholder="Password" />
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="phone">Phone</label>
-                                        <input type="tel" id="phone" class="form-control" placeholder="Phone Number" required />
-                                    </div>
-                                    <div class="form-group full-width">
-                                        <label for="position">Position</label>
-                                        <select id="position" class="form-control" required>
-                                            <option value="">Select Position</option>
-                                            <option value="Manager">Manager</option>
-                                            <option value="Mechanic">Mechanic</option>
-                                            <option value="Supervisor">Supervisor</option>
-                                            <option value="Workshop Supervisor">Workshop Supervisor</option>
-                                            <option value="Customer Support">Customer Support</option>
-                                            <option value="Parts Manager">Parts Manager</option>
-                                            <option value="Other">Other</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group full-width">
-                                        <button type="submit" id="saveButton" class="btn-primary">Add Staff</button>
-                                        <button type="button" id="cancelButton" class="btn-secondary" style="display:none; margin-top: 10px;" onclick="resetForm()">Cancel Edit</button>
-                                    </div>
-                                </div>
-                            </form>
-                        </section>
-
-                        <section id="staff-list-section" class="card section-panel hidden">
-                            <h3 class="card-title">Staff List</h3>
-                            <div id="staffListContainer" class="table-wrapper">
-                                <div class="empty-state">Loading staff...</div>
-                            </div>
-                        </section>
-
-                        <section id="manage-parts-section" class="card section-panel hidden">
-                            <h3 class="card-title">Parts Management</h3>
-                            <div id="partsMessage" class="message"></div>
-                            <form id="partsForm">
-                                <input type="hidden" id="partId" value="" />
-                                <div class="form-grid">
-                                    <div class="form-group">
-                                        <label for="partName">Part Name</label>
-                                        <input type="text" id="partName" class="form-control" placeholder="Part Name" required />
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="price">Price</label>
-                                        <input type="number" id="price" class="form-control" placeholder="Price" step="0.01" min="0" required />
-                                    </div>
-                                    <div class="form-group full-width">
-                                        <label for="quantity">Quantity</label>
-                                        <input type="number" id="quantity" class="form-control" placeholder="Quantity" min="0" required />
-                                    </div>
-                                    <div class="form-group full-width">
-                                        <button type="submit" id="savePartButton" class="btn-primary">Add Part</button>
-                                        <button type="button" id="cancelPartButton" class="btn-secondary" style="display:none; margin-top: 10px;" onclick="resetPartsForm()">Cancel Edit</button>
-                                    </div>
-                                </div>
-                            </form>
-                        </section>
-
-                        <section id="parts-list-section" class="card section-panel hidden">
-                            <h3 class="card-title">Parts List</h3>
-                            <div id="partsListContainer" class="table-wrapper">
-                                <div class="empty-state">Loading parts...</div>
-                            </div>
-                        </section>
-                    </div>
+        <main class="main">
+            <header class="topbar">
+                <h1 class="page-title">Admin Dashboard</h1>
+                <div class="top-actions">
+                    <span class="welcome" id="welcomeText">Welcome, Admin</span>
+                    <button class="icon-button" type="button" title="Notifications" aria-label="Notifications">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M15 17H9M18 10.5C18 7.2 15.3 4.5 12 4.5C8.7 4.5 6 7.2 6 10.5V14L4.5 16.5H19.5L18 14V10.5Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M10 19C10.4 19.6 11.1 20 12 20C12.9 20 13.6 19.6 14 19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                        </svg>
+                        <span class="notification-dot"></span>
+                    </button>
+                    <button class="logout-btn" type="button" id="logoutButton">Logout</button>
                 </div>
-            </div>
+            </header>
+
+            <section class="content">
+                <div class="welcome-panel">
+                    <div>
+                        <h2 id="welcomeHeading">Welcome back, Admin</h2>
+                        <p>Use this dashboard to open the core administration modules for staff, parts stock, and purchase invoices.</p>
+                    </div>
+                    <span class="status-pill">Admin Access</span>
+                </div>
+
+                <div class="module-grid" aria-label="Admin modules">
+                    <a class="module-card" href="staff-management.html">
+                        <div class="card-top">
+                            <span class="card-icon">SM</span>
+                            <span class="open-label">Open</span>
+                        </div>
+                        <h3>Staff Management</h3>
+                        <p>Manage staff registration and roles</p>
+                    </a>
+
+                    <a class="module-card" href="parts-inventory.html">
+                        <div class="card-top">
+                            <span class="card-icon">PI</span>
+                            <span class="open-label">Open</span>
+                        </div>
+                        <h3>Parts Inventory</h3>
+                        <p>Add, edit, delete, and manage vehicle parts</p>
+                    </a>
+
+                    <a class="module-card" href="purchase-invoice-list.html">
+                        <div class="card-top">
+                            <span class="card-icon">IN</span>
+                            <span class="open-label">Open</span>
+                        </div>
+                        <h3>Purchase Invoices</h3>
+                        <p>Create purchase invoices and update stock</p>
+                    </a>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-header">
+                        <h2>Administration Modules</h2>
+                        <span>Active menu: Admin Dashboard</span>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Module</th>
+                                <th>Description</th>
+                                <th>Page</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Staff Management</td>
+                                <td>Manage staff registration and roles</td>
+                                <td><a class="table-link" href="staff-management.html">Open Staff Management</a></td>
+                            </tr>
+                            <tr>
+                                <td>Parts Inventory</td>
+                                <td>Add, edit, delete, and manage vehicle parts</td>
+                                <td><a class="table-link" href="parts-inventory.html">Open Parts Inventory</a></td>
+                            </tr>
+                            <tr>
+                                <td>Purchase Invoices</td>
+                                <td>Create purchase invoices and update stock</td>
+                                <td><a class="table-link" href="purchase-invoice-list.html">Open Purchase Invoices</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
         </main>
     </div>
 
     <script>
-        const apiBaseUrl = `${window.location.origin}/api`;
-        const userStr = localStorage.getItem('driveSewaUser');
-        let staffCache = [];
-        let editingStaffId = null;
-        let activeTab = 'add-staff';
+        (function () {
+            const loginPage = "/public/login.html";
+            const userData = localStorage.getItem("driveSewaUser");
 
-        if (!userStr) {
-            window.location.href = '/public/login.html';
-        } else {
-            const user = JSON.parse(userStr);
-            if (user.role !== 'Admin') {
-                alert('Access Denied. You are not an Admin.');
-                window.location.href = '/public/login.html';
+            function redirectToLogin() {
+                window.location.href = loginPage;
             }
-        }
 
-        function setActiveTab(tabName) {
-            activeTab = tabName;
+            if (!userData) {
+                redirectToLogin();
+                return;
+            }
 
-            document.querySelectorAll('.sidebar-tab').forEach(button => {
-                button.classList.toggle('active', button.dataset.tab === tabName);
+            let user;
+            try {
+                user = JSON.parse(userData);
+            } catch (error) {
+                localStorage.removeItem("driveSewaUser");
+                redirectToLogin();
+                return;
+            }
+
+            if (!user || user.role !== "Admin") {
+                redirectToLogin();
+                return;
+            }
+
+            const adminName = user.fullName || user.name || "Admin";
+            document.getElementById("welcomeText").textContent = "Welcome, " + adminName;
+            document.getElementById("welcomeHeading").textContent = "Welcome back, " + adminName;
+
+            document.getElementById("logoutButton").addEventListener("click", function () {
+                localStorage.removeItem("driveSewaUser");
+                redirectToLogin();
             });
-
-            document.getElementById('add-staff-section').classList.toggle('hidden', tabName !== 'add-staff');
-            document.getElementById('staff-list-section').classList.toggle('hidden', tabName !== 'staff-list');
-            document.getElementById('manage-parts-section').classList.toggle('hidden', tabName !== 'manage-parts');
-            document.getElementById('parts-list-section').classList.toggle('hidden', tabName !== 'manage-parts');
-
-            if (tabName === 'staff-list') {
-                loadStaff();
-            } else if (tabName === 'manage-parts') {
-                loadParts();
-            }
-        }
-
-        function initializeDashboard() {
-            document.getElementById('welcomeText').textContent = 'Welcome Admin';
-
-            document.querySelectorAll('.sidebar-tab').forEach(button => {
-                button.addEventListener('click', () => setActiveTab(button.dataset.tab));
-            });
-
-            setActiveTab('add-staff');
-            loadStaff();
-            loadParts();
-        }
-
-        async function loadStaff() {
-            const container = document.getElementById('staffListContainer');
-            try {
-                const response = await fetch(`${apiBaseUrl}/staff`);
-                const staffList = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(staffList.message || 'Failed to load staff.');
-                }
-
-                staffCache = Array.isArray(staffList) ? staffList : [];
-                renderStaffList();
-            } catch (err) {
-                container.innerHTML = `<div class="empty-state">${err.message}</div>`;
-            }
-        }
-
-        function renderStaffList() {
-            const container = document.getElementById('staffListContainer');
-
-            if (!Array.isArray(staffCache) || staffCache.length === 0) {
-                container.innerHTML = '<div class="empty-state">No staff found.</div>';
-                return;
-            }
-
-            container.innerHTML = `
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Phone</th>
-                                <th>Position</th>
-                                <th>Role</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${staffCache.map(staff => renderStaffRow(staff)).join('')}
-                        </tbody>
-                    </table>`;
-        }
-
-        function renderStaffRow(staff) {
-            if (editingStaffId !== staff.staffId) {
-                return `
-                        <tr>
-                            <td>${staff.fullName ?? ''}</td>
-                            <td>${staff.email ?? ''}</td>
-                            <td>${staff.phone ?? ''}</td>
-                            <td>${staff.position ?? ''}</td>
-                            <td>${staff.role ?? ''}</td>
-                            <td>
-                                <div class="action-buttons">
-                                    <button class="btn-secondary" type="button" onclick="startInlineEdit(${staff.staffId})">Edit</button>
-                                    <button class="btn-danger" type="button" onclick="deleteStaff(${staff.staffId})">Delete</button>
-                                </div>
-                            </td>
-                        </tr>`;
-            }
-
-            return `
-                    <tr>
-                        <td><input class="row-input" id="edit-fullName-${staff.staffId}" value="${escapeHtml(staff.fullName ?? '')}"></td>
-                        <td>${staff.email ?? ''}</td>
-                        <td><input class="row-input" id="edit-phone-${staff.staffId}" value="${escapeHtml(staff.phone ?? '')}"></td>
-                        <td>
-                            <select class="row-input" id="edit-position-${staff.staffId}">
-                                <option value="Manager" ${staff.position === 'Manager' ? 'selected' : ''}>Manager</option>
-                                <option value="Mechanic" ${staff.position === 'Mechanic' ? 'selected' : ''}>Mechanic</option>
-                                <option value="Supervisor" ${staff.position === 'Supervisor' ? 'selected' : ''}>Supervisor</option>
-                                <option value="Workshop Supervisor" ${staff.position === 'Workshop Supervisor' ? 'selected' : ''}>Workshop Supervisor</option>
-                                <option value="Customer Support" ${staff.position === 'Customer Support' ? 'selected' : ''}>Customer Support</option>
-                                <option value="Parts Manager" ${staff.position === 'Parts Manager' ? 'selected' : ''}>Parts Manager</option>
-                                <option value="Other" ${staff.position === 'Other' ? 'selected' : ''}>Other</option>
-                            </select>
-                        </td>
-                        <td>${staff.role ?? ''}</td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="btn-primary" type="button" onclick="saveInlineEdit(${staff.staffId})">Save</button>
-                                <button class="btn-secondary" type="button" onclick="cancelInlineEdit()">Cancel</button>
-                            </div>
-                        </td>
-                    </tr>`;
-        }
-
-        function escapeHtml(value) {
-            return String(value)
-                .replaceAll('&', '&amp;')
-                .replaceAll('<', '&lt;')
-                .replaceAll('>', '&gt;')
-                .replaceAll('"', '&quot;')
-                .replaceAll("'", '&#39;');
-        }
-
-        function showMessage(text, isError) {
-            const message = document.getElementById('staffMessage');
-            message.textContent = text;
-            message.className = `message ${isError ? 'error' : 'success'}`;
-            message.style.display = 'block';
-        }
-
-        function hideMessage() {
-            const message = document.getElementById('staffMessage');
-            message.style.display = 'none';
-            message.textContent = '';
-        }
-
-        function resetForm() {
-            document.getElementById('staffForm').reset();
-            document.getElementById('staffId').value = '';
-            document.getElementById('saveButton').textContent = 'Add Staff';
-            document.getElementById('cancelButton').style.display = 'none';
-            hideMessage();
-        }
-
-        function startInlineEdit(staffId) {
-            editingStaffId = staffId;
-            renderStaffList();
-            hideMessage();
-        }
-
-        function cancelInlineEdit() {
-            editingStaffId = null;
-            renderStaffList();
-        }
-
-        async function saveInlineEdit(staffId) {
-            const staff = staffCache.find(s => s.staffId === staffId);
-            if (!staff) {
-                showMessage('Staff record was not found.', true);
-                return;
-            }
-
-            const payload = {
-                fullName: document.getElementById(`edit-fullName-${staffId}`).value.trim(),
-                email: staff.email,
-                password: '',
-                phone: document.getElementById(`edit-phone-${staffId}`).value.trim(),
-                position: document.getElementById(`edit-position-${staffId}`).value.trim()
-            };
-
-            try {
-                const response = await fetch(`${apiBaseUrl}/staff/${staffId}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.message || 'Save failed.');
-                }
-
-                showMessage('Staff updated successfully.', false);
-                editingStaffId = null;
-                await loadStaff();
-            } catch (err) {
-                showMessage(err.message, true);
-            }
-        }
-
-        async function deleteStaff(id) {
-            if (!confirm('Delete this staff member?')) {
-                return;
-            }
-
-            try {
-                const response = await fetch(`${apiBaseUrl}/staff/${id}`, {
-                    method: 'DELETE'
-                });
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.message || 'Delete failed.');
-                }
-
-                showMessage(data.message || 'Staff deleted successfully.', false);
-                editingStaffId = null;
-                resetForm();
-                await loadStaff();
-            } catch (err) {
-                showMessage(err.message, true);
-            }
-        }
-
-        document.getElementById('staffForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const staffId = document.getElementById('staffId').value;
-            const payload = {
-                fullName: document.getElementById('fullName').value.trim(),
-                email: document.getElementById('email').value.trim(),
-                password: document.getElementById('password').value,
-                phone: document.getElementById('phone').value.trim(),
-                position: document.getElementById('position').value.trim()
-            };
-
-            try {
-                const response = await fetch(staffId ? `${apiBaseUrl}/staff/${staffId}` : `${apiBaseUrl}/staff`, {
-                    method: staffId ? 'PUT' : 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.message || 'Save failed.');
-                }
-
-                showMessage(staffId ? 'Staff updated successfully.' : 'Staff added successfully.', false);
-                resetForm();
-                await loadStaff();
-                setActiveTab('staff-list');
-            } catch (err) {
-                showMessage(err.message, true);
-            }
-        });
-
-        // Parts Management Functions
-        let partsCache = [];
-        let editingPartId = null;
-
-        async function loadParts() {
-            const container = document.getElementById('partsListContainer');
-            try {
-                const response = await fetch(`${apiBaseUrl}/parts`);
-                const partsList = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(partsList.message || 'Failed to load parts.');
-                }
-
-                partsCache = Array.isArray(partsList) ? partsList : [];
-                renderPartsList();
-            } catch (err) {
-                container.innerHTML = `<div class="empty-state">${err.message}</div>`;
-            }
-        }
-
-        function renderPartsList() {
-            const container = document.getElementById('partsListContainer');
-
-            if (!Array.isArray(partsCache) || partsCache.length === 0) {
-                container.innerHTML = '<div class="empty-state">No parts found.</div>';
-                return;
-            }
-
-            container.innerHTML = `
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Part Name</th>
-                                <th>Price</th>
-                                <th>Quantity</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${partsCache.map(part => renderPartsRow(part)).join('')}
-                        </tbody>
-                    </table>`;
-        }
-
-        function renderPartsRow(part) {
-            if (editingPartId !== part.partId) {
-                return `
-                        <tr>
-                            <td>${part.partName ?? ''}</td>
-                            <td>Rs. ${parseFloat(part.price ?? 0).toFixed(2)}</td>
-                            <td>${part.quantity ?? '0'}</td>
-                            <td>
-                                <div class="action-buttons">
-                                    <button class="btn-secondary" type="button" onclick="startPartInlineEdit(${part.partId})">Edit</button>
-                                    <button class="btn-primary" type="button" onclick="openAddStockModal(${part.partId})">Add Stock</button>
-                                    <button class="btn-danger" type="button" onclick="deletePart(${part.partId})">Delete</button>
-                                </div>
-                            </td>
-                        </tr>`;
-            }
-
-            return `
-                    <tr>
-                        <td><input class="row-input" id="edit-partName-${part.partId}" value="${escapeHtml(part.partName ?? '')}"></td>
-                        <td><input type="number" class="row-input" id="edit-price-${part.partId}" value="${part.price ?? 0}" step="0.01" min="0"></td>
-                        <td><input type="number" class="row-input" id="edit-quantity-${part.partId}" value="${part.quantity ?? 0}" min="0"></td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="btn-primary" type="button" onclick="savePartInlineEdit(${part.partId})">Save</button>
-                                <button class="btn-secondary" type="button" onclick="cancelPartInlineEdit()">Cancel</button>
-                            </div>
-                        </td>
-                    </tr>`;
-        }
-
-        function showPartsMessage(text, isError) {
-            const message = document.getElementById('partsMessage');
-            message.textContent = text;
-            message.className = `message ${isError ? 'error' : 'success'}`;
-            message.style.display = 'block';
-        }
-
-        function hidePartsMessage() {
-            const message = document.getElementById('partsMessage');
-            message.style.display = 'none';
-            message.textContent = '';
-        }
-
-        function resetPartsForm() {
-            document.getElementById('partsForm').reset();
-            document.getElementById('partId').value = '';
-            document.getElementById('savePartButton').textContent = 'Add Part';
-            document.getElementById('cancelPartButton').style.display = 'none';
-            hidePartsMessage();
-        }
-
-        function startPartInlineEdit(partId) {
-            editingPartId = partId;
-            renderPartsList();
-            hidePartsMessage();
-        }
-
-        function cancelPartInlineEdit() {
-            editingPartId = null;
-            renderPartsList();
-        }
-
-        async function savePartInlineEdit(partId) {
-            const part = partsCache.find(p => p.partId === partId);
-            if (!part) {
-                showPartsMessage('Part record was not found.', true);
-                return;
-            }
-
-            const payload = {
-                partName: document.getElementById(`edit-partName-${partId}`).value.trim(),
-                price: parseFloat(document.getElementById(`edit-price-${partId}`).value) || 0,
-                quantity: parseInt(document.getElementById(`edit-quantity-${partId}`).value) || 0
-            };
-
-            try {
-                const response = await fetch(`${apiBaseUrl}/parts/${partId}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.message || 'Save failed.');
-                }
-
-                showPartsMessage('Part updated successfully.', false);
-                editingPartId = null;
-                await loadParts();
-            } catch (err) {
-                showPartsMessage(err.message, true);
-            }
-        }
-
-        async function deletePart(id) {
-            if (!confirm('Delete this part?')) {
-                return;
-            }
-
-            try {
-                const response = await fetch(`${apiBaseUrl}/parts/${id}`, {
-                    method: 'DELETE'
-                });
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.message || 'Delete failed.');
-                }
-
-                showPartsMessage(data.message || 'Part deleted successfully.', false);
-                editingPartId = null;
-                resetPartsForm();
-                await loadParts();
-            } catch (err) {
-                showPartsMessage(err.message, true);
-            }
-        }
-
-        function openAddStockModal(partId) {
-            const part = partsCache.find(p => p.partId === partId);
-            if (!part) {
-                showPartsMessage('Part not found.', true);
-                return;
-            }
-
-            const quantity = prompt(`Add Stock for "${part.partName}"\n\nEnter quantity to add:`, '1');
-            if (quantity === null || quantity.trim() === '') {
-                return;
-            }
-
-            const qtyToAdd = parseInt(quantity);
-            if (isNaN(qtyToAdd) || qtyToAdd <= 0) {
-                showPartsMessage('Please enter a valid quantity.', true);
-                return;
-            }
-
-            addStock(partId, qtyToAdd);
-        }
-
-        async function addStock(partId, quantityToAdd) {
-            const part = partsCache.find(p => p.partId === partId);
-            if (!part) {
-                showPartsMessage('Part not found.', true);
-                return;
-            }
-
-            const payload = {
-                partName: part.partName,
-                price: part.price,
-                quantity: part.quantity + quantityToAdd
-            };
-
-            try {
-                const response = await fetch(`${apiBaseUrl}/parts/${partId}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.message || 'Stock update failed.');
-                }
-
-                showPartsMessage(`Added ${quantityToAdd} units. Stock updated successfully.`, false);
-                await loadParts();
-            } catch (err) {
-                showPartsMessage(err.message, true);
-            }
-        }
-
-        document.getElementById('partsForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const partId = document.getElementById('partId').value;
-            const payload = {
-                partName: document.getElementById('partName').value.trim(),
-                price: parseFloat(document.getElementById('price').value) || 0,
-                quantity: parseInt(document.getElementById('quantity').value) || 0
-            };
-
-            try {
-                const response = await fetch(partId ? `${apiBaseUrl}/parts/${partId}` : `${apiBaseUrl}/parts`, {
-                    method: partId ? 'PUT' : 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.message || 'Save failed.');
-                }
-
-                showPartsMessage(partId ? 'Part updated successfully.' : 'Part added successfully.', false);
-                resetPartsForm();
-                await loadParts();
-                setActiveTab('manage-parts');
-            } catch (err) {
-                showPartsMessage(err.message, true);
-            }
-        });
-
-        function logout() {
-            localStorage.removeItem('driveSewaUser');
-            window.location.href = '/public/login.html';
-        }
-
-        initializeDashboard();
+        })();
     </script>
 </body>
 
