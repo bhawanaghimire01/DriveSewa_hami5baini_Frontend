@@ -219,7 +219,7 @@
             document.getElementById('tableContainer').innerHTML = '<p>Loading customers...</p>';
             try {
                 let url = `${apiBaseUrl}/customers`;
-                if (query) url += `?search=${encodeURIComponent(query)}`;
+                if (query) url += `/search?query=${encodeURIComponent(query)}`;
                 
                 const res = await fetch(url);
                 const customers = await res.json();
@@ -235,23 +235,24 @@
                 return;
             }
             
-            const rows = customers.map(c => `
+            const rows = customers.map(c => {
+                const vehicles = c.vehicleNumbers && c.vehicleNumbers.length > 0 ? c.vehicleNumbers.join(', ') : 'N/A';
+                return `
                 <tr>
-                    <td>#${c.customerId}</td>
                     <td style="font-weight:600;">${c.fullName}</td>
                     <td>${c.phone || 'N/A'}</td>
                     <td>${c.email}</td>
-                    <td><span class="badge">Active</span></td>
+                    <td><span class="badge" style="background:#e0f2fe; color:#0369a1;">${vehicles}</span></td>
                     <td>
                         <button class="btn" style="padding: 6px 12px; font-size: 12px;" onclick="window.location.href='customer-details.html?id=${c.customerId}'">View Details</button>
                     </td>
                 </tr>
-            `).join('');
+            `}).join('');
 
             document.getElementById('tableContainer').innerHTML = `
                 <table>
                     <thead>
-                        <tr><th>ID</th><th>Name</th><th>Phone</th><th>Email</th><th>Status</th><th>Actions</th></tr>
+                        <tr><th>Name</th><th>Phone</th><th>Email</th><th>Vehicle Number(s)</th><th>Actions</th></tr>
                     </thead>
                     <tbody>${rows}</tbody>
                 </table>
