@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DriveSewa - Login</title>
-    <link rel="stylesheet" href="../assets/Css/style.css">
+    <link rel="stylesheet" href="/assets/Css/style.css">
 </head>
 <body>
     <div class="auth-wrapper">
@@ -26,14 +26,14 @@
                     <button type="submit" class="btn-primary">Login</button>
                 </form>
                 <div class="auth-links">
-                    <p style="margin-top: 15px;">Don't have an account? <a href="register.html">Register here</a></p>
+                    <p style="margin-top: 15px;">Don't have an account? <a href="/public/register.html">Register here</a></p>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        const API_BASE_URL = 'https://localhost:7011/api'; // Ensure this matches your backend port
+        const API_BASE_URL = `${window.location.origin}/api`;
 
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -55,16 +55,14 @@
                     throw new Error(data.message || 'Login failed. Invalid credentials.');
                 }
                 
-                // Store user data
                 localStorage.setItem('driveSewaUser', JSON.stringify(data));
                 
-                // Redirect based on role
                 if (data.role === 'Admin') {
-                    window.location.href = '../pages/admin/admin-dashboard.html';
+                    window.location.href = '/pages/admin/admin-dashboard.html';
                 } else if (data.role === 'Staff') {
-                    window.location.href = '../pages/staff/staff-dashboard.html';
+                    window.location.href = '/pages/Staff/staff-dashboard.html';
                 } else {
-                    window.location.href = '../pages/customer/customer-dashboard.html';
+                    window.location.href = '/pages/Customer/customer-dashboard.html';
                 }
                 
             } catch (err) {
