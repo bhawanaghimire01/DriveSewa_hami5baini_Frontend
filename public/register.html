@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DriveSewa - Register</title>
-    <link rel="stylesheet" href="../assets/Css/style.css">
+    <link rel="stylesheet" href="/assets/Css/style.css">
 </head>
 <body>
     <div class="auth-wrapper">
@@ -36,14 +36,14 @@
                     <button type="submit" class="btn-success">Register</button>
                 </form>
                 <div class="auth-links">
-                    <p style="margin-top: 15px;">Already have an account? <a href="login.html">Login here</a></p>
+                    <p style="margin-top: 15px;">Already have an account? <a href="/public/login.html">Login here</a></p>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        const API_BASE_URL = 'https://localhost:7011/api'; // Ensure this matches your backend port
+        const API_BASE_URL = `${window.location.origin}/api`;
 
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -73,16 +73,13 @@
                     throw new Error(data.message || 'Registration failed. Check your data.');
                 }
                 
-                // Show success message
                 successDiv.textContent = 'Registration successful! Redirecting to login...';
                 successDiv.style.display = 'block';
                 
-                // Clear form
                 document.getElementById('registerForm').reset();
                 
-                // Redirect user to login automatically
                 setTimeout(() => {
-                    window.location.href = 'login.html';
+                    window.location.href = '/public/login.html';
                 }, 2000);
                 
             } catch (err) {

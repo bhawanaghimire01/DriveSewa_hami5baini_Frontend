@@ -5,41 +5,684 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f8f9fa; }
-        .container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); max-width: 800px; margin: 0 auto; }
-        button { padding: 10px 15px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; margin-top: 20px; }
-        button:hover { background-color: #c82333; }
-        h1 { color: #343a40; }
-        h2 { color: #495057; font-weight: normal; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            color: #1a1a1a;
+        }
+
+        .app-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 240px;
+            background: linear-gradient(135deg, #3d5c7b, #44678a);
+            color: #fff;
+            padding: 24px 16px;
+            box-sizing: border-box;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            box-shadow: 2px 0 18px rgba(0, 0, 0, 0.12);
+            z-index: 10;
+        }
+
+        .sidebar-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0 0 28px;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .sidebar-tab {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            cursor: pointer;
+            text-align: left;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.25s ease;
+        }
+
+        .sidebar-tab:hover {
+            background: rgba(255, 255, 255, 0.18);
+            transform: translateX(3px);
+        }
+
+        .sidebar-tab.active {
+            background: #fff;
+            color: #3d5c7b;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .content-area {
+            margin-left: 240px;
+            width: calc(100% - 240px);
+            box-sizing: border-box;
+        }
+
+        .page-wrapper {
+            min-height: 100vh;
+            padding: 40px 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            max-width: 1100px;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: #1a1a1a;
+            margin: 0 0 10px;
+            font-size: 2.2rem;
+        }
+
+        h2 {
+            color: #343a40;
+            font-weight: 600;
+            margin: 0 0 20px;
+        }
+
+        h3.card-title {
+            margin: 0 0 16px;
+            font-size: 1.2rem;
+            color: #343a40;
+        }
+
+        p {
+            color: #495057;
+            line-height: 1.6;
+        }
+
+        hr {
+            margin: 24px 0;
+            border: 0;
+            height: 1px;
+            background: #e1e5eb;
+        }
+
+        .top-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary, .btn-danger, .btn-secondary {
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            padding: 12px 18px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0056b3, #007BFF);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #c82333, #dc3545);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #e9ecef;
+            color: #343a40;
+        }
+
+        .btn-primary:hover, .btn-danger:hover, .btn-secondary:hover {
+            transform: translateY(-1px);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        .card {
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 24px;
+            background: #fff;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #495057;
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e1e5eb;
+            border-radius: 8px;
+            font-size: 15px;
+            background-color: #f8f9fa;
+            box-sizing: border-box;
+        }
+
+        .form-control:focus {
+            border-color: #0056b3;
+            background-color: #ffffff;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(0, 86, 179, 0.1);
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .message {
+            display: none;
+            margin-bottom: 16px;
+            padding: 14px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .message.error {
+            color: #842029;
+            background: #f8d7da;
+            border: 1px solid #f5c2c7;
+        }
+
+        .message.success {
+            color: #0f5132;
+            background: #d1e7dd;
+            border: 1px solid #badbcc;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 14px 12px;
+            border-bottom: 1px solid #e9ecef;
+            vertical-align: top;
+        }
+
+        th {
+            color: #343a40;
+            font-size: 14px;
+            background: #f8f9fa;
+        }
+
+        td {
+            color: #495057;
+            font-size: 14px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .row-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+            background: #fff;
+        }
+
+        .row-input:focus {
+            outline: none;
+            border-color: #0056b3;
+            box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.1);
+        }
+
+        .section-panel {
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .section-panel.hidden {
+            display: none;
+        }
+
+        .empty-state {
+            padding: 18px;
+            background: #f8f9fa;
+            border: 1px dashed #ced4da;
+            border-radius: 8px;
+            color: #6c757d;
+        }
+
+        @media (max-width: 900px) {
+            .app-layout {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+                bottom: auto;
+                box-shadow: none;
+            }
+
+            .content-area {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-wrapper {
+                padding: 16px;
+            }
+
+            .container {
+                padding: 24px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Admin Dashboard</h1>
-        <h2 id="welcomeText">Loading...</h2>
-        <p>Here you can manage System Users, Appointments, Inventory, and Reviews.</p>
-        <hr style="margin: 20px 0; border: 0; height: 1px; background: #ddd;" />
-        <button onclick="logout()">Logout</button>
+    <div class="app-layout">
+        <aside class="sidebar">
+            <div class="sidebar-title">DriveSewa</div>
+            <nav class="sidebar-nav">
+                <button type="button" class="sidebar-tab active" data-tab="add-staff">Add Staff</button>
+                <button type="button" class="sidebar-tab" data-tab="staff-list">Staff List</button>
+            </nav>
+        </aside>
+
+        <main class="content-area">
+            <div class="page-wrapper">
+                <div class="container">
+                    <div class="top-actions">
+                        <div>
+                            <h1>Admin Dashboard</h1>
+                            <h2 id="welcomeText">Welcome Admin</h2>
+                            <p>Here you can manage System Users, Appointments, Inventory, Reviews, and Staff.</p>
+                        </div>
+                        <button class="btn-danger" onclick="logout()">Logout</button>
+                    </div>
+
+                    <hr />
+
+                    <div class="dashboard-grid">
+                        <section id="add-staff-section" class="card section-panel">
+                            <h3 class="card-title">Staff Management</h3>
+                            <div id="staffMessage" class="message"></div>
+                            <form id="staffForm">
+                                <input type="hidden" id="staffId" value="" />
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="fullName">Full Name</label>
+                                        <input type="text" id="fullName" class="form-control" placeholder="Full Name" required />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="email">Email</label>
+                                        <input type="email" id="email" class="form-control" placeholder="Email Address" required />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="password">Password</label>
+                                        <input type="password" id="password" class="form-control" placeholder="Password" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="phone">Phone</label>
+                                        <input type="tel" id="phone" class="form-control" placeholder="Phone Number" required />
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <label for="position">Position</label>
+                                        <select id="position" class="form-control" required>
+                                            <option value="">Select Position</option>
+                                            <option value="Manager">Manager</option>
+                                            <option value="Mechanic">Mechanic</option>
+                                            <option value="Supervisor">Supervisor</option>
+                                            <option value="Workshop Supervisor">Workshop Supervisor</option>
+                                            <option value="Customer Support">Customer Support</option>
+                                            <option value="Parts Manager">Parts Manager</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <button type="submit" id="saveButton" class="btn-primary">Add Staff</button>
+                                        <button type="button" id="cancelButton" class="btn-secondary" style="display:none; margin-top: 10px;" onclick="resetForm()">Cancel Edit</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </section>
+
+                        <section id="staff-list-section" class="card section-panel hidden">
+                            <h3 class="card-title">Staff List</h3>
+                            <div id="staffListContainer" class="table-wrapper">
+                                <div class="empty-state">Loading staff...</div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 
     <script>
+        const apiBaseUrl = `${window.location.origin}/api`;
         const userStr = localStorage.getItem('driveSewaUser');
-        
+        let staffCache = [];
+        let editingStaffId = null;
+        let activeTab = 'add-staff';
+
         if (!userStr) {
-            window.location.href = '../../public/login.html'; // basic protection
+            window.location.href = '/public/login.html';
         } else {
             const user = JSON.parse(userStr);
             if (user.role !== 'Admin') {
                 alert('Access Denied. You are not an Admin.');
-                window.location.href = '../../public/login.html';
+                window.location.href = '/public/login.html';
             }
-            document.getElementById('welcomeText').textContent = 'Welcome back, ' + user.fullName + '!';
         }
-        
+
+        function setActiveTab(tabName) {
+            activeTab = tabName;
+
+            document.querySelectorAll('.sidebar-tab').forEach(button => {
+                button.classList.toggle('active', button.dataset.tab === tabName);
+            });
+
+            document.getElementById('add-staff-section').classList.toggle('hidden', tabName !== 'add-staff');
+            document.getElementById('staff-list-section').classList.toggle('hidden', tabName !== 'staff-list');
+
+            if (tabName === 'staff-list') {
+                loadStaff();
+            }
+        }
+
+        function initializeDashboard() {
+            document.getElementById('welcomeText').textContent = 'Welcome Admin';
+
+            document.querySelectorAll('.sidebar-tab').forEach(button => {
+                button.addEventListener('click', () => setActiveTab(button.dataset.tab));
+            });
+
+            setActiveTab('add-staff');
+            loadStaff();
+        }
+
+        async function loadStaff() {
+            const container = document.getElementById('staffListContainer');
+            try {
+                const response = await fetch(`${apiBaseUrl}/staff`);
+                const staffList = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(staffList.message || 'Failed to load staff.');
+                }
+
+                staffCache = Array.isArray(staffList) ? staffList : [];
+                renderStaffList();
+            } catch (err) {
+                container.innerHTML = `<div class="empty-state">${err.message}</div>`;
+            }
+        }
+
+        function renderStaffList() {
+            const container = document.getElementById('staffListContainer');
+
+            if (!Array.isArray(staffCache) || staffCache.length === 0) {
+                container.innerHTML = '<div class="empty-state">No staff found.</div>';
+                return;
+            }
+
+            container.innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Position</th>
+                            <th>Role</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${staffCache.map(staff => renderStaffRow(staff)).join('')}
+                    </tbody>
+                </table>`;
+        }
+
+        function renderStaffRow(staff) {
+            if (editingStaffId !== staff.staffId) {
+                return `
+                    <tr>
+                        <td>${staff.fullName ?? ''}</td>
+                        <td>${staff.email ?? ''}</td>
+                        <td>${staff.phone ?? ''}</td>
+                        <td>${staff.position ?? ''}</td>
+                        <td>${staff.role ?? ''}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-secondary" type="button" onclick="startInlineEdit(${staff.staffId})">Edit</button>
+                                <button class="btn-danger" type="button" onclick="deleteStaff(${staff.staffId})">Delete</button>
+                            </div>
+                        </td>
+                    </tr>`;
+            }
+
+            return `
+                <tr>
+                    <td><input class="row-input" id="edit-fullName-${staff.staffId}" value="${escapeHtml(staff.fullName ?? '')}"></td>
+                    <td>${staff.email ?? ''}</td>
+                    <td><input class="row-input" id="edit-phone-${staff.staffId}" value="${escapeHtml(staff.phone ?? '')}"></td>
+                    <td>
+                        <select class="row-input" id="edit-position-${staff.staffId}">
+                            <option value="Manager" ${staff.position === 'Manager' ? 'selected' : ''}>Manager</option>
+                            <option value="Mechanic" ${staff.position === 'Mechanic' ? 'selected' : ''}>Mechanic</option>
+                            <option value="Supervisor" ${staff.position === 'Supervisor' ? 'selected' : ''}>Supervisor</option>
+                            <option value="Workshop Supervisor" ${staff.position === 'Workshop Supervisor' ? 'selected' : ''}>Workshop Supervisor</option>
+                            <option value="Customer Support" ${staff.position === 'Customer Support' ? 'selected' : ''}>Customer Support</option>
+                            <option value="Parts Manager" ${staff.position === 'Parts Manager' ? 'selected' : ''}>Parts Manager</option>
+                            <option value="Other" ${staff.position === 'Other' ? 'selected' : ''}>Other</option>
+                        </select>
+                    </td>
+                    <td>${staff.role ?? ''}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-primary" type="button" onclick="saveInlineEdit(${staff.staffId})">Save</button>
+                            <button class="btn-secondary" type="button" onclick="cancelInlineEdit()">Cancel</button>
+                        </div>
+                    </td>
+                </tr>`;
+        }
+
+        function escapeHtml(value) {
+            return String(value)
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#39;');
+        }
+
+        function showMessage(text, isError) {
+            const message = document.getElementById('staffMessage');
+            message.textContent = text;
+            message.className = `message ${isError ? 'error' : 'success'}`;
+            message.style.display = 'block';
+        }
+
+        function hideMessage() {
+            const message = document.getElementById('staffMessage');
+            message.style.display = 'none';
+            message.textContent = '';
+        }
+
+        function resetForm() {
+            document.getElementById('staffForm').reset();
+            document.getElementById('staffId').value = '';
+            document.getElementById('saveButton').textContent = 'Add Staff';
+            document.getElementById('cancelButton').style.display = 'none';
+            hideMessage();
+        }
+
+        function startInlineEdit(staffId) {
+            editingStaffId = staffId;
+            renderStaffList();
+            hideMessage();
+        }
+
+        function cancelInlineEdit() {
+            editingStaffId = null;
+            renderStaffList();
+        }
+
+        async function saveInlineEdit(staffId) {
+            const staff = staffCache.find(s => s.staffId === staffId);
+            if (!staff) {
+                showMessage('Staff record was not found.', true);
+                return;
+            }
+
+            const payload = {
+                fullName: document.getElementById(`edit-fullName-${staffId}`).value.trim(),
+                email: staff.email,
+                password: '',
+                phone: document.getElementById(`edit-phone-${staffId}`).value.trim(),
+                position: document.getElementById(`edit-position-${staffId}`).value.trim()
+            };
+
+            try {
+                const response = await fetch(`${apiBaseUrl}/staff/${staffId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Save failed.');
+                }
+
+                showMessage('Staff updated successfully.', false);
+                editingStaffId = null;
+                await loadStaff();
+            } catch (err) {
+                showMessage(err.message, true);
+            }
+        }
+
+        async function deleteStaff(id) {
+            if (!confirm('Delete this staff member?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${apiBaseUrl}/staff/${id}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Delete failed.');
+                }
+
+                showMessage(data.message || 'Staff deleted successfully.', false);
+                editingStaffId = null;
+                resetForm();
+                await loadStaff();
+            } catch (err) {
+                showMessage(err.message, true);
+            }
+        }
+
+        document.getElementById('staffForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const staffId = document.getElementById('staffId').value;
+            const payload = {
+                fullName: document.getElementById('fullName').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                password: document.getElementById('password').value,
+                phone: document.getElementById('phone').value.trim(),
+                position: document.getElementById('position').value.trim()
+            };
+
+            try {
+                const response = await fetch(staffId ? `${apiBaseUrl}/staff/${staffId}` : `${apiBaseUrl}/staff`, {
+                    method: staffId ? 'PUT' : 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Save failed.');
+                }
+
+                showMessage(staffId ? 'Staff updated successfully.' : 'Staff added successfully.', false);
+                resetForm();
+                await loadStaff();
+                setActiveTab('staff-list');
+            } catch (err) {
+                showMessage(err.message, true);
+            }
+        });
+
         function logout() {
             localStorage.removeItem('driveSewaUser');
-            window.location.href = '../../public/login.html';
+            window.location.href = '/public/login.html';
         }
+
+        initializeDashboard();
     </script>
 </body>
 </html>
