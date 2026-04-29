@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -59,16 +60,16 @@
             transition: all 0.25s ease;
         }
 
-        .sidebar-tab:hover {
-            background: rgba(255, 255, 255, 0.18);
-            transform: translateX(3px);
-        }
+            .sidebar-tab:hover {
+                background: rgba(255, 255, 255, 0.18);
+                transform: translateX(3px);
+            }
 
-        .sidebar-tab.active {
-            background: #fff;
-            color: #3d5c7b;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-        }
+            .sidebar-tab.active {
+                background: #fff;
+                color: #3d5c7b;
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+            }
 
         .content-area {
             margin-left: 240px;
@@ -130,7 +131,9 @@
             flex-wrap: wrap;
         }
 
-        .btn-primary, .btn-danger, .btn-secondary {
+        .btn-primary,
+        .btn-danger,
+        .btn-secondary {
             border: none;
             border-radius: 8px;
             cursor: pointer;
@@ -141,7 +144,7 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #0056b3, #007BFF);
+            background: linear-gradient(135deg, #0056b3, #007bff);
             color: white;
         }
 
@@ -155,9 +158,11 @@
             color: #343a40;
         }
 
-        .btn-primary:hover, .btn-danger:hover, .btn-secondary:hover {
-            transform: translateY(-1px);
-        }
+            .btn-primary:hover,
+            .btn-danger:hover,
+            .btn-secondary:hover {
+                transform: translateY(-1px);
+            }
 
         .dashboard-grid {
             display: grid;
@@ -185,11 +190,11 @@
             gap: 8px;
         }
 
-        .form-group label {
-            font-weight: 600;
-            color: #495057;
-            font-size: 14px;
-        }
+            .form-group label {
+                font-weight: 600;
+                color: #495057;
+                font-size: 14px;
+            }
 
         .form-control {
             width: 100%;
@@ -201,12 +206,12 @@
             box-sizing: border-box;
         }
 
-        .form-control:focus {
-            border-color: #0056b3;
-            background-color: #ffffff;
-            outline: none;
-            box-shadow: 0 0 0 4px rgba(0, 86, 179, 0.1);
-        }
+            .form-control:focus {
+                border-color: #0056b3;
+                background-color: #ffffff;
+                outline: none;
+                box-shadow: 0 0 0 4px rgba(0, 86, 179, 0.1);
+            }
 
         .full-width {
             grid-column: 1 / -1;
@@ -220,17 +225,17 @@
             font-weight: 500;
         }
 
-        .message.error {
-            color: #842029;
-            background: #f8d7da;
-            border: 1px solid #f5c2c7;
-        }
+            .message.error {
+                color: #842029;
+                background: #f8d7da;
+                border: 1px solid #f5c2c7;
+            }
 
-        .message.success {
-            color: #0f5132;
-            background: #d1e7dd;
-            border: 1px solid #badbcc;
-        }
+            .message.success {
+                color: #0f5132;
+                background: #d1e7dd;
+                border: 1px solid #badbcc;
+            }
 
         .table-wrapper {
             overflow-x: auto;
@@ -242,7 +247,8 @@
             min-width: 800px;
         }
 
-        th, td {
+        th,
+        td {
             text-align: left;
             padding: 14px 12px;
             border-bottom: 1px solid #e9ecef;
@@ -276,19 +282,19 @@
             background: #fff;
         }
 
-        .row-input:focus {
-            outline: none;
-            border-color: #0056b3;
-            box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.1);
-        }
+            .row-input:focus {
+                outline: none;
+                border-color: #0056b3;
+                box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.1);
+            }
 
         .section-panel {
             transition: opacity 0.2s ease, transform 0.2s ease;
         }
 
-        .section-panel.hidden {
-            display: none;
-        }
+            .section-panel.hidden {
+                display: none;
+            }
 
         .empty-state {
             padding: 18px;
@@ -332,6 +338,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="app-layout">
         <aside class="sidebar">
@@ -339,6 +346,7 @@
             <nav class="sidebar-nav">
                 <button type="button" class="sidebar-tab active" data-tab="add-staff">Add Staff</button>
                 <button type="button" class="sidebar-tab" data-tab="staff-list">Staff List</button>
+                <button type="button" class="sidebar-tab" data-tab="manage-parts">Manage Parts</button>
             </nav>
         </aside>
 
@@ -406,6 +414,39 @@
                                 <div class="empty-state">Loading staff...</div>
                             </div>
                         </section>
+
+                        <section id="manage-parts-section" class="card section-panel hidden">
+                            <h3 class="card-title">Parts Management</h3>
+                            <div id="partsMessage" class="message"></div>
+                            <form id="partsForm">
+                                <input type="hidden" id="partId" value="" />
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="partName">Part Name</label>
+                                        <input type="text" id="partName" class="form-control" placeholder="Part Name" required />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="price">Price</label>
+                                        <input type="number" id="price" class="form-control" placeholder="Price" step="0.01" min="0" required />
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <label for="quantity">Quantity</label>
+                                        <input type="number" id="quantity" class="form-control" placeholder="Quantity" min="0" required />
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <button type="submit" id="savePartButton" class="btn-primary">Add Part</button>
+                                        <button type="button" id="cancelPartButton" class="btn-secondary" style="display:none; margin-top: 10px;" onclick="resetPartsForm()">Cancel Edit</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </section>
+
+                        <section id="parts-list-section" class="card section-panel hidden">
+                            <h3 class="card-title">Parts List</h3>
+                            <div id="partsListContainer" class="table-wrapper">
+                                <div class="empty-state">Loading parts...</div>
+                            </div>
+                        </section>
                     </div>
                 </div>
             </div>
@@ -438,9 +479,13 @@
 
             document.getElementById('add-staff-section').classList.toggle('hidden', tabName !== 'add-staff');
             document.getElementById('staff-list-section').classList.toggle('hidden', tabName !== 'staff-list');
+            document.getElementById('manage-parts-section').classList.toggle('hidden', tabName !== 'manage-parts');
+            document.getElementById('parts-list-section').classList.toggle('hidden', tabName !== 'manage-parts');
 
             if (tabName === 'staff-list') {
                 loadStaff();
+            } else if (tabName === 'manage-parts') {
+                loadParts();
             }
         }
 
@@ -453,6 +498,7 @@
 
             setActiveTab('add-staff');
             loadStaff();
+            loadParts();
         }
 
         async function loadStaff() {
@@ -481,65 +527,65 @@
             }
 
             container.innerHTML = `
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Phone</th>
-                            <th>Position</th>
-                            <th>Role</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${staffCache.map(staff => renderStaffRow(staff)).join('')}
-                    </tbody>
-                </table>`;
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Position</th>
+                                <th>Role</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${staffCache.map(staff => renderStaffRow(staff)).join('')}
+                        </tbody>
+                    </table>`;
         }
 
         function renderStaffRow(staff) {
             if (editingStaffId !== staff.staffId) {
                 return `
-                    <tr>
-                        <td>${staff.fullName ?? ''}</td>
-                        <td>${staff.email ?? ''}</td>
-                        <td>${staff.phone ?? ''}</td>
-                        <td>${staff.position ?? ''}</td>
-                        <td>${staff.role ?? ''}</td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="btn-secondary" type="button" onclick="startInlineEdit(${staff.staffId})">Edit</button>
-                                <button class="btn-danger" type="button" onclick="deleteStaff(${staff.staffId})">Delete</button>
-                            </div>
-                        </td>
-                    </tr>`;
+                        <tr>
+                            <td>${staff.fullName ?? ''}</td>
+                            <td>${staff.email ?? ''}</td>
+                            <td>${staff.phone ?? ''}</td>
+                            <td>${staff.position ?? ''}</td>
+                            <td>${staff.role ?? ''}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-secondary" type="button" onclick="startInlineEdit(${staff.staffId})">Edit</button>
+                                    <button class="btn-danger" type="button" onclick="deleteStaff(${staff.staffId})">Delete</button>
+                                </div>
+                            </td>
+                        </tr>`;
             }
 
             return `
-                <tr>
-                    <td><input class="row-input" id="edit-fullName-${staff.staffId}" value="${escapeHtml(staff.fullName ?? '')}"></td>
-                    <td>${staff.email ?? ''}</td>
-                    <td><input class="row-input" id="edit-phone-${staff.staffId}" value="${escapeHtml(staff.phone ?? '')}"></td>
-                    <td>
-                        <select class="row-input" id="edit-position-${staff.staffId}">
-                            <option value="Manager" ${staff.position === 'Manager' ? 'selected' : ''}>Manager</option>
-                            <option value="Mechanic" ${staff.position === 'Mechanic' ? 'selected' : ''}>Mechanic</option>
-                            <option value="Supervisor" ${staff.position === 'Supervisor' ? 'selected' : ''}>Supervisor</option>
-                            <option value="Workshop Supervisor" ${staff.position === 'Workshop Supervisor' ? 'selected' : ''}>Workshop Supervisor</option>
-                            <option value="Customer Support" ${staff.position === 'Customer Support' ? 'selected' : ''}>Customer Support</option>
-                            <option value="Parts Manager" ${staff.position === 'Parts Manager' ? 'selected' : ''}>Parts Manager</option>
-                            <option value="Other" ${staff.position === 'Other' ? 'selected' : ''}>Other</option>
-                        </select>
-                    </td>
-                    <td>${staff.role ?? ''}</td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="btn-primary" type="button" onclick="saveInlineEdit(${staff.staffId})">Save</button>
-                            <button class="btn-secondary" type="button" onclick="cancelInlineEdit()">Cancel</button>
-                        </div>
-                    </td>
-                </tr>`;
+                    <tr>
+                        <td><input class="row-input" id="edit-fullName-${staff.staffId}" value="${escapeHtml(staff.fullName ?? '')}"></td>
+                        <td>${staff.email ?? ''}</td>
+                        <td><input class="row-input" id="edit-phone-${staff.staffId}" value="${escapeHtml(staff.phone ?? '')}"></td>
+                        <td>
+                            <select class="row-input" id="edit-position-${staff.staffId}">
+                                <option value="Manager" ${staff.position === 'Manager' ? 'selected' : ''}>Manager</option>
+                                <option value="Mechanic" ${staff.position === 'Mechanic' ? 'selected' : ''}>Mechanic</option>
+                                <option value="Supervisor" ${staff.position === 'Supervisor' ? 'selected' : ''}>Supervisor</option>
+                                <option value="Workshop Supervisor" ${staff.position === 'Workshop Supervisor' ? 'selected' : ''}>Workshop Supervisor</option>
+                                <option value="Customer Support" ${staff.position === 'Customer Support' ? 'selected' : ''}>Customer Support</option>
+                                <option value="Parts Manager" ${staff.position === 'Parts Manager' ? 'selected' : ''}>Parts Manager</option>
+                                <option value="Other" ${staff.position === 'Other' ? 'selected' : ''}>Other</option>
+                            </select>
+                        </td>
+                        <td>${staff.role ?? ''}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-primary" type="button" onclick="saveInlineEdit(${staff.staffId})">Save</button>
+                                <button class="btn-secondary" type="button" onclick="cancelInlineEdit()">Cancel</button>
+                            </div>
+                        </td>
+                    </tr>`;
         }
 
         function escapeHtml(value) {
@@ -677,6 +723,258 @@
             }
         });
 
+        // Parts Management Functions
+        let partsCache = [];
+        let editingPartId = null;
+
+        async function loadParts() {
+            const container = document.getElementById('partsListContainer');
+            try {
+                const response = await fetch(`${apiBaseUrl}/parts`);
+                const partsList = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(partsList.message || 'Failed to load parts.');
+                }
+
+                partsCache = Array.isArray(partsList) ? partsList : [];
+                renderPartsList();
+            } catch (err) {
+                container.innerHTML = `<div class="empty-state">${err.message}</div>`;
+            }
+        }
+
+        function renderPartsList() {
+            const container = document.getElementById('partsListContainer');
+
+            if (!Array.isArray(partsCache) || partsCache.length === 0) {
+                container.innerHTML = '<div class="empty-state">No parts found.</div>';
+                return;
+            }
+
+            container.innerHTML = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Part Name</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${partsCache.map(part => renderPartsRow(part)).join('')}
+                        </tbody>
+                    </table>`;
+        }
+
+        function renderPartsRow(part) {
+            if (editingPartId !== part.partId) {
+                return `
+                        <tr>
+                            <td>${part.partName ?? ''}</td>
+                            <td>Rs. ${parseFloat(part.price ?? 0).toFixed(2)}</td>
+                            <td>${part.quantity ?? '0'}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-secondary" type="button" onclick="startPartInlineEdit(${part.partId})">Edit</button>
+                                    <button class="btn-primary" type="button" onclick="openAddStockModal(${part.partId})">Add Stock</button>
+                                    <button class="btn-danger" type="button" onclick="deletePart(${part.partId})">Delete</button>
+                                </div>
+                            </td>
+                        </tr>`;
+            }
+
+            return `
+                    <tr>
+                        <td><input class="row-input" id="edit-partName-${part.partId}" value="${escapeHtml(part.partName ?? '')}"></td>
+                        <td><input type="number" class="row-input" id="edit-price-${part.partId}" value="${part.price ?? 0}" step="0.01" min="0"></td>
+                        <td><input type="number" class="row-input" id="edit-quantity-${part.partId}" value="${part.quantity ?? 0}" min="0"></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-primary" type="button" onclick="savePartInlineEdit(${part.partId})">Save</button>
+                                <button class="btn-secondary" type="button" onclick="cancelPartInlineEdit()">Cancel</button>
+                            </div>
+                        </td>
+                    </tr>`;
+        }
+
+        function showPartsMessage(text, isError) {
+            const message = document.getElementById('partsMessage');
+            message.textContent = text;
+            message.className = `message ${isError ? 'error' : 'success'}`;
+            message.style.display = 'block';
+        }
+
+        function hidePartsMessage() {
+            const message = document.getElementById('partsMessage');
+            message.style.display = 'none';
+            message.textContent = '';
+        }
+
+        function resetPartsForm() {
+            document.getElementById('partsForm').reset();
+            document.getElementById('partId').value = '';
+            document.getElementById('savePartButton').textContent = 'Add Part';
+            document.getElementById('cancelPartButton').style.display = 'none';
+            hidePartsMessage();
+        }
+
+        function startPartInlineEdit(partId) {
+            editingPartId = partId;
+            renderPartsList();
+            hidePartsMessage();
+        }
+
+        function cancelPartInlineEdit() {
+            editingPartId = null;
+            renderPartsList();
+        }
+
+        async function savePartInlineEdit(partId) {
+            const part = partsCache.find(p => p.partId === partId);
+            if (!part) {
+                showPartsMessage('Part record was not found.', true);
+                return;
+            }
+
+            const payload = {
+                partName: document.getElementById(`edit-partName-${partId}`).value.trim(),
+                price: parseFloat(document.getElementById(`edit-price-${partId}`).value) || 0,
+                quantity: parseInt(document.getElementById(`edit-quantity-${partId}`).value) || 0
+            };
+
+            try {
+                const response = await fetch(`${apiBaseUrl}/parts/${partId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Save failed.');
+                }
+
+                showPartsMessage('Part updated successfully.', false);
+                editingPartId = null;
+                await loadParts();
+            } catch (err) {
+                showPartsMessage(err.message, true);
+            }
+        }
+
+        async function deletePart(id) {
+            if (!confirm('Delete this part?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${apiBaseUrl}/parts/${id}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Delete failed.');
+                }
+
+                showPartsMessage(data.message || 'Part deleted successfully.', false);
+                editingPartId = null;
+                resetPartsForm();
+                await loadParts();
+            } catch (err) {
+                showPartsMessage(err.message, true);
+            }
+        }
+
+        function openAddStockModal(partId) {
+            const part = partsCache.find(p => p.partId === partId);
+            if (!part) {
+                showPartsMessage('Part not found.', true);
+                return;
+            }
+
+            const quantity = prompt(`Add Stock for "${part.partName}"\n\nEnter quantity to add:`, '1');
+            if (quantity === null || quantity.trim() === '') {
+                return;
+            }
+
+            const qtyToAdd = parseInt(quantity);
+            if (isNaN(qtyToAdd) || qtyToAdd <= 0) {
+                showPartsMessage('Please enter a valid quantity.', true);
+                return;
+            }
+
+            addStock(partId, qtyToAdd);
+        }
+
+        async function addStock(partId, quantityToAdd) {
+            const part = partsCache.find(p => p.partId === partId);
+            if (!part) {
+                showPartsMessage('Part not found.', true);
+                return;
+            }
+
+            const payload = {
+                partName: part.partName,
+                price: part.price,
+                quantity: part.quantity + quantityToAdd
+            };
+
+            try {
+                const response = await fetch(`${apiBaseUrl}/parts/${partId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Stock update failed.');
+                }
+
+                showPartsMessage(`Added ${quantityToAdd} units. Stock updated successfully.`, false);
+                await loadParts();
+            } catch (err) {
+                showPartsMessage(err.message, true);
+            }
+        }
+
+        document.getElementById('partsForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const partId = document.getElementById('partId').value;
+            const payload = {
+                partName: document.getElementById('partName').value.trim(),
+                price: parseFloat(document.getElementById('price').value) || 0,
+                quantity: parseInt(document.getElementById('quantity').value) || 0
+            };
+
+            try {
+                const response = await fetch(partId ? `${apiBaseUrl}/parts/${partId}` : `${apiBaseUrl}/parts`, {
+                    method: partId ? 'PUT' : 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Save failed.');
+                }
+
+                showPartsMessage(partId ? 'Part updated successfully.' : 'Part added successfully.', false);
+                resetPartsForm();
+                await loadParts();
+                setActiveTab('manage-parts');
+            } catch (err) {
+                showPartsMessage(err.message, true);
+            }
+        });
+
         function logout() {
             localStorage.removeItem('driveSewaUser');
             window.location.href = '/public/login.html';
@@ -685,4 +983,5 @@
         initializeDashboard();
     </script>
 </body>
+
 </html>
