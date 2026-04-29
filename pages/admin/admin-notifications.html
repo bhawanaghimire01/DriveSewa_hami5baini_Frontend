@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - Admin</title>
+    <style>
+        :root {
+            --bg: #f5f7fb;
+            --surface: #ffffff;
+            --surface-soft: #f8fafc;
+            --primary: #174ea6;
+            --primary-dark: #123f84;
+            --text: #172033;
+            --muted: #667085;
+            --border: #dfe5ef;
+            --danger: #c62828;
+            --warning: #f59e0b;
+            --shadow: 0 16px 36px rgba(23, 32, 51, 0.08);
+        }
+
+        * { box-sizing: border-box; }
+
+        body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--text); font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
+        .dashboard { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
+        .sidebar { background: var(--surface); border-right: 1px solid var(--border); padding: 24px 18px; display: flex; flex-direction: column; gap: 26px; }
+        .brand { padding: 0 10px 20px; border-bottom: 1px solid var(--border); }
+        .brand-title { margin: 0; font-size: 24px; font-weight: 800; color: var(--primary); }
+        .brand-subtitle { margin: 6px 0 0; font-size: 13px; color: var(--muted); }
+
+        .side-nav { display: grid; gap: 10px; }
+        .nav-link { display: grid; grid-template-columns: 38px 1fr; gap: 12px; align-items: center; padding: 13px 12px; border-radius: 8px; color: var(--text); text-decoration: none; border: 1px solid transparent; }
+        .nav-link:hover { background: var(--surface-soft); border-color: var(--border); }
+        .nav-link.active { background: #eaf2ff; border-color: #b8d2ff; color: var(--primary); }
+        .nav-icon { width: 38px; height: 38px; border-radius: 8px; display: grid; place-items: center; background: var(--surface-soft); font-weight: 800; }
+        .nav-title { display: block; font-size: 15px; font-weight: 700; }
+
+        .main { display: flex; flex-direction: column; min-width: 0; }
+        .topbar { height: 76px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; }
+        .page-title { margin: 0; font-size: 24px; font-weight: 800; }
+        .top-actions { display: flex; align-items: center; gap: 14px; }
+        .logout-btn { border: 1px solid #f1b9b9; background: #fff5f5; color: var(--danger); border-radius: 8px; padding: 11px 16px; font-size: 14px; font-weight: 800; cursor: pointer; }
+
+        .content { padding: 32px; flex: 1; }
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; box-shadow: var(--shadow); max-width: 800px;}
+
+        .notification-item { padding: 16px; border: 1px solid var(--warning); border-left: 4px solid var(--warning); background: #fffbeb; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .notification-item.critical { border-color: var(--danger); background: #fef2f2; }
+        .notification-icon { font-size: 24px; margin-right: 16px; }
+        .notification-text { flex: 1; }
+        .notification-text strong { display: block; font-size: 15px; margin-bottom: 4px; }
+        .notification-text p { margin: 0; color: var(--muted); font-size: 13px; }
+        
+        .btn-action { background: var(--primary); color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="brand">
+                <h2 class="brand-title">DriveSewa</h2>
+                <p class="brand-subtitle">Admin Operations</p>
+            </div>
+            <nav class="side-nav">
+                <a class="nav-link" href="admin-dashboard.html"><span class="nav-icon">📊</span><span class="nav-title">Dashboard</span></a>
+                <a class="nav-link" href="staff-management.html"><span class="nav-icon">👥</span><span class="nav-title">Staff Management</span></a>
+                <a class="nav-link" href="parts-inventory.html"><span class="nav-icon">🔧</span><span class="nav-title">Parts Inventory</span></a>
+                <a class="nav-link" href="vendors.html"><span class="nav-icon">🏢</span><span class="nav-title">Vendors</span></a>
+                <a class="nav-link" href="purchase-invoice-list.html"><span class="nav-icon">📦</span><span class="nav-title">Purchase Invoices</span></a>
+                <a class="nav-link" href="financial-reports.html"><span class="nav-icon">📈</span><span class="nav-title">Financial Reports</span></a>
+                <a class="nav-link" href="admin-ai-insights.html"><span class="nav-icon">🤖</span><span class="nav-title">AI Insights</span></a>
+                <a class="nav-link active" href="admin-notifications.html"><span class="nav-icon">🔔</span><span class="nav-title">Notifications</span></a>
+            </nav>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <h1 class="page-title">System Notifications</h1>
+                <div class="top-actions">
+                    <span class="welcome" id="welcomeText">Admin</span>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </header>
+
+            <section class="content">
+                <div class="card">
+                    <h3 style="margin-top:0;">Inventory Alerts</h3>
+                    <div id="notificationsContainer">
+                        <p style="text-align: center; color: var(--muted);">Checking for notifications...</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:5178/api';
+        let authToken = '';
+
+        window.onload = () => {
+            const userData = localStorage.getItem("driveSewaUser");
+            if (!userData) { window.location.href = "../../public/login.html"; return; }
+            const user = JSON.parse(userData);
+            if (!user || user.role !== "Admin") { window.location.href = "../../public/login.html"; return; }
+            
+            authToken = user.token;
+            document.getElementById("welcomeText").textContent = user.fullName || "Admin";
+            
+            loadNotifications();
+        };
+
+        function logout() {
+            localStorage.removeItem("driveSewaUser");
+            window.location.href = "../../public/login.html";
+        }
+
+        async function loadNotifications() {
+            try {
+                const res = await fetch(`${API_BASE_URL}/notifications/low-stock`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if (res.ok) {
+                    const alerts = await res.json();
+                    const container = document.getElementById('notificationsContainer');
+                    
+                    if (alerts.length === 0) {
+                        container.innerHTML = '<p style="text-align: center; padding: 20px; color: var(--success); font-weight: 600;">✅ All systems normal. No low stock alerts.</p>';
+                        return;
+                    }
+
+                    container.innerHTML = alerts.map(a => {
+                        const isCritical = a.stockQuantity <= 3;
+                        const cssClass = isCritical ? 'notification-item critical' : 'notification-item';
+                        const icon = isCritical ? '🚨' : '⚠️';
+                        
+                        return `
+                            <div class="${cssClass}">
+                                <div style="display:flex; align-items:center;">
+                                    <span class="notification-icon">${icon}</span>
+                                    <div class="notification-text">
+                                        <strong>${a.partName} - Low Stock</strong>
+                                        <p>${a.message}</p>
+                                    </div>
+                                </div>
+                                <a href="create-purchase-invoice.html" class="btn-action">Order More</a>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            } catch (err) {
+                console.error('Error fetching notifications:', err);
+                document.getElementById('notificationsContainer').innerHTML = '<p style="color:red; text-align:center;">Error loading notifications.</p>';
+            }
+        }
+    </script>
+</body>
+</html>
