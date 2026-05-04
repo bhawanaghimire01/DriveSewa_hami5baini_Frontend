@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Details - Staff Portal</title>
+    <style>
+        :root {
+            --primary: #8b5cf6;
+            --primary-dark: #7c3aed;
+            --bg: #f3f4f6;
+            --surface: #ffffff;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --danger: #ef4444;
+            --success: #10b981;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 24px 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand {
+            padding: 0 24px 24px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 24px;
+        }
+
+        .brand h2 {
+            margin: 0;
+            color: var(--primary);
+            font-weight: 800;
+        }
+
+        .nav-item {
+            padding: 12px 24px;
+            color: var(--muted);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            border-left: 4px solid transparent;
+            cursor: pointer;
+        }
+        
+        .nav-item:hover {
+            color: var(--primary);
+            background: #f5f3ff;
+        }
+
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            height: 70px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 0 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .content {
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-header h3 { margin: 0; }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .detail-item label {
+            display: block;
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .detail-item div {
+            font-weight: 500;
+            font-size: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        th {
+            background: var(--bg);
+            color: var(--muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            background: var(--primary);
+            color: white;
+            font-size: 13px;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+        
+        .btn-outline:hover {
+            background: var(--bg);
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="brand">
+            <h2>DriveSewa</h2>
+            <p style="margin:4px 0 0; font-size:13px; color:var(--muted);">Staff Portal</p>
+        </div>
+        <div class="nav-item" onclick="window.location.href='customer-list.html'">
+            ← Back to Directory
+        </div>
+    </aside>
+
+    <div class="main">
+        <div class="header">
+            <h1 style="margin:0; font-size: 20px;">Customer Details</h1>
+        </div>
+        
+        <div class="content" id="mainContent">
+            <!-- Profile Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Profile Information</h3>
+                </div>
+                <div class="detail-grid" id="profileGrid">
+                    Loading profile...
+                </div>
+            </div>
+
+            <!-- Vehicles Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Registered Vehicles</h3>
+                </div>
+                <div id="vehicleContainer">
+                    Loading vehicles...
+                </div>
+            </div>
+
+            <!-- History Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Service & Purchase History</h3>
+                </div>
+                
+                <h4 style="margin: 0 0 12px 0; color: var(--primary);">Appointments</h4>
+                <div id="appointmentsContainer" style="margin-bottom: 24px;">
+                    Loading appointments...
+                </div>
+
+                <h4 style="margin: 0 0 12px 0; color: var(--primary);">Purchase/Sales History</h4>
+                <div id="salesContainer">
+                    Loading sales...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const apiBaseUrl = 'http://localhost:5178/api';
+        
+        // Extract ID from query param
+        const urlParams = new URLSearchParams(window.location.search);
+        const customerId = urlParams.get('id');
+
+        window.onload = () => {
+            const stored = localStorage.getItem('driveSewaUser');
+            if(!stored) { window.location.href = '../../public/login.html'; return; }
+            const user = JSON.parse(stored);
+            if(user.role !== 'Admin' && user.role !== 'Staff') {
+                window.location.href = '../../public/login.html'; return;
+            }
+
+            if(!customerId) {
+                document.getElementById('mainContent').innerHTML = '<div class="card"><p style="color:red;">No customer selected. Go back and select a customer.</p></div>';
+                return;
+            }
+
+            loadAllData();
+        };
+
+        async function loadAllData() {
+            try {
+                // 1. Fetch Profile
+                const profRes = await fetch(`${apiBaseUrl}/customers/${customerId}/profile`);
+                if(profRes.ok) {
+                    const prof = await profRes.json();
+                    renderProfile(prof);
+                    
+                    // 2. Fetch Vehicles using UserId from Profile
+                    const vehRes = await fetch(`${apiBaseUrl}/customers/${prof.userId}/vehicles`);
+                    if(vehRes.ok) renderVehicles(await vehRes.json());
+
+                    // 3. Fetch History using CustomerId
+                    const histRes = await fetch(`${apiBaseUrl}/customers/${customerId}/history`);
+                    if(histRes.ok) {
+                        const history = await histRes.json();
+                        renderAppointments(history.appointments);
+                        renderSales(history.sales);
+                    }
+                } else {
+                    document.getElementById('mainContent').innerHTML = '<div class="card"><p style="color:red;">Customer not found.</p></div>';
+                }
+            } catch(e) {
+                alert('Network error while loading data.');
+            }
+        }
+
+        function renderProfile(p) {
+            document.getElementById('profileGrid').innerHTML = `
+                <div class="detail-item"><label>Full Name</label><div>${p.fullName}</div></div>
+                <div class="detail-item"><label>Customer ID</label><div>#${p.customerId}</div></div>
+                <div class="detail-item"><label>Email</label><div>${p.email}</div></div>
+                <div class="detail-item"><label>Phone</label><div>${p.phone || 'N/A'}</div></div>
+                <div class="detail-item"><label>Address</label><div>${p.address || 'N/A'}</div></div>
+                <div class="detail-item"><label>Registration Date</label><div>${new Date(p.createdAt).toLocaleDateString()}</div></div>
+            `;
+        }
+
+        function renderVehicles(v) {
+            const container = document.getElementById('vehicleContainer');
+            if(v.length === 0) {
+                container.innerHTML = '<p style="color:var(--muted);">No vehicles registered.</p>';
+                return;
+            }
+            container.innerHTML = `
+                <table>
+                    <thead><tr><th>Number</th><th>Type</th><th>Brand</th><th>Model</th></tr></thead>
+                    <tbody>
+                        ${v.map(x => `<tr>
+                            <td style="font-weight:600;">${x.vehicleNumber}</td>
+                            <td>${x.vehicleType}</td>
+                            <td>${x.brand}</td>
+                            <td>${x.model}</td>
+                        </tr>`).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function renderAppointments(appts) {
+            const container = document.getElementById('appointmentsContainer');
+            if(appts.length === 0) {
+                container.innerHTML = '<p style="color:var(--muted); font-size:14px;">No appointments found.</p>';
+                return;
+            }
+            container.innerHTML = `
+                <table>
+                    <thead><tr><th>ID</th><th>Date</th><th>Service</th><th>Status</th></tr></thead>
+                    <tbody>
+                        ${appts.map(x => `<tr>
+                            <td>#${x.id}</td>
+                            <td>${new Date(x.appointmentDate).toLocaleString()}</td>
+                            <td>${x.serviceType}</td>
+                            <td><span style="padding:4px 8px; border-radius:4px; font-size:12px; background:#f3f4f6;">${x.status}</span></td>
+                        </tr>`).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function renderSales(sales) {
+            const container = document.getElementById('salesContainer');
+            if(sales.length === 0) {
+                container.innerHTML = '<p style="color:var(--muted); font-size:14px;">No purchase history found.</p>';
+                return;
+            }
+            container.innerHTML = `
+                <table>
+                    <thead><tr><th>Invoice ID</th><th>Date</th><th>Amount</th><th>Status</th></tr></thead>
+                    <tbody>
+                        ${sales.map(x => `<tr>
+                            <td>#${x.id}</td>
+                            <td>${new Date(x.saleDate).toLocaleDateString()}</td>
+                            <td style="font-weight:600;">$${x.totalAmount.toFixed(2)}</td>
+                            <td>${x.paymentStatus}</td>
+                        </tr>`).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+    </script>
+</body>
+</html>
