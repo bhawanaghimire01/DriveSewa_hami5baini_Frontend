@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Management - DriveSewa Admin</title>
+    <style>
+        :root {
+            --bg: #f5f7fb;
+            --surface: #ffffff;
+            --surface-soft: #f8fafc;
+            --primary: #174ea6;
+            --primary-dark: #123f84;
+            --text: #172033;
+            --muted: #667085;
+            --border: #dfe5ef;
+            --danger: #c62828;
+            --success: #10b981;
+            --shadow: 0 16px 36px rgba(23, 32, 51, 0.08);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles copied from admin-dashboard */
+        .sidebar {
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 24px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 26px;
+        }
+
+        .brand {
+            padding: 0 10px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        .brand-title { margin: 0; font-size: 24px; font-weight: 800; color: var(--primary); }
+        .brand-subtitle { margin: 6px 0 0; font-size: 13px; color: var(--muted); }
+
+        .side-nav { display: grid; gap: 10px; }
+        .nav-link {
+            display: grid; grid-template-columns: 38px 1fr; gap: 12px;
+            align-items: center; padding: 13px 12px; border-radius: 8px;
+            color: var(--text); text-decoration: none; border: 1px solid transparent;
+        }
+        .nav-link:hover { background: var(--surface-soft); border-color: var(--border); }
+        .nav-link.active { background: #eaf2ff; border-color: #b8d2ff; color: var(--primary); }
+        .nav-icon {
+            width: 38px; height: 38px; border-radius: 8px; display: grid;
+            place-items: center; background: var(--surface-soft); font-weight: 800;
+        }
+        .nav-title { display: block; font-size: 15px; font-weight: 700; }
+        .nav-desc { display: block; margin-top: 3px; font-size: 12px; color: var(--muted); }
+
+        /* Main Content Styles */
+        .main { display: flex; flex-direction: column; min-width: 0; }
+        .topbar {
+            height: 76px; background: var(--surface); border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 32px;
+        }
+        .page-title { margin: 0; font-size: 24px; font-weight: 800; }
+        .top-actions { display: flex; align-items: center; gap: 14px; }
+        
+        .logout-btn {
+            border: 1px solid #f1b9b9; background: #fff5f5; color: var(--danger);
+            border-radius: 8px; padding: 11px 16px; font-size: 14px; font-weight: 800; cursor: pointer;
+        }
+        .logout-btn:hover { background: var(--danger); color: #fff; }
+
+        .content { padding: 32px; flex: 1; display: flex; flex-direction: column; }
+
+        /* Table Card */
+        .table-card {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 8px; overflow: hidden; box-shadow: var(--shadow);
+            flex: 1;
+        }
+        .table-header {
+            padding: 18px 22px; border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .table-header h2 { margin: 0; font-size: 18px; }
+        
+        .btn-primary {
+            background: var(--primary); color: #fff; border: none;
+            padding: 10px 18px; border-radius: 6px; font-weight: 600; cursor: pointer;
+            font-size: 14px; display: inline-flex; align-items: center; gap: 6px;
+        }
+        .btn-primary:hover { background: var(--primary-dark); }
+
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 16px 22px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
+        th { background: var(--surface-soft); color: var(--muted); font-size: 12px; text-transform: uppercase; }
+        tr:last-child td { border-bottom: 0; }
+        
+        .action-btns { display: flex; gap: 10px; }
+        .btn-edit { color: var(--primary); background: #eaf2ff; border: 1px solid #b8d2ff; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 13px; }
+        .btn-delete { color: var(--danger); background: #fff5f5; border: 1px solid #f1b9b9; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 13px; }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); display: none; place-items: center; z-index: 100;
+        }
+        .modal {
+            background: var(--surface); padding: 32px; border-radius: 12px;
+            width: 100%; max-width: 500px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        .modal-title { margin: 0 0 24px; font-size: 20px; font-weight: 800; color: var(--primary); }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 600; color: var(--muted); }
+        .form-group input { 
+            width: 100%; padding: 10px; border: 1px solid var(--border); 
+            border-radius: 6px; font-size: 14px; font-family: inherit; 
+        }
+        .form-group input:focus { outline: none; border-color: var(--primary); }
+        
+        .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; }
+        .btn-cancel { background: #f1f5f9; color: var(--text); border: 1px solid var(--border); padding: 10px 18px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+
+        .message { padding: 12px; border-radius: 6px; margin-bottom: 20px; font-size: 14px; display: none; }
+        .message.error { background: #fef2f2; color: #b91c1c; border: 1px solid #fca5a5; }
+        .message.success { background: #f0fdf4; color: #15803d; border: 1px solid #86efac; }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="brand">
+                <h2 class="brand-title">DriveSewa</h2>
+                <p class="brand-subtitle">Administration workspace</p>
+            </div>
+            <nav class="side-nav">
+                <a class="nav-link" href="admin-dashboard.html">
+                    <span class="nav-icon">AD</span>
+                    <span><span class="nav-title">Admin Dashboard</span><span class="nav-desc">Overview and module access</span></span>
+                </a>
+                <a class="nav-link" href="staff-management.html">
+                    <span class="nav-icon">SM</span>
+                    <span><span class="nav-title">Staff Management</span><span class="nav-desc">Manage staff and roles</span></span>
+                </a>
+                <a class="nav-link" href="parts-inventory.html">
+                    <span class="nav-icon">PI</span>
+                    <span><span class="nav-title">Parts Inventory</span><span class="nav-desc">Manage vehicle parts</span></span>
+                </a>
+                <a class="nav-link" href="purchase-invoice-list.html">
+                    <span class="nav-icon">IN</span>
+                    <span><span class="nav-title">Purchase Invoices</span><span class="nav-desc">Stock management</span></span>
+                </a>
+                <a class="nav-link active" href="vendors.html">
+                    <span class="nav-icon">VM</span>
+                    <span><span class="nav-title">Vendor Management</span><span class="nav-desc">Manage vendor details</span></span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <h1 class="page-title">Vendor Management</h1>
+                <div class="top-actions">
+                    <span class="welcome" id="welcomeText">Welcome, Admin</span>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </header>
+
+            <section class="content">
+                <div id="alertMsg" class="message"></div>
+                <div class="table-card">
+                    <div class="table-header">
+                        <h2>All Vendors</h2>
+                        <button class="btn-primary" onclick="openAddModal()">+ Add New Vendor</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Company Name</th>
+                                <th>Contact Person</th>
+                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>Address</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vendorTableBody">
+                            <tr><td colspan="6" style="text-align: center; color: var(--muted);">Loading vendors...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Vendor Modal -->
+    <div class="modal-overlay" id="vendorModal">
+        <div class="modal">
+            <h2 class="modal-title" id="modalTitle">Add New Vendor</h2>
+            <form id="vendorForm">
+                <input type="hidden" id="vId">
+                <div class="form-group">
+                    <label>Company Name *</label>
+                    <input type="text" id="vName" required>
+                </div>
+                <div class="form-group">
+                    <label>Contact Person *</label>
+                    <input type="text" id="vContact" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone *</label>
+                    <input type="tel" id="vPhone" required>
+                </div>
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="vEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Address *</label>
+                    <input type="text" id="vAddress" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn-primary" id="saveBtn">Save Vendor</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const apiBaseUrl = 'http://localhost:5178/api/vendors';
+        let authToken = '';
+
+        window.onload = () => {
+            const userData = localStorage.getItem("driveSewaUser");
+            if (!userData) { window.location.href = "../../public/login.html"; return; }
+            const user = JSON.parse(userData);
+            if (!user || user.role !== "Admin") { window.location.href = "../../public/login.html"; return; }
+            
+            document.getElementById("welcomeText").textContent = "Welcome, " + (user.fullName || "Admin");
+            authToken = user.token || ''; // Use token if available from auth
+            
+            loadVendors();
+        };
+
+        function logout() {
+            localStorage.removeItem("driveSewaUser");
+            window.location.href = "../../public/login.html";
+        }
+
+        function getAuthHeaders() {
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
+            };
+        }
+
+        function showMessage(msg, type) {
+            const alertMsg = document.getElementById('alertMsg');
+            alertMsg.textContent = msg;
+            alertMsg.className = 'message ' + type;
+            alertMsg.style.display = 'block';
+            setTimeout(() => { alertMsg.style.display = 'none'; }, 4000);
+        }
+
+        async function loadVendors() {
+            try {
+                const res = await fetch(apiBaseUrl, { headers: getAuthHeaders() });
+                if (!res.ok) throw new Error('Failed to load vendors');
+                const vendors = await res.json();
+                renderTable(vendors);
+            } catch (error) {
+                document.getElementById('vendorTableBody').innerHTML = `<tr><td colspan="6" style="text-align:center;color:red;">Error loading vendors. Is the backend running?</td></tr>`;
+            }
+        }
+
+        function renderTable(vendors) {
+            const tbody = document.getElementById('vendorTableBody');
+            if(vendors.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">No vendors found. Add a new vendor.</td></tr>`;
+                return;
+            }
+            
+            tbody.innerHTML = vendors.map(v => `
+                <tr>
+                    <td><strong>${v.vendorName}</strong></td>
+                    <td>${v.contactPerson}</td>
+                    <td>${v.phone}</td>
+                    <td>${v.email}</td>
+                    <td>${v.address}</td>
+                    <td class="action-btns">
+                        <button class="btn-edit" onclick="openEditModal(${v.id}, '${v.vendorName.replace(/'/g, "\\'")}', '${v.contactPerson.replace(/'/g, "\\'")}', '${v.phone}', '${v.email}', '${v.address.replace(/'/g, "\\'")}')">Edit</button>
+                        <button class="btn-delete" onclick="deleteVendor(${v.id}, '${v.vendorName.replace(/'/g, "\\'")}')">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        const modal = document.getElementById('vendorModal');
+        const form = document.getElementById('vendorForm');
+
+        function openAddModal() {
+            document.getElementById('modalTitle').textContent = 'Add New Vendor';
+            form.reset();
+            document.getElementById('vId').value = '';
+            modal.style.display = 'grid';
+        }
+
+        function openEditModal(id, name, contact, phone, email, address) {
+            document.getElementById('modalTitle').textContent = 'Edit Vendor';
+            document.getElementById('vId').value = id;
+            document.getElementById('vName').value = name;
+            document.getElementById('vContact').value = contact;
+            document.getElementById('vPhone').value = phone;
+            document.getElementById('vEmail').value = email;
+            document.getElementById('vAddress').value = address;
+            modal.style.display = 'grid';
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('saveBtn');
+            btn.disabled = true;
+            btn.textContent = 'Saving...';
+
+            const id = document.getElementById('vId').value;
+            const payload = {
+                vendorName: document.getElementById('vName').value.trim(),
+                contactPerson: document.getElementById('vContact').value.trim(),
+                phone: document.getElementById('vPhone').value.trim(),
+                email: document.getElementById('vEmail').value.trim(),
+                address: document.getElementById('vAddress').value.trim()
+            };
+
+            const method = id ? 'PUT' : 'POST';
+            const url = id ? `${apiBaseUrl}/${id}` : apiBaseUrl;
+
+            try {
+                const res = await fetch(url, {
+                    method: method,
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(id ? { id: parseInt(id), ...payload } : payload)
+                });
+
+                if(res.ok) {
+                    showMessage(`Vendor ${id ? 'updated' : 'added'} successfully!`, 'success');
+                    closeModal();
+                    loadVendors();
+                } else {
+                    const err = await res.text();
+                    alert("Error: " + err);
+                }
+            } catch(e) {
+                alert("Network error. Backend might be down.");
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Save Vendor';
+            }
+        });
+
+        async function deleteVendor(id, name) {
+            if(!confirm(`Are you sure you want to delete vendor "${name}"? This action cannot be undone.`)) return;
+            
+            try {
+                const res = await fetch(`${apiBaseUrl}/${id}`, {
+                    method: 'DELETE',
+                    headers: getAuthHeaders()
+                });
+                
+                if(res.ok) {
+                    showMessage('Vendor deleted successfully!', 'success');
+                    loadVendors();
+                } else {
+                    const err = await res.text();
+                    alert("Delete failed: " + err);
+                }
+            } catch(e) {
+                alert("Network error.");
+            }
+        }
+    </script>
+</body>
+</html>

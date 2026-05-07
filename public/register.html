@@ -1,6 +1,5 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,7 +27,7 @@
             align-items: center;
             justify-content: center;
             background-image: radial-gradient(circle at top right, rgba(59, 130, 246, 0.15), transparent 40%),
-                radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.15), transparent 40%);
+                              radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.15), transparent 40%);
         }
 
         .auth-container {
@@ -44,15 +43,8 @@
         }
 
         @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .brand-header {
@@ -166,7 +158,6 @@
         }
     </style>
 </head>
-
 <body>
     <div class="auth-container">
         <div class="brand-header">
@@ -197,12 +188,12 @@
                 <label class="form-label">Password</label>
                 <input type="password" id="password" class="form-control" placeholder="••••••••" required>
             </div>
-
+            
             <button type="submit" class="btn-primary" id="submitBtn">Register Account</button>
         </form>
 
         <div class="auth-footer">
-            Already have an account? <a href="customer-login.html" class="auth-link">Sign In</a>
+            Already have an account? <a href="login.html" class="auth-link">Sign In</a>
         </div>
     </div>
 
@@ -213,7 +204,7 @@
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
             const alertMsg = document.getElementById('alertMessage');
-
+            
             btn.textContent = 'Registering...';
             btn.disabled = true;
 
@@ -239,7 +230,7 @@
                     alertMsg.className = 'message success';
                     alertMsg.style.display = 'block';
                     setTimeout(() => {
-                        window.location.href = 'customer-login.html';
+                        window.location.href = 'login.html';
                     }, 1500);
                 } else {
                     alertMsg.textContent = data.message || 'Registration failed.';
@@ -258,5 +249,4 @@
         });
     </script>
 </body>
-
 </html>
