@@ -279,13 +279,13 @@
 
         async function loadCustomers() {
             try {
-                const res = await fetch(`${API_URL}/customers`, { headers: getHeaders() });
+                const res = await fetch(`${API_URL}/customer`, { headers: getHeaders() });
                 const customers = await res.json();
                 const sel = document.getElementById('customerSelect');
                 sel.innerHTML = '<option value="">-- Select a Customer --</option>';
                 customers.forEach(c => {
                     const opt = document.createElement('option');
-                    opt.value = c.customerId || c.id;
+                    opt.value = c.id;
                     opt.textContent = `${c.fullName} (${c.phone})`;
                     sel.appendChild(opt);
                 });
@@ -305,11 +305,9 @@
 
         function generatePartsOptions() {
             return partsList.map(p => {
-                const stock = p.quantity !== undefined ? p.quantity : (p.stockQuantity !== undefined ? p.stockQuantity : 0);
-                const id = p.partId || p.id;
-                const isOutOfStock = stock <= 0;
-                return `<option value="${id}" data-price="${p.price}" data-stock="${stock}" ${isOutOfStock ? 'disabled' : ''}>
-                    ${p.partName} (Stock: ${stock}) - $${p.price}
+                const isOutOfStock = p.stockQuantity <= 0;
+                return `<option value="${p.id}" data-price="${p.price}" data-stock="${p.stockQuantity}" ${isOutOfStock ? 'disabled' : ''}>
+                    ${p.partName} (Stock: ${p.stockQuantity}) - $${p.price}
                 </option>`;
             }).join('');
         }

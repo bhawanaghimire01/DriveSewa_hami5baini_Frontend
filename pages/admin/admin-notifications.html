@@ -16,12 +16,13 @@
             --border: #dfe5ef;
             --danger: #c62828;
             --warning: #f59e0b;
+            --success: #137333;
             --shadow: 0 16px 36px rgba(23, 32, 51, 0.08);
         }
 
         * { box-sizing: border-box; }
 
-        body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--text); font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
+        body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--text); font-family: 'Outfit', "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
         .dashboard { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
         .sidebar { background: var(--surface); border-right: 1px solid var(--border); padding: 24px 18px; display: flex; flex-direction: column; gap: 26px; }
         .brand { padding: 0 10px 20px; border-bottom: 1px solid var(--border); }
@@ -42,7 +43,52 @@
         .logout-btn { border: 1px solid #f1b9b9; background: #fff5f5; color: var(--danger); border-radius: 8px; padding: 11px 16px; font-size: 14px; font-weight: 800; cursor: pointer; }
 
         .content { padding: 32px; flex: 1; }
-        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; box-shadow: var(--shadow); max-width: 800px;}
+        
+        .section-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+            max-width: 1400px;
+        }
+        @media(max-width: 1000px) {
+            .section-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card { 
+            background: var(--surface); 
+            border: 1px solid var(--border); 
+            border-radius: 12px; 
+            padding: 24px; 
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px rgba(23, 32, 51, 0.1);
+        }
+
+        .section-title-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--surface-soft);
+            padding-bottom: 12px;
+            margin-bottom: 4px;
+        }
+        .section-title {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
         .notification-item { padding: 16px; border: 1px solid var(--warning); border-left: 4px solid var(--warning); background: #fffbeb; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
         .notification-item.critical { border-color: var(--danger); background: #fef2f2; }
@@ -52,6 +98,101 @@
         .notification-text p { margin: 0; color: var(--muted); font-size: 13px; }
         
         .btn-action { background: var(--primary); color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600; }
+
+        .btn-primary-glow {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 14px rgba(23, 78, 166, 0.25);
+            transition: all 0.3s ease;
+        }
+        .btn-primary-glow:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(23, 78, 166, 0.35);
+            filter: brightness(1.08);
+        }
+        .btn-primary-glow:disabled {
+            background: #cbd5e1;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .unpaid-item {
+            padding: 16px;
+            border: 1px solid var(--border);
+            background: var(--surface-soft);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+        .unpaid-item:hover {
+            border-color: #b8d2ff;
+            background: #f0f5ff;
+        }
+        .badge-amount {
+            background: #e6f4ea;
+            color: #137333;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 12px;
+        }
+        .badge-days {
+            background: #fef7e0;
+            color: #b06000;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .badge-days.high {
+            background: #fce8e6;
+            color: #c5221f;
+            animation: pulse-border 2s infinite alternate;
+        }
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0px rgba(197, 34, 31, 0.3); }
+            100% { box-shadow: 0 0 0 5px rgba(197, 34, 31, 0); }
+        }
+
+        .loader-spinner {
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top: 2px solid #fff;
+            width: 14px;
+            height: 14px;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .toast-log {
+            background: #1e293b;
+            color: #f8fafc;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 16px;
+            border-radius: 8px;
+            max-height: 180px;
+            overflow-y: auto;
+            font-size: 11px;
+            line-height: 1.6;
+            margin-top: 12px;
+            border-left: 4px solid var(--primary);
+        }
     </style>
 </head>
 <body>
@@ -84,10 +225,32 @@
             </header>
 
             <section class="content">
-                <div class="card">
-                    <h3 style="margin-top:0;">Inventory Alerts</h3>
-                    <div id="notificationsContainer">
-                        <p style="text-align: center; color: var(--muted);">Checking for notifications...</p>
+                <div class="section-grid">
+                    <!-- Inventory Stock Alerts Card -->
+                    <div class="card">
+                        <div class="section-title-bar">
+                            <h3 class="section-title">🔧 Inventory Alerts (Low Stock < 10)</h3>
+                        </div>
+                        <div id="notificationsContainer">
+                            <p style="text-align: center; color: var(--muted);">Checking for notifications...</p>
+                        </div>
+                    </div>
+
+                    <!-- Overdue Credits & Email Reminder Card -->
+                    <div class="card">
+                        <div class="section-title-bar">
+                            <h3 class="section-title">✉️ Unpaid Credits (> 1 Month)</h3>
+                            <button id="triggerRemindersBtn" class="btn-primary-glow" onclick="triggerEmailReminders()" disabled>
+                                <span>Send Email Reminders</span>
+                            </button>
+                        </div>
+                        <div id="unpaidCreditsContainer">
+                            <p style="text-align: center; color: var(--muted);">Checking for unpaid credits...</p>
+                        </div>
+                        <div id="toastLogContainer" style="display: none;">
+                            <h5 style="margin: 12px 0 4px 0; font-weight: 700; text-transform: uppercase; font-size: 11px; color: var(--muted);">SMTP Delivery Log</h5>
+                            <div id="toastLog" class="toast-log"></div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -108,6 +271,7 @@
             document.getElementById("welcomeText").textContent = user.fullName || "Admin";
             
             loadNotifications();
+            loadUnpaidCredits();
         };
 
         function logout() {
@@ -152,6 +316,102 @@
             } catch (err) {
                 console.error('Error fetching notifications:', err);
                 document.getElementById('notificationsContainer').innerHTML = '<p style="color:red; text-align:center;">Error loading notifications.</p>';
+            }
+        }
+
+        async function loadUnpaidCredits() {
+            try {
+                const res = await fetch(`${API_BASE_URL}/notifications/unpaid-credits`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if (res.ok) {
+                    const credits = await res.json();
+                    const container = document.getElementById('unpaidCreditsContainer');
+                    const btn = document.getElementById('triggerRemindersBtn');
+                    
+                    if (credits.length === 0) {
+                        container.innerHTML = '<p style="text-align: center; padding: 20px; color: var(--success); font-weight: 600;">✅ Excellent! No unpaid credits overdue by more than 1 month.</p>';
+                        btn.disabled = true;
+                        return;
+                    }
+
+                    btn.disabled = false;
+                    container.innerHTML = credits.map(c => {
+                        const isHighOverdue = c.overdueDays > 45;
+                        const badgeClass = isHighOverdue ? 'badge-days high' : 'badge-days';
+                        
+                        return `
+                            <div class="unpaid-item">
+                                <div style="display:flex; flex-direction:column; gap:4px;">
+                                    <strong style="font-size:14px; color:var(--text);">${c.customerName}</strong>
+                                    <span style="font-size:12px; color:var(--muted);">${c.customerEmail}</span>
+                                    <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
+                                        <span class="badge-amount">Rs. ${c.finalAmount.toLocaleString()}</span>
+                                        <span class="${badgeClass}">${c.overdueDays} Days Overdue</span>
+                                    </div>
+                                </div>
+                                <span style="font-size:11px; font-weight:700; color:var(--muted);">Inv #${c.invoiceId}</span>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            } catch (err) {
+                console.error('Error fetching unpaid credits:', err);
+                document.getElementById('unpaidCreditsContainer').innerHTML = '<p style="color:red; text-align:center;">Error loading unpaid credits.</p>';
+            }
+        }
+
+        async function triggerEmailReminders() {
+            const btn = document.getElementById('triggerRemindersBtn');
+            const btnText = btn.querySelector('span');
+            const logContainer = document.getElementById('toastLogContainer');
+            const logDiv = document.getElementById('toastLog');
+            
+            btn.disabled = true;
+            btnText.innerHTML = '<div style="display:flex; align-items:center; gap:8px;"><div class="loader-spinner"></div> Sending Reminders...</div>';
+            logContainer.style.display = 'none';
+            logDiv.innerHTML = '';
+            
+            try {
+                const res = await fetch(`${API_BASE_URL}/notifications/send-unpaid-reminders`, {
+                    method: 'POST',
+                    headers: { 
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    
+                    logContainer.style.display = 'block';
+                    let logHtml = `[${new Date().toLocaleTimeString()}] Starting reminder delivery...\n`;
+                    logHtml += `[${new Date().toLocaleTimeString()}] Total unpaid overdue invoices: ${data.totalProcessed}\n\n`;
+                    
+                    data.results.forEach(r => {
+                        if (r.status === 'Success') {
+                            logHtml += `✅ SENT -> ${r.customerName} (${r.email}) for Inv #${r.invoiceId} [Rs. ${r.amount}]\n`;
+                        } else {
+                            logHtml += `❌ FAILED -> ${r.customerName} (${r.email}): ${r.error || 'Unknown SMTP error'}\n`;
+                        }
+                    });
+                    
+                    logHtml += `\n[${new Date().toLocaleTimeString()}] Delivery complete.`;
+                    logDiv.innerText = logHtml;
+                    
+                    alert('🎉 Payment reminders have been successfully dispatched via SMTP!');
+                    await loadUnpaidCredits();
+                } else {
+                    const errMsg = await res.text();
+                    alert(`Failed to send reminders: ${errMsg || res.statusText}`);
+                }
+            } catch (err) {
+                console.error('Error triggering reminders:', err);
+                alert('Failed to send reminders due to network error.');
+            } finally {
+                btn.disabled = false;
+                btnText.innerHTML = 'Send Email Reminders';
             }
         }
     </script>

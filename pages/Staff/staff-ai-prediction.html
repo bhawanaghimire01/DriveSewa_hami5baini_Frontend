@@ -293,7 +293,7 @@
                     const customers = await res.json();
                     const select = document.getElementById('customerSelect');
                     select.innerHTML = '<option value="">-- Select a Customer --</option>' + 
-                        customers.map(c => `<option value="${c.customerId || c.id}">${c.fullName} (${c.phone || c.email})</option>`).join('');
+                        customers.map(c => `<option value="${c.id}">${c.fullName} (${c.phone || c.email})</option>`).join('');
                 }
             } catch (err) {
                 document.getElementById('customerSelect').innerHTML = '<option value="">Error loading customers</option>';
