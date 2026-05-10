@@ -1,0 +1,542 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Reports</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            color: #1a1a1a;
+        }
+
+        .page-wrapper {
+            min-height: 100vh;
+            padding: 40px 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            max-width: 1150px;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+
+        .top-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            margin: 0 0 10px;
+            font-size: 2.2rem;
+            color: #1a1a1a;
+        }
+
+        h2 {
+            margin: 0 0 14px;
+            color: #343a40;
+            font-size: 1.35rem;
+        }
+
+        p {
+            color: #495057;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .btn-primary,
+        .btn-secondary {
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            padding: 12px 18px;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0056b3, #007bff);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #e9ecef;
+            color: #343a40;
+        }
+
+        .btn-primary:hover,
+        .btn-secondary:hover {
+            transform: translateY(-1px);
+        }
+
+        .filter-card,
+        .report-card,
+        .summary-card {
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            background: #fff;
+        }
+
+        .filter-card {
+            padding: 24px;
+            margin-bottom: 24px;
+            background: #f8f9fa;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+            align-items: end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-weight: 600;
+            color: #495057;
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e1e5eb;
+            border-radius: 8px;
+            font-size: 15px;
+            background-color: white;
+            box-sizing: border-box;
+        }
+
+        .form-control:focus {
+            border-color: #0056b3;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(0, 86, 179, 0.1);
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .summary-card {
+            padding: 20px;
+        }
+
+        .summary-card span {
+            display: block;
+            color: #6c757d;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .summary-card strong {
+            color: #1a1a1a;
+            font-size: 1.5rem;
+        }
+
+        .reports-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        .report-card {
+            padding: 24px;
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .badge {
+            background: #e7f1ff;
+            color: #0056b3;
+            border-radius: 999px;
+            padding: 8px 12px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 760px;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 14px 12px;
+            border-bottom: 1px solid #e9ecef;
+            vertical-align: top;
+        }
+
+        th {
+            color: #343a40;
+            font-size: 14px;
+            background: #f8f9fa;
+        }
+
+        td {
+            color: #495057;
+            font-size: 14px;
+        }
+
+        .amount {
+            font-weight: 700;
+        }
+
+        .profit {
+            color: #0f5132;
+        }
+
+        .expense {
+            color: #842029;
+        }
+
+        .message {
+            display: none;
+            margin-bottom: 16px;
+            padding: 14px 16px;
+            border-radius: 8px;
+            color: #664d03;
+            background: #fff3cd;
+            border: 1px solid #ffecb5;
+            font-weight: 500;
+        }
+
+        @media (max-width: 900px) {
+            .filter-grid,
+            .summary-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 650px) {
+            .page-wrapper {
+                padding: 16px;
+            }
+
+            .container {
+                padding: 24px;
+            }
+
+            .filter-grid,
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="page-wrapper">
+        <div class="container">
+            <div class="top-actions">
+                <div>
+                    <h1>Financial Reports</h1>
+                    <p>Generate and view daily, monthly, and yearly financial reports for DriveSewa.</p>
+                </div>
+                <a class="btn-secondary" href="./admin-dashboard.html">Back to Dashboard</a>
+            </div>
+
+            <section class="filter-card">
+                <form id="reportForm" class="filter-grid">
+                    <div class="form-group">
+                        <label for="reportDate">Daily Report Date</label>
+                        <input type="date" id="reportDate" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reportMonth">Monthly Report</label>
+                        <input type="month" id="reportMonth" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reportYear">Yearly Report</label>
+                        <select id="reportYear" class="form-control" required></select>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn-primary">Generate Reports</button>
+                    </div>
+                </form>
+            </section>
+
+            <div id="reportMessage" class="message"></div>
+
+            <section class="summary-grid">
+                <article class="summary-card">
+                    <span>Total Income</span>
+                    <strong id="totalIncome">Rs. 0.00</strong>
+                </article>
+                <article class="summary-card">
+                    <span>Total Expense</span>
+                    <strong id="totalExpense">Rs. 0.00</strong>
+                </article>
+                <article class="summary-card">
+                    <span>Net Profit</span>
+                    <strong id="netProfit">Rs. 0.00</strong>
+                </article>
+                <article class="summary-card">
+                    <span>Total Transactions</span>
+                    <strong id="totalTransactions">0</strong>
+                </article>
+            </section>
+
+            <section class="reports-grid">
+                <article class="report-card">
+                    <div class="report-header">
+                        <div>
+                            <h2>Daily Financial Report</h2>
+                            <p>Income and expenses for the selected date.</p>
+                        </div>
+                        <span id="dailyLabel" class="badge">Daily</span>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Particular</th>
+                                    <th>Income</th>
+                                    <th>Expense</th>
+                                    <th>Profit</th>
+                                    <th>Transactions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dailyReportBody"></tbody>
+                        </table>
+                    </div>
+                </article>
+
+                <article class="report-card">
+                    <div class="report-header">
+                        <div>
+                            <h2>Monthly Financial Report</h2>
+                            <p>Income and expenses for the selected month.</p>
+                        </div>
+                        <span id="monthlyLabel" class="badge">Monthly</span>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Particular</th>
+                                    <th>Income</th>
+                                    <th>Expense</th>
+                                    <th>Profit</th>
+                                    <th>Transactions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="monthlyReportBody"></tbody>
+                        </table>
+                    </div>
+                </article>
+
+                <article class="report-card">
+                    <div class="report-header">
+                        <div>
+                            <h2>Yearly Financial Report</h2>
+                            <p>Income and expenses for the selected year.</p>
+                        </div>
+                        <span id="yearlyLabel" class="badge">Yearly</span>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Particular</th>
+                                    <th>Income</th>
+                                    <th>Expense</th>
+                                    <th>Profit</th>
+                                    <th>Transactions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="yearlyReportBody"></tbody>
+                        </table>
+                    </div>
+                </article>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        const apiBaseUrl = `${window.location.origin}/api`;
+        const reportDate = document.getElementById('reportDate');
+        const reportMonth = document.getElementById('reportMonth');
+        const reportYear = document.getElementById('reportYear');
+        const reportMessage = document.getElementById('reportMessage');
+
+        const sampleReports = {
+            daily: [
+                { particular: 'Service Revenue', income: 12500, expense: 0, transactions: 5 },
+                { particular: 'Parts Sales', income: 7800, expense: 4200, transactions: 4 },
+                { particular: 'Workshop Expense', income: 0, expense: 2500, transactions: 2 }
+            ],
+            monthly: [
+                { particular: 'Service Revenue', income: 260000, expense: 0, transactions: 86 },
+                { particular: 'Parts Sales', income: 145000, expense: 81500, transactions: 57 },
+                { particular: 'Operating Expense', income: 0, expense: 42000, transactions: 14 }
+            ],
+            yearly: [
+                { particular: 'Service Revenue', income: 2950000, expense: 0, transactions: 920 },
+                { particular: 'Parts Sales', income: 1740000, expense: 980000, transactions: 640 },
+                { particular: 'Operating Expense', income: 0, expense: 510000, transactions: 156 }
+            ]
+        };
+
+        function formatMoney(value) {
+            return `Rs. ${Number(value || 0).toFixed(2)}`;
+        }
+
+        function normalizeReportRows(rows, fallbackRows) {
+            const source = Array.isArray(rows) && rows.length > 0 ? rows : fallbackRows;
+            return source.map(row => {
+                const income = Number(row.income ?? row.revenue ?? row.totalIncome ?? row.totalRevenue ?? 0);
+                const expense = Number(row.expense ?? row.expenses ?? row.totalExpense ?? row.totalExpenses ?? 0);
+
+                return {
+                    particular: row.particular ?? row.category ?? row.title ?? 'Financial Activity',
+                    income,
+                    expense,
+                    profit: Number(row.profit ?? row.netProfit ?? income - expense),
+                    transactions: Number(row.transactions ?? row.transactionCount ?? row.count ?? 0)
+                };
+            });
+        }
+
+        function renderTable(targetId, rows) {
+            document.getElementById(targetId).innerHTML = rows.map(row => `
+                <tr>
+                    <td>${row.particular}</td>
+                    <td class="amount">${formatMoney(row.income)}</td>
+                    <td class="amount expense">${formatMoney(row.expense)}</td>
+                    <td class="amount profit">${formatMoney(row.profit)}</td>
+                    <td>${row.transactions}</td>
+                </tr>
+            `).join('');
+        }
+
+        function updateSummary(allRows) {
+            const totals = allRows.reduce((summary, row) => {
+                summary.income += row.income;
+                summary.expense += row.expense;
+                summary.transactions += row.transactions;
+                return summary;
+            }, { income: 0, expense: 0, transactions: 0 });
+
+            document.getElementById('totalIncome').textContent = formatMoney(totals.income);
+            document.getElementById('totalExpense').textContent = formatMoney(totals.expense);
+            document.getElementById('netProfit').textContent = formatMoney(totals.income - totals.expense);
+            document.getElementById('totalTransactions').textContent = totals.transactions;
+        }
+
+        async function loadReport(period, query) {
+            const response = await fetch(`${apiBaseUrl}/financial-reports/${period}?${new URLSearchParams(query)}`);
+
+            if (!response.ok) {
+                throw new Error('Financial report API is not available yet. Showing sample report data.');
+            }
+
+            return response.json();
+        }
+
+        async function generateReports() {
+            const dailyQuery = { date: reportDate.value };
+            const monthlyQuery = { month: reportMonth.value };
+            const yearlyQuery = { year: reportYear.value };
+
+            document.getElementById('dailyLabel').textContent = reportDate.value;
+            document.getElementById('monthlyLabel').textContent = reportMonth.value;
+            document.getElementById('yearlyLabel').textContent = reportYear.value;
+
+            try {
+                const [daily, monthly, yearly] = await Promise.all([
+                    loadReport('daily', dailyQuery),
+                    loadReport('monthly', monthlyQuery),
+                    loadReport('yearly', yearlyQuery)
+                ]);
+
+                const dailyRows = normalizeReportRows(daily.rows ?? daily, sampleReports.daily);
+                const monthlyRows = normalizeReportRows(monthly.rows ?? monthly, sampleReports.monthly);
+                const yearlyRows = normalizeReportRows(yearly.rows ?? yearly, sampleReports.yearly);
+
+                reportMessage.style.display = 'none';
+                renderTable('dailyReportBody', dailyRows);
+                renderTable('monthlyReportBody', monthlyRows);
+                renderTable('yearlyReportBody', yearlyRows);
+                updateSummary([...dailyRows, ...monthlyRows, ...yearlyRows]);
+            } catch (error) {
+                const dailyRows = normalizeReportRows([], sampleReports.daily);
+                const monthlyRows = normalizeReportRows([], sampleReports.monthly);
+                const yearlyRows = normalizeReportRows([], sampleReports.yearly);
+
+                reportMessage.textContent = error.message;
+                reportMessage.style.display = 'block';
+                renderTable('dailyReportBody', dailyRows);
+                renderTable('monthlyReportBody', monthlyRows);
+                renderTable('yearlyReportBody', yearlyRows);
+                updateSummary([...dailyRows, ...monthlyRows, ...yearlyRows]);
+            }
+        }
+
+        function initializeYears() {
+            const currentYear = new Date().getFullYear();
+            for (let year = currentYear; year >= currentYear - 5; year--) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                reportYear.appendChild(option);
+            }
+        }
+
+        function initializeDates() {
+            const today = new Date();
+            reportDate.value = today.toISOString().slice(0, 10);
+            reportMonth.value = today.toISOString().slice(0, 7);
+            reportYear.value = today.getFullYear();
+        }
+
+        document.getElementById('reportForm').addEventListener('submit', (event) => {
+            event.preventDefault();
+            generateReports();
+        });
+
+        initializeYears();
+        initializeDates();
+        generateReports();
+    </script>
+</body>
+
+</html>
