@@ -180,6 +180,9 @@
         <div class="nav-item" onclick="window.location.href='customer-list.html'">
             ← Back to Directory
         </div>
+        <div class="nav-item" onclick="window.location.href='create-sales-invoice.html'">
+            Create Sales Invoice
+        </div>
     </aside>
 
     <div class="main">
@@ -338,12 +341,14 @@
             }
             container.innerHTML = `
                 <table>
-                    <thead><tr><th>Invoice ID</th><th>Date</th><th>Amount</th><th>Status</th></tr></thead>
+                    <thead><tr><th>Invoice ID</th><th>Date</th><th>Subtotal</th><th>Discount</th><th>Final Total</th><th>Status</th></tr></thead>
                     <tbody>
                         ${sales.map(x => `<tr>
                             <td>#${x.id}</td>
                             <td>${new Date(x.saleDate).toLocaleDateString()}</td>
-                            <td style="font-weight:600;">$${x.totalAmount.toFixed(2)}</td>
+                            <td style="font-weight:600;">Rs. ${(x.subTotal || x.totalAmount).toFixed(2)}</td>
+                            <td>Rs. ${(x.discountAmount || 0).toFixed(2)}</td>
+                            <td style="font-weight:600;">Rs. ${(x.finalTotal || x.finalAmount || x.totalAmount).toFixed(2)}</td>
                             <td>${x.paymentStatus}</td>
                         </tr>`).join('')}
                     </tbody>

@@ -79,8 +79,9 @@ function renderPurchases(purchases) {
                     <th>Invoice No</th>
                     <th>Date</th>
                     <th>Items</th>
-                    <th>Total</th>
+                    <th>Subtotal</th>
                     <th>Discount</th>
+                    <th>Final Total</th>
                 </tr>
             </thead>
             <tbody>
@@ -89,8 +90,9 @@ function renderPurchases(purchases) {
                         <td style="font-weight: 600;">${purchase.invoiceNo}</td>
                         <td>${formatDate(purchase.purchaseDate)}</td>
                         <td>${formatItems(purchase.items || [])}</td>
-                        <td>${formatCurrency(purchase.totalAmount)}</td>
+                        <td>${formatCurrency(purchase.subTotal || purchase.totalAmount)}</td>
                         <td>${formatCurrency(purchase.discountAmount)}</td>
+                        <td>${formatCurrency(purchase.finalTotal || purchase.totalAmount)}</td>
                     </tr>
                 `).join('')}
             </tbody>
