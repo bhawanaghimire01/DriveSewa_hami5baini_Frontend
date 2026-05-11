@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Appointments - DriveSewa</title>
+    <title>Purchase & Service History - DriveSewa</title>
     <style>
         :root {
             --primary: #3b82f6;
@@ -29,7 +29,6 @@
             min-height: 100vh;
         }
 
-        /* Sidebar */
         .sidebar {
             width: 250px;
             background: var(--surface);
@@ -77,7 +76,6 @@
             border-left-color: var(--primary);
         }
 
-        /* Main Content */
         .main-content {
             flex: 1;
             display: flex;
@@ -123,7 +121,6 @@
             overflow-y: auto;
         }
 
-        /* Cards and Forms */
         .card {
             background: var(--surface);
             border-radius: 12px;
@@ -144,58 +141,36 @@
             align-items: center;
         }
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-        }
-
-        .form-group {
+        .tabs {
             display: flex;
-            flex-direction: column;
             gap: 8px;
+            margin-bottom: 20px;
         }
 
-        .form-group.full {
-            grid-column: 1 / -1;
-        }
-
-        .form-control {
-            padding: 10px 14px;
+        .tab-btn {
+            background: var(--surface);
+            color: var(--text-muted);
             border: 1px solid var(--border);
             border-radius: 6px;
-            font-size: 14px;
-            background: var(--bg);
+            padding: 10px 16px;
+            font-weight: 600;
+            cursor: pointer;
         }
 
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-            background: var(--surface);
-        }
-
-        .btn-primary {
+        .tab-btn.active {
             background: var(--primary);
             color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        
-        .btn-danger {
-            background: var(--danger);
-            color: white;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
+            border-color: var(--primary);
         }
 
-        /* Table */
+        .history-section {
+            display: none;
+        }
+
+        .history-section.active {
+            display: block;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -206,6 +181,7 @@
             text-align: left;
             border-bottom: 1px solid var(--border);
             font-size: 14px;
+            vertical-align: top;
         }
 
         th {
@@ -221,14 +197,21 @@
             border-radius: 4px;
             font-size: 12px;
             font-weight: 600;
+            display: inline-block;
         }
+
         .status-Pending { background: #fef3c7; color: #d97706; }
         .status-Approved { background: #dcfce7; color: #15803d; }
         .status-Completed { background: #dbeafe; color: #1d4ed8; }
+
+        .empty-state {
+            color: var(--secondary);
+            text-align: center;
+            padding: 24px;
+        }
     </style>
 </head>
 <body>
-
     <aside class="sidebar">
         <div class="brand">
             <h2>DriveSewa</h2>
@@ -238,16 +221,16 @@
             <a class="nav-item" href="customer-dashboard.html">Dashboard Home</a>
             <a class="nav-item" href="customer-dashboard.html">My Profile</a>
             <a class="nav-item" href="customer-dashboard.html">My Vehicles</a>
-            <a class="nav-item active" href="customer-appointments.html">Appointments</a>
+            <a class="nav-item" href="customer-appointments.html">Appointments</a>
             <a class="nav-item" href="customer-part-requests.html">Part Requests</a>
             <a class="nav-item" href="customer-reviews.html">Reviews</a>
-            <a class="nav-item" href="customer-history.html">Purchase & Service History</a>
+            <a class="nav-item active" href="customer-history.html">Purchase & Service History</a>
         </nav>
     </aside>
 
     <main class="main-content">
         <header class="header">
-            <h1 class="header-title">My Appointments</h1>
+            <h1 class="header-title">Purchase & Service History</h1>
             <div style="display: flex; align-items: center; gap: 16px;">
                 <span id="headerName" style="font-weight: 600; color: var(--text-muted);"></span>
                 <button class="logout-btn" onclick="logout()">Logout</button>
@@ -256,57 +239,29 @@
 
         <div class="content-area">
             <div class="card">
-                <h3 class="card-title">
-                    Book an Appointment
-                    <button class="btn-primary" onclick="toggleAppointmentForm()" style="font-size: 13px;">+ Book Appointment</button>
-                </h3>
-                
-                <div id="appointmentFormWrapper" style="display: none; background: var(--bg); padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--border);">
-                    <form id="appointmentForm">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Select Vehicle</label>
-                                <select id="vehId" class="form-control" required>
-                                    <option value="">-- Loading Vehicles --</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Service Type</label>
-                                <select id="serviceType" class="form-control" required>
-                                    <option value="General Service">General Service</option>
-                                    <option value="Repair">Repair</option>
-                                    <option value="Inspection">Inspection</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Appointment Date</label>
-                                <input type="date" id="appointmentDate" class="form-control" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Appointment Time</label>
-                                <input type="time" id="appointmentTime" class="form-control" required>
-                            </div>
-                            <div class="form-group full">
-                                <label>Issue / Description</label>
-                                <textarea id="issueDescription" class="form-control" rows="3" required></textarea>
-                            </div>
-                            <div class="form-group full" style="display: flex; gap: 10px;">
-                                <button type="submit" class="btn-primary">Submit Appointment</button>
-                                <button type="button" class="btn-primary" style="background: var(--secondary);" onclick="toggleAppointmentForm()">Cancel</button>
-                            </div>
-                        </div>
-                    </form>
+                <div class="tabs">
+                    <button class="tab-btn active" type="button" data-target="purchase-section">Purchase History</button>
+                    <button class="tab-btn" type="button" data-target="service-section">Service History</button>
                 </div>
 
-                <div id="appointmentsTableContainer">
-                    <p style="color: var(--secondary); text-align: center; padding: 20px;">Loading appointments...</p>
-                </div>
+                <section id="purchase-section" class="history-section active">
+                    <h3 class="card-title">Purchase History</h3>
+                    <div id="purchaseHistoryContainer">
+                        <p class="empty-state">Loading purchase history...</p>
+                    </div>
+                </section>
+
+                <section id="service-section" class="history-section">
+                    <h3 class="card-title">Service History</h3>
+                    <div id="serviceHistoryContainer">
+                        <p class="empty-state">Loading service history...</p>
+                    </div>
+                </section>
             </div>
         </div>
     </main>
 
-    <script src="../../assets/Js/customer-appointments.js"></script>
+    <script src="../../assets/Js/customer-history.js"></script>
     <script>
         function logout() {
             localStorage.removeItem('driveSewaCustomer');

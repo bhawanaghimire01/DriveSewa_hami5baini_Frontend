@@ -241,6 +241,7 @@
             <a class="nav-item" href="customer-appointments.html">Appointments</a>
             <a class="nav-item active" href="customer-part-requests.html">Part Requests</a>
             <a class="nav-item" href="customer-reviews.html">Reviews</a>
+            <a class="nav-item" href="customer-history.html">Purchase & Service History</a>
         </nav>
     </aside>
 
@@ -267,8 +268,16 @@
                                 <label>Part Name</label>
                                 <input type="text" id="partName" class="form-control" required>
                             </div>
+                            <div class="form-group">
+                                <label>Vehicle Model / Details</label>
+                                <input type="text" id="vehicleDetails" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Quantity Needed</label>
+                                <input type="number" id="quantityNeeded" class="form-control" min="1" value="1" required>
+                            </div>
                             <div class="form-group full">
-                                <label>Description / Details (e.g. Quantity, Vehicle Model)</label>
+                                <label>Description</label>
                                 <textarea id="description" class="form-control" rows="3"></textarea>
                             </div>
                             <div class="form-group full" style="display: flex; gap: 10px;">
@@ -286,7 +295,7 @@
         </div>
     </main>
 
-    <script src="../../assets/js/customer-part-requests.js"></script>
+    <script src="../../assets/Js/customer-part-requests.js"></script>
     <script>
         function logout() {
             localStorage.removeItem('driveSewaCustomer');

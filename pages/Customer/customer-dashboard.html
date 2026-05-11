@@ -14,7 +14,7 @@
             --text: #0f172a;
             --text-muted: #475569;
             --border: #e2e8f0;
-            --danger: #ef4444;
+            --danger: #241313;
             --success: #10b981;
             --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
         }
@@ -245,6 +245,7 @@
             <a class="nav-item" href="customer-appointments.html">Appointments</a>
             <a class="nav-item" href="customer-part-requests.html">Part Requests</a>
             <a class="nav-item" href="customer-reviews.html">Reviews</a>
+            <a class="nav-item" href="customer-history.html">Purchase & Service History</a>
         </nav>
     </aside>
 
@@ -281,6 +282,11 @@
                         <h3 class="card-title">Reviews</h3>
                         <p>Share your experience with our services.</p>
                         <a href="customer-reviews.html" class="btn-primary" style="text-decoration: none; display: inline-block;">Submit Review</a>
+                    </div>
+                    <div class="card" style="margin-bottom: 0;">
+                        <h3 class="card-title">History</h3>
+                        <p>View your parts purchases and vehicle service records.</p>
+                        <a href="customer-history.html" class="btn-primary" style="text-decoration: none; display: inline-block;">View History</a>
                     </div>
                 </div>
             </div>
@@ -369,12 +375,13 @@
     <script>
         const apiBaseUrl = 'http://localhost:5178/api';
         let customerData = null;
+        let customerId = null;
 
         // Init
         window.onload = () => {
             const stored = localStorage.getItem('driveSewaCustomer');
             if(!stored) {
-                window.location.href = '../../public/customer-login.html';
+                window.location.href = '../../public/login.html';
                 return;
             }
             customerData = JSON.parse(stored);
@@ -382,13 +389,14 @@
                 logout();
                 return;
             }
+            customerId = customerData.customerId || customerData.userId;
             document.getElementById('headerName').textContent = customerData.fullName;
             loadProfile();
         };
 
         function logout() {
             localStorage.removeItem('driveSewaCustomer');
-            window.location.href = '../../public/customer-login.html';
+            window.location.href = '../../public/login.html';
         }
 
         // Navigation
@@ -428,7 +436,7 @@
         // Profile Logic
         async function loadProfile() {
             try {
-                const res = await fetch(`${apiBaseUrl}/customers/${customerData.userId}/profile`);
+                const res = await fetch(`${apiBaseUrl}/customers/${customerId}/profile`);
                 if(res.ok) {
                     const prof = await res.json();
                     document.getElementById('profName').value = prof.fullName;
@@ -448,7 +456,7 @@
                 address: document.getElementById('profAddress').value.trim()
             };
             try {
-                const res = await fetch(`${apiBaseUrl}/customers/${customerData.userId}/profile`, {
+                const res = await fetch(`${apiBaseUrl}/customers/${customerId}/profile`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -478,7 +486,7 @@
 
         async function loadVehicles() {
             try {
-                const res = await fetch(`${apiBaseUrl}/customers/${customerData.userId}/vehicles`);
+                const res = await fetch(`${apiBaseUrl}/customers/${customerId}/vehicles`);
                 const vehicles = await res.json();
                 const container = document.getElementById('vehiclesTableContainer');
                 
@@ -515,7 +523,7 @@
         document.getElementById('vehicleForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const payload = {
-                customerId: customerData.userId,
+                customerId: customerId,
                 vehicleNumber: document.getElementById('vehNumber').value.trim(),
                 brand: document.getElementById('vehBrand').value.trim(),
                 model: document.getElementById('vehModel').value.trim(),
