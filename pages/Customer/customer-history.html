@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Dashboard - DriveSewa</title>
+    <title>History - DriveSewa</title>
     <script>
         (function() {
             const stored = localStorage.getItem('driveSewaCustomer') || localStorage.getItem('driveSewaUser');
@@ -117,6 +117,33 @@
             .content-area { padding: 20px; }
             .welcome-banner h2 { font-size: 28px; }
         }
+            /* Added Premium UI Forms and Tables */
+        .card { background: var(--surface); border: none; border-radius: 20px; padding: 32px; box-shadow: var(--shadow-soft); margin-bottom: 24px; }
+        .card-title { margin-top: 0; margin-bottom: 24px; font-size: 22px; font-weight: 700; color: var(--secondary); display: flex; justify-content: space-between; align-items: center;}
+        
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group.full { grid-column: 1 / -1; }
+        .form-group label { font-size: 14px; font-weight: 600; color: var(--secondary); }
+        .form-control { padding: 14px 16px; border: 1px solid var(--border); border-radius: 12px; font-size: 15px; font-family: inherit; background: var(--bg); transition: var(--transition); color: var(--text); }
+        .form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(67, 24, 255, 0.1); background: var(--surface); }
+        
+        .btn-primary { background: var(--primary); color: white; border: none; padding: 14px 24px; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; transition: var(--transition); display: inline-block; text-align: center; text-decoration: none; font-family: inherit;}
+        .btn-primary:hover { background: var(--secondary); box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+        .btn-danger { background: #FFECEB; color: var(--danger); border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; transition: var(--transition); }
+        .btn-danger:hover { background: var(--danger); color: white; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 16px 20px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
+        th { background: rgba(244, 247, 254, 0.5); color: var(--text-muted); font-size: 13px; text-transform: uppercase; font-weight: 600; border-bottom: 2px solid var(--border); }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(244, 247, 254, 0.3); }
+        
+        .status-badge { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-block; }
+        .status-pending { background: rgba(255, 206, 32, 0.15); color: #E5B200; }
+        .status-approved { background: rgba(1, 181, 116, 0.15); color: var(--success); }
+        .status-completed { background: rgba(67, 24, 255, 0.1); color: var(--primary); }
+        .status-rejected { background: #FFECEB; color: var(--danger); }
     </style>
 </head>
 <body>
@@ -137,7 +164,7 @@
         </div>
         
         <nav>
-            <a class="nav-item active" href="customer-dashboard.html">
+            <a class="nav-item" href="customer-dashboard.html">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"></rect><rect x="14" y="3" width="7" height="5" rx="1"></rect><rect x="14" y="12" width="7" height="9" rx="1"></rect><rect x="3" y="16" width="7" height="5" rx="1"></rect></svg>
                 Dashboard
             </a>
@@ -161,7 +188,7 @@
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                 Reviews
             </a>
-            <a class="nav-item" href="customer-history.html">
+            <a class="nav-item active" href="customer-history.html">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                 Digital History
             </a>
@@ -174,7 +201,7 @@
 
     <main class="main-content">
         <header class="header">
-            <h1 class="header-title">Dashboard</h1>
+            <h1 class="header-title">History</h1>
             <div class="header-actions">
                 <div class="user-profile">
                     <div class="user-avatar" id="avatarInitial">U</div>
@@ -185,85 +212,142 @@
         </header>
 
         <div class="content-area">
-            
-            <div class="welcome-banner">
-                <h2 id="welcomeGreeting">Welcome to DriveSewa!</h2>
-                <p>Your premium vehicle service management portal. Book appointments, request out-of-stock parts, access your digital history, or run an AI Diagnostic scan all in one place.</p>
+            <!-- Purchase History Card -->
+            <div class="card">
+                <h3 class="card-title">Past Purchases</h3>
+                <div id="purchasesContainer">
+                    <p style="padding: 20px;">Loading purchases...</p>
+                </div>
             </div>
-            
-            <div class="modules-grid">
-                
-                <a href="customer-appointments.html" class="module-card c-blue">
-                    <div class="module-icon-wrapper">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                    </div>
-                    <h3>Book Appointments</h3>
-                    <p>Schedule your vehicle's routine maintenance or repair service at your preferred time.</p>
-                    <div class="module-btn">
-                        Schedule Now
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                    </div>
-                </a>
 
-                <a href="customer-ai.html" class="module-card c-purple">
-                    <div class="module-icon-wrapper">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-                    </div>
-                    <h3>AI Diagnostics</h3>
-                    <p>Describe your car's symptoms and let our advanced AI pinpoint the exact issue instantly.</p>
-                    <div class="module-btn">
-                        Start Scan
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                    </div>
-                </a>
-
-                <a href="customer-part-requests.html" class="module-card c-orange">
-                    <div class="module-icon-wrapper">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
-                    </div>
-                    <h3>Request Parts</h3>
-                    <p>Can't find a specific part? Send a request to our staff to import it directly for you.</p>
-                    <div class="module-btn">
-                        Request Item
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                    </div>
-                </a>
-
-                <a href="customer-history.html" class="module-card c-green">
-                    <div class="module-icon-wrapper">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                    </div>
-                    <h3>Digital History</h3>
-                    <p>Access all your previous invoices, track pending payments, and view service records.</p>
-                    <div class="module-btn">
-                        View Records
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                    </div>
-                </a>
-
+            <!-- Service History Card -->
+            <div class="card">
+                <h3 class="card-title">Past Services</h3>
+                <div id="servicesContainer">
+                    <p style="padding: 20px;">Loading services...</p>
+                </div>
             </div>
         </div>
     </main>
 
     <script>
+        const apiBaseUrl = window.location.origin.includes('5178') ? window.location.origin + '/api' : 'http://localhost:5178/api';
         let customerData = null;
+        let customerId = null;
 
         window.onload = () => {
             const stored = localStorage.getItem('driveSewaCustomer') || localStorage.getItem('driveSewaUser');
             if(!stored) { window.location.href = '../../public/login.html'; return; }
             customerData = JSON.parse(stored);
-            if(!customerData.role || customerData.role.toLowerCase() !== 'customer') { logout(); return; }
+            if(customerData.role !== 'Customer') { logout(); return; }
+            
+            customerId = customerData.customerId || customerData.userId;
             
             const fullName = customerData.fullName || "User";
-            document.getElementById('headerName').textContent = fullName;
-            document.getElementById('avatarInitial').textContent = fullName.charAt(0).toUpperCase();
-            document.getElementById('welcomeGreeting').textContent = "Welcome back, " + fullName.split(' ')[0] + "!";
+            if(document.getElementById('headerName')) document.getElementById('headerName').textContent = fullName;
+            if(document.getElementById('avatarInitial')) document.getElementById('avatarInitial').textContent = fullName.charAt(0).toUpperCase();
+
+            loadHistory();
         };
 
         function logout() {
             localStorage.removeItem('driveSewaUser');
             localStorage.removeItem('driveSewaCustomer');
             window.location.href = '../../public/login.html';
+        }
+
+        async function loadHistory() {
+            try {
+                const token = customerData.token;
+                const res = await fetch(`${apiBaseUrl}/customerhistory/${customerId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    
+                    // Render Purchases
+                    const pContainer = document.getElementById('purchasesContainer');
+                    if (data.purchases.length === 0) {
+                        pContainer.innerHTML = '<p style="padding: 20px;">No past purchases found.</p>';
+                    } else {
+                        pContainer.innerHTML = `
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Invoice No</th>
+                                        <th>Items Purchased</th>
+                                        <th>Total Paid</th>
+                                        <th>Payment</th>
+                                        <th>Due Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${data.purchases.map(p => `
+                                        <tr>
+                                            <td>${new Date(p.purchaseDate).toLocaleDateString()}</td>
+                                            <td><span style="font-weight: 600; color: var(--primary);">${p.invoiceNo}</span></td>
+                                            <td>
+                                                <ul class="item-list" style="list-style: none;">
+                                                    ${p.items.map(i => `<li>${i.quantity}x ${i.partName}</li>`).join('')}
+                                                </ul>
+                                            </td>
+                                            <td style="font-weight: 600;">Rs. ${p.finalTotal.toFixed(2)}
+                                                ${p.isDiscountApplied ? `<br><small style="color:var(--danger)">- Rs. ${p.discountAmount.toFixed(2)}</small>` : ''}
+                                            </td>
+                                            <td>
+                                                <span class="status-badge status-${p.paymentStatus.toLowerCase()}">${p.paymentStatus}</span><br>
+                                                <small style="color:var(--text-muted)">${p.paymentMethod || '-'}</small>
+                                            </td>
+                                            <td>${p.paymentStatus === 'Pending' ? new Date(p.dueDate).toLocaleDateString() : '-'}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        `;
+                    }
+
+                    // Render Services
+                    const sContainer = document.getElementById('servicesContainer');
+                    if (data.services.length === 0) {
+                        sContainer.innerHTML = '<p style="padding: 20px;">No past services found.</p>';
+                    } else {
+                        sContainer.innerHTML = `
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Vehicle</th>
+                                        <th>Service Type</th>
+                                        <th>Notes</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${data.services.map(s => `
+                                        <tr>
+                                            <td>${new Date(s.serviceDate).toLocaleDateString()}</td>
+                                            <td style="font-weight: 600;">${s.vehicle}</td>
+                                            <td>${s.serviceType}</td>
+                                            <td style="color: var(--text-muted); font-size: 13px;">${s.description || '-'}</td>
+                                            <td><span class="status-badge status-${s.status.toLowerCase()}">${s.status}</span></td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        `;
+                    }
+                } else {
+                    document.getElementById('purchasesContainer').innerHTML = '<p style="color:red;">Error loading history.</p>';
+                    document.getElementById('servicesContainer').innerHTML = '';
+                }
+            } catch (err) {
+                console.error(err);
+                document.getElementById('purchasesContainer').innerHTML = '<p style="color:red;">Network error loading history.</p>';
+            }
         }
     </script>
 </body>

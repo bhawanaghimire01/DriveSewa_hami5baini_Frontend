@@ -1,11 +1,371 @@
-﻿<!DOCTYPE html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <title>DriveSewa</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveSewa | Next-Gen Automotive Care</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --accent: #8b5cf6;
+            --dark: #0f172a;
+            --darker: #020617;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--darker);
+            color: var(--light);
+            overflow-x: hidden;
+        }
+
+        /* ----- NAVIGATION ----- */
+        nav {
+            position: fixed;
+            top: 0; width: 100%;
+            padding: 20px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(2, 6, 23, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-links { display: flex; gap: 20px; align-items: center; }
+        
+        .btn-outline {
+            padding: 10px 24px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 50px;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .btn-outline:hover { background: rgba(255,255,255,0.1); }
+
+        .btn-solid {
+            padding: 10px 24px;
+            background: linear-gradient(to right, var(--primary), #6366f1);
+            border-radius: 50px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        .btn-solid:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5); }
+
+        /* ----- HERO SECTION ----- */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, rgba(0,0,0,0) 70%);
+            top: -100px; left: -200px;
+            border-radius: 50%; z-index: -1;
+        }
+        .hero::after {
+            content: '';
+            position: absolute;
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(139,92,246,0.15) 0%, rgba(0,0,0,0) 70%);
+            bottom: 100px; right: -100px;
+            border-radius: 50%; z-index: -1;
+        }
+
+        .hero-badge {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .hero h1 {
+            font-size: 4.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            max-width: 900px;
+            animation: fadeInUp 0.8s ease-out 0.2s backwards;
+        }
+        .hero h1 span {
+            background: linear-gradient(to right, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--gray);
+            max-width: 600px;
+            margin-bottom: 40px;
+            line-height: 1.6;
+            animation: fadeInUp 0.8s ease-out 0.4s backwards;
+        }
+
+        .hero-btns {
+            display: flex; gap: 16px;
+            animation: fadeInUp 0.8s ease-out 0.6s backwards;
+        }
+
+        .hero-btns .btn-solid { padding: 16px 32px; font-size: 1.1rem; }
+        .hero-btns .btn-outline { padding: 16px 32px; font-size: 1.1rem; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ----- FEATURES SECTION ----- */
+        .features {
+            padding: 100px 5%;
+            background: var(--dark);
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .section-header { text-align: center; margin-bottom: 60px; }
+        .section-header h2 { font-size: 2.5rem; font-weight: 700; margin-bottom: 16px; }
+        .section-header p { color: var(--gray); font-size: 1.1rem; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 40px 30px;
+            border-radius: 20px;
+            transition: all 0.4s;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            transform: translateY(-10px);
+            border-color: rgba(59, 130, 246, 0.3);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .icon {
+            font-size: 40px;
+            margin-bottom: 24px;
+            display: inline-block;
+        }
+
+        .card h3 { font-size: 1.4rem; margin-bottom: 12px; font-weight: 700; }
+        .card p { color: var(--gray); line-height: 1.6; font-size: 0.95rem; }
+
+        /* ----- HOW IT WORKS ----- */
+        .workflow {
+            padding: 100px 5%;
+            background: var(--darker);
+            position: relative;
+        }
+
+        .steps {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            max-width: 1000px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
+
+        .step {
+            flex: 1;
+            min-width: 250px;
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 60px; height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; font-weight: 800;
+            margin: 0 auto 24px;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .step h3 { font-size: 1.3rem; margin-bottom: 12px; }
+        .step p { color: var(--gray); font-size: 0.95rem; line-height: 1.5; }
+
+        /* ----- CTA SECTION ----- */
+        .cta {
+            padding: 100px 5%;
+            text-align: center;
+            background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
+            border-top: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .cta h2 { font-size: 3rem; margin-bottom: 20px; font-weight: 800; }
+        .cta p { color: var(--gray); font-size: 1.2rem; margin-bottom: 40px; }
+
+        /* ----- FOOTER ----- */
+        footer {
+            padding: 40px 5%;
+            background: var(--darker);
+            text-align: center;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 3rem; }
+            .hero p { font-size: 1.1rem; }
+            .hero-btns { flex-direction: column; width: 100%; max-width: 300px; }
+            .nav-links { display: none; }
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to DriveSewa</h1>
-    <a href="public/login.html" style="display:inline-block; padding:10px 20px; background-color:green; color:white; text-decoration:none; border-radius:5px;">Start (Login)</a>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="#" class="logo">DriveSewa.</a>
+        <div class="nav-links">
+            <a href="public/login.html" class="btn-outline">Sign In</a>
+            <a href="public/register.html" class="btn-solid">Get Started</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-badge">🚀 The Future of Auto Maintenance</div>
+        <h1>Next-Generation <br><span>Automotive Care</span></h1>
+        <p>Experience seamless vehicle maintenance, intelligent AI diagnostics, and a massive genuine parts inventory all in one powerful platform.</p>
+        <div class="hero-btns">
+            <a href="public/register.html" class="btn-solid">Register Your Vehicle</a>
+            <a href="#features" class="btn-outline">Explore Features</a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="section-header">
+            <h2>Why Choose DriveSewa?</h2>
+            <p>We provide a completely integrated ecosystem for your vehicle.</p>
+        </div>
+        <div class="grid">
+            <div class="card">
+                <span class="icon">🤖</span>
+                <h3>AI Diagnostics</h3>
+                <p>Input your vehicle's mileage and symptoms. Our advanced Gemini AI will instantly predict potential part failures and assess risk levels.</p>
+            </div>
+            <div class="card">
+                <span class="icon">📅</span>
+                <h3>Smart Appointments</h3>
+                <p>No more waiting in line. Schedule repairs, routine services, or inspections directly from your personalized dashboard.</p>
+            </div>
+            <div class="card">
+                <span class="icon">🔧</span>
+                <h3>Genuine Parts</h3>
+                <p>Access our real-time inventory of verified auto parts. Can't find what you need? Submit a custom part request instantly.</p>
+            </div>
+            <div class="card">
+                <span class="icon">📊</span>
+                <h3>Digital History</h3>
+                <p>Say goodbye to paper receipts. Track every repair, invoice, and part replaced over the entire lifetime of your vehicle.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Workflow Section -->
+    <section class="workflow">
+        <div class="section-header">
+            <h2>How It Works</h2>
+            <p>Three simple steps to smarter vehicle management.</p>
+        </div>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Create Account</h3>
+                <p>Sign up securely and add your car, truck, or motorcycle details to your digital garage.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>Run Diagnostics</h3>
+                <p>Notice a weird noise? Run our AI analysis to see what might be wrong before booking.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Book & Relax</h3>
+                <p>Schedule your service with our expert staff. We handle the parts, repairs, and digital invoicing.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <h2>Ready to upgrade your ride?</h2>
+        <p>Join hundreds of customers already using DriveSewa.</p>
+        <a href="public/register.html" class="btn-solid" style="padding: 16px 40px; font-size: 1.2rem;">Create Free Account</a>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 DriveSewa Automotive Systems. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
 </body>
-</html></html>
+</html>

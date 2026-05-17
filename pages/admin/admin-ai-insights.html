@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI System Insights - Admin</title>
+    <style>
+        :root {
+            --bg: #f5f7fb;
+            --surface: #ffffff;
+            --surface-soft: #f8fafc;
+            --primary: #174ea6;
+            --primary-dark: #123f84;
+            --text: #172033;
+            --muted: #667085;
+            --border: #dfe5ef;
+            --danger: #c62828;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --shadow: 0 16px 36px rgba(23, 32, 51, 0.08);
+        }
+
+        * { box-sizing: border-box; }
+
+        body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--text); font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
+        .dashboard { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
+        .sidebar { background: var(--surface); border-right: 1px solid var(--border); padding: 24px 18px; display: flex; flex-direction: column; gap: 26px; }
+        .brand { padding: 0 10px 20px; border-bottom: 1px solid var(--border); }
+        .brand-title { margin: 0; font-size: 24px; font-weight: 800; color: var(--primary); }
+        .brand-subtitle { margin: 6px 0 0; font-size: 13px; color: var(--muted); }
+
+        .side-nav { display: grid; gap: 10px; }
+        .nav-link { display: grid; grid-template-columns: 38px 1fr; gap: 12px; align-items: center; padding: 13px 12px; border-radius: 8px; color: var(--text); text-decoration: none; border: 1px solid transparent; }
+        .nav-link:hover { background: var(--surface-soft); border-color: var(--border); }
+        .nav-link.active { background: #eaf2ff; border-color: #b8d2ff; color: var(--primary); }
+        .nav-icon { width: 38px; height: 38px; border-radius: 8px; display: grid; place-items: center; background: var(--surface-soft); font-weight: 800; }
+        .nav-title { display: block; font-size: 15px; font-weight: 700; }
+
+        .main { display: flex; flex-direction: column; min-width: 0; }
+        .topbar { height: 76px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; }
+        .page-title { margin: 0; font-size: 24px; font-weight: 800; }
+        .top-actions { display: flex; align-items: center; gap: 14px; }
+        .logout-btn { border: 1px solid #f1b9b9; background: #fff5f5; color: var(--danger); border-radius: 8px; padding: 11px 16px; font-size: 14px; font-weight: 800; cursor: pointer; }
+
+        .content { padding: 32px; flex: 1; }
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; box-shadow: var(--shadow); }
+
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 16px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
+        th { font-weight: 600; color: var(--muted); background: var(--surface-soft); text-transform: uppercase; font-size: 12px; }
+        tr:hover td { background: var(--surface-soft); }
+
+        .badge { padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; display: inline-block; }
+        .badge.high { background: #fef2f2; color: var(--danger); border: 1px solid #fca5a5; }
+        .badge.medium { background: #fffbeb; color: var(--warning); border: 1px solid #fcd34d; }
+        .badge.low { background: #f0fdf4; color: var(--success); border: 1px solid #86efac; }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="brand">
+                <h2 class="brand-title">DriveSewa</h2>
+                <p class="brand-subtitle">Admin Operations</p>
+            </div>
+            <nav class="side-nav">
+                <a class="nav-link" href="admin-dashboard.html"><span class="nav-icon">📊</span><span class="nav-title">Dashboard</span></a>
+                <a class="nav-link" href="staff-management.html"><span class="nav-icon">👥</span><span class="nav-title">Staff Management</span></a>
+                <a class="nav-link" href="parts-inventory.html"><span class="nav-icon">🔧</span><span class="nav-title">Parts Inventory</span></a>
+                <a class="nav-link" href="vendors.html"><span class="nav-icon">🏢</span><span class="nav-title">Vendors</span></a>
+                <a class="nav-link" href="purchase-invoice-list.html"><span class="nav-icon">📦</span><span class="nav-title">Purchase Invoices</span></a>
+                <a class="nav-link" href="financial-reports.html"><span class="nav-icon">📈</span><span class="nav-title">Financial Reports</span></a>
+                <a class="nav-link active" href="admin-ai-insights.html"><span class="nav-icon">🤖</span><span class="nav-title">AI Insights</span></a>
+            </nav>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <h1 class="page-title">AI System Insights</h1>
+                <div class="top-actions">
+                    <span class="welcome" id="welcomeText">Admin</span>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </header>
+
+            <section class="content">
+                <div class="card">
+                    <h3 style="margin-top:0;">Customer AI Diagnostics Logs</h3>
+                    <p style="color:var(--muted); margin-bottom: 24px;">View all AI vehicle predictions generated by customers in the system.</p>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Customer & Vehicle</th>
+                                <th>Predicted Risk Level</th>
+                                <th>Flagged Parts</th>
+                                <th>AI Reason</th>
+                            </tr>
+                        </thead>
+                        <tbody id="aiTableBody">
+                            <tr><td colspan="5" style="text-align:center;">Loading AI insights...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:5178/api';
+        let authToken = '';
+
+        window.onload = () => {
+            const userData = localStorage.getItem("driveSewaUser");
+            if (!userData) { window.location.href = "../../public/login.html"; return; }
+            const user = JSON.parse(userData);
+            if (!user || user.role !== "Admin") { window.location.href = "../../public/login.html"; return; }
+            
+            authToken = user.token;
+            document.getElementById("welcomeText").textContent = user.fullName || "Admin";
+            
+            loadAiInsights();
+        };
+
+        function logout() {
+            localStorage.removeItem("driveSewaUser");
+            window.location.href = "../../public/login.html";
+        }
+
+        async function loadAiInsights() {
+            try {
+                const res = await fetch(`${API_BASE_URL}/ai/predictions`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if (res.ok) {
+                    const predictions = await res.json();
+                    const tbody = document.getElementById('aiTableBody');
+                    
+                    if (predictions.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No AI predictions have been made by customers yet.</td></tr>';
+                        return;
+                    }
+
+                    tbody.innerHTML = predictions.map(p => {
+                        let badgeClass = 'low';
+                        const risk = p.riskLevel.toLowerCase();
+                        if (risk.includes('high')) badgeClass = 'high';
+                        else if (risk.includes('medium')) badgeClass = 'medium';
+
+                        return `
+                            <tr>
+                                <td>${new Date(p.predictionDate).toLocaleString()}</td>
+                                <td>
+                                    <strong>${p.customerName}</strong><br>
+                                    <span style="color:var(--muted); font-size:12px;">${p.vehicleInfo}</span>
+                                </td>
+                                <td><span class="badge ${badgeClass}">${p.riskLevel}</span></td>
+                                <td>${p.predictedParts}</td>
+                                <td style="max-width: 300px; line-height: 1.5; font-size: 13px;">${p.reason}</td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+            } catch (err) {
+                console.error('Error fetching AI insights:', err);
+            }
+        }
+    </script>
+</body>
+</html>

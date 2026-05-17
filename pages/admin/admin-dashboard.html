@@ -1,570 +1,506 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - DriveSewa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg: #f5f7fb;
-            --surface: #ffffff;
-            --surface-soft: #f8fafc;
-            --primary: #174ea6;
-            --primary-dark: #123f84;
-            --text: #172033;
-            --muted: #667085;
-            --border: #dfe5ef;
-            --danger: #c62828;
-            --shadow: 0 16px 36px rgba(23, 32, 51, 0.08);
+            --bg: #F4F7FE;
+            --surface: #FFFFFF;
+            --primary: #4318FF;
+            --primary-light: #F4F7FE;
+            --secondary: #11047A;
+            --text: #2B3674;
+            --text-muted: #A3AED0;
+            --border: #E0E5F2;
+            --danger: #EE5D50;
+            --success: #01B574;
+            --warning: #FFCE20;
+            --shadow-soft: 0px 18px 40px rgba(112, 144, 176, 0.12);
+            --shadow-hover: 0px 20px 40px rgba(67, 24, 255, 0.2);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            margin: 0;
-            min-height: 100vh;
+            font-family: 'Outfit', sans-serif;
             background: var(--bg);
             color: var(--text);
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        .dashboard {
-            display: grid;
-            grid-template-columns: 280px 1fr;
             min-height: 100vh;
+            display: flex;
         }
 
+        /* Sidebar Styles */
         .sidebar {
+            width: 290px;
             background: var(--surface);
-            border-right: 1px solid var(--border);
-            padding: 24px 18px;
+            padding: 30px 20px;
             display: flex;
             flex-direction: column;
-            gap: 26px;
+            border-right: 1px solid rgba(0,0,0,0.03);
+            box-shadow: 14px 17px 40px 4px rgba(112, 144, 176, 0.04);
+            z-index: 10;
         }
 
         .brand {
-            padding: 0 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 10px 30px;
             border-bottom: 1px solid var(--border);
+            margin-bottom: 30px;
+        }
+
+        .brand-logo {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--primary), #868CFF);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 4px 15px rgba(67, 24, 255, 0.3);
         }
 
         .brand-title {
-            margin: 0;
-            font-size: 24px;
+            font-size: 26px;
             font-weight: 800;
-            color: var(--primary);
+            color: var(--secondary);
+            letter-spacing: -0.5px;
         }
-
+        
         .brand-subtitle {
-            margin: 6px 0 0;
-            font-size: 13px;
-            color: var(--muted);
-        }
-
-        .side-nav {
-            display: grid;
-            gap: 10px;
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 2px;
         }
 
         .nav-link {
-            display: grid;
-            grid-template-columns: 38px 1fr;
-            gap: 12px;
+            display: flex;
             align-items: center;
-            padding: 13px 12px;
-            border-radius: 8px;
-            color: var(--text);
+            gap: 16px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            color: var(--text-muted);
             text-decoration: none;
-            border: 1px solid transparent;
-            transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+            font-weight: 600;
+            font-size: 15px;
+            transition: var(--transition);
+            margin-bottom: 8px;
+        }
+
+        .nav-link svg {
+            width: 22px;
+            height: 22px;
+            transition: var(--transition);
         }
 
         .nav-link:hover {
-            background: var(--surface-soft);
-            border-color: var(--border);
+            color: var(--primary);
+            background: rgba(67, 24, 255, 0.04);
         }
 
         .nav-link.active {
-            background: #eaf2ff;
-            border-color: #b8d2ff;
-            color: var(--primary);
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(67, 24, 255, 0.25);
         }
 
-        .nav-icon {
-            width: 38px;
-            height: 38px;
-            border-radius: 8px;
-            display: grid;
-            place-items: center;
-            background: var(--surface-soft);
-            color: currentColor;
-            font-weight: 800;
-        }
+        .nav-link.active svg { color: white; }
 
-        .nav-title {
-            display: block;
-            font-size: 15px;
-            font-weight: 700;
-        }
-
-        .nav-desc {
-            display: block;
-            margin-top: 3px;
-            font-size: 12px;
-            color: var(--muted);
-            line-height: 1.35;
-        }
-
+        /* Main Content */
         .main {
+            flex: 1;
             display: flex;
             flex-direction: column;
-            min-width: 0;
+            overflow-x: hidden;
         }
 
         .topbar {
-            height: 76px;
-            background: var(--surface);
-            border-bottom: 1px solid var(--border);
+            height: 100px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 32px;
+            padding: 0 40px;
+            background: rgba(244, 247, 254, 0.8);
+            backdrop-filter: blur(20px);
+            position: sticky;
+            top: 0;
+            z-index: 5;
         }
 
         .page-title {
-            margin: 0;
-            font-size: 24px;
-            font-weight: 800;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--secondary);
+            letter-spacing: -0.5px;
         }
 
         .top-actions {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 20px;
+            background: var(--surface);
+            padding: 8px 12px 8px 24px;
+            border-radius: 30px;
+            box-shadow: var(--shadow-soft);
         }
 
         .welcome {
-            color: var(--muted);
-            font-size: 14px;
+            color: var(--text);
             font-weight: 600;
+            font-size: 14px;
         }
 
-        .icon-button {
-            width: 42px;
-            height: 42px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            background: var(--surface);
-            color: var(--text);
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary-light);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            display: grid;
-            place-items: center;
             position: relative;
+            transition: var(--transition);
         }
+
+        .icon-btn:hover { background: var(--primary); color: white; }
 
         .notification-dot {
             position: absolute;
-            top: 9px;
+            top: 10px;
             right: 10px;
             width: 8px;
             height: 8px;
-            border-radius: 50%;
             background: var(--danger);
-            border: 2px solid var(--surface);
+            border-radius: 50%;
+            border: 2px solid white;
         }
 
         .logout-btn {
-            border: 1px solid #f1b9b9;
-            background: #fff5f5;
+            background: #FFECEB;
             color: var(--danger);
-            border-radius: 8px;
-            padding: 11px 16px;
-            font-size: 14px;
-            font-weight: 800;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 13px;
             cursor: pointer;
+            transition: var(--transition);
         }
 
-        .logout-btn:hover {
-            background: var(--danger);
-            border-color: var(--danger);
-            color: #ffffff;
-        }
+        .logout-btn:hover { background: var(--danger); color: white; }
 
-        .content {
-            padding: 32px;
-        }
+        .content { padding: 0 40px 40px; }
 
-        .welcome-panel {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 24px;
-            box-shadow: var(--shadow);
+        /* Welcome Banner */
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--primary) 0%, #868CFF 100%);
+            border-radius: 20px;
+            padding: 40px;
+            color: white;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 18px;
-            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-hover);
+            margin-bottom: 30px;
         }
 
-        .welcome-panel h2 {
-            margin: 0 0 8px;
-            font-size: 22px;
+        .welcome-banner::after {
+            content: '';
+            position: absolute;
+            right: -5%;
+            top: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
         }
 
-        .welcome-panel p {
-            margin: 0;
-            color: var(--muted);
-            line-height: 1.6;
-        }
+        .welcome-text h2 { font-size: 32px; margin-bottom: 10px; font-weight: 700; }
+        .welcome-text p { font-size: 16px; opacity: 0.9; max-width: 500px; line-height: 1.6; font-weight: 400;}
 
-        .status-pill {
-            flex: 0 0 auto;
-            border-radius: 999px;
-            background: #ecfdf3;
-            color: #087443;
-            border: 1px solid #b7e4c7;
-            padding: 9px 14px;
-            font-size: 13px;
-            font-weight: 800;
-        }
-
+        /* Dashboard Cards */
         .module-grid {
             display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 18px;
-            margin-bottom: 24px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
         }
 
         .module-card {
             background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 22px;
-            color: inherit;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: var(--shadow-soft);
             text-decoration: none;
-            box-shadow: 0 10px 28px rgba(23, 32, 51, 0.05);
-            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            color: var(--text);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            border: 1px solid transparent;
         }
 
         .module-card:hover {
-            transform: translateY(-3px);
-            border-color: #9bc2ff;
-            box-shadow: var(--shadow);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+            border-color: rgba(67, 24, 255, 0.1);
         }
 
-        .card-top {
+        .card-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 18px;
+            margin-bottom: 20px;
         }
 
-        .card-icon {
-            width: 46px;
-            height: 46px;
-            border-radius: 8px;
-            display: grid;
-            place-items: center;
-            background: #eaf2ff;
-            color: var(--primary);
-            font-size: 18px;
-            font-weight: 900;
-        }
-
-        .open-label {
-            color: var(--primary);
-            font-size: 13px;
-            font-weight: 800;
-        }
-
-        .module-card h3 {
-            margin: 0 0 8px;
-            font-size: 18px;
-        }
-
-        .module-card p {
-            margin: 0;
-            color: var(--muted);
-            line-height: 1.55;
-            font-size: 14px;
-        }
-
-        .table-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .table-header {
-            padding: 18px 22px;
-            border-bottom: 1px solid var(--border);
+        .card-icon-wrapper {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 16px;
+            justify-content: center;
         }
+        
+        .card-icon-wrapper svg { width: 28px; height: 28px; }
 
-        .table-header h2 {
-            margin: 0;
-            font-size: 18px;
+        .c-purple { background: rgba(67, 24, 255, 0.08); color: var(--primary); }
+        .c-green { background: rgba(1, 181, 116, 0.08); color: var(--success); }
+        .c-orange { background: rgba(255, 206, 32, 0.15); color: #E5B200; }
+        .c-red { background: rgba(238, 93, 80, 0.08); color: var(--danger); }
+
+        .arrow-icon {
+            color: var(--text-muted);
+            transition: var(--transition);
         }
-
-        .table-header span {
-            color: var(--muted);
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th,
-        td {
-            padding: 16px 22px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-            font-size: 14px;
-            vertical-align: top;
-        }
-
-        th {
-            background: var(--surface-soft);
-            color: var(--muted);
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-        }
-
-        tr:last-child td {
-            border-bottom: 0;
-        }
-
-        .table-link {
+        
+        .module-card:hover .arrow-icon {
             color: var(--primary);
-            font-weight: 800;
-            text-decoration: none;
+            transform: translateX(4px);
         }
 
-        .table-link:hover {
-            color: var(--primary-dark);
-            text-decoration: underline;
-        }
+        .module-card h3 { font-size: 20px; font-weight: 700; color: var(--secondary); margin-bottom: 8px; }
+        .module-card p { font-size: 14px; color: var(--text-muted); line-height: 1.5; font-weight: 500; }
 
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border: 0;
+        /* Notification Modal */
+        #notificationModal {
+            display: none; position: absolute; top: 80px; right: 40px; width: 340px;
+            background: var(--surface); border-radius: 20px; box-shadow: var(--shadow-hover);
+            z-index: 100; padding: 20px; overflow: hidden; border: 1px solid var(--border);
+            animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
+        #notificationModal h3 { font-size: 16px; font-weight: 700; color: var(--secondary); margin-bottom: 15px; }
+        .noti-item { padding: 12px; background: #FFECEB; border-radius: 12px; margin-bottom: 10px; border-left: 4px solid var(--danger); }
+        .noti-item strong { color: var(--danger); display: block; font-size: 14px; margin-bottom: 4px;}
+        .noti-item span { color: #555; font-size: 12px; font-weight: 500;}
+
+        /* Responsive */
         @media (max-width: 1024px) {
-            .dashboard {
-                grid-template-columns: 1fr;
-            }
-
-            .sidebar {
-                border-right: 0;
-                border-bottom: 1px solid var(--border);
-            }
-
-            .side-nav,
-            .module-grid {
-                grid-template-columns: repeat(3, minmax(0, 1fr));
-            }
+            .sidebar { width: 220px; }
         }
-
-        @media (max-width: 760px) {
-            .topbar,
-            .welcome-panel {
-                align-items: flex-start;
-                flex-direction: column;
-                height: auto;
-            }
-
-            .topbar {
-                padding: 20px;
-            }
-
-            .content {
-                padding: 20px;
-            }
-
-            .side-nav,
-            .module-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .welcome {
-                width: 100%;
-            }
-
-            .table-card {
-                overflow-x: auto;
-            }
-
-            table {
-                min-width: 720px;
-            }
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; border-bottom: 1px solid var(--border); }
+            .topbar { padding: 20px; flex-direction: column; height: auto; gap: 20px; }
+            .content { padding: 20px; }
         }
     </style>
 </head>
-
 <body>
-    <div class="dashboard">
-        <aside class="sidebar" aria-label="Admin navigation">
-            <div class="brand">
-                <h2 class="brand-title">DriveSewa</h2>
-                <p class="brand-subtitle">Administration workspace</p>
+
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                    <path d="M2 12h20"></path>
+                </svg>
+            </div>
+            <div>
+                <div class="brand-title">DriveSewa</div>
+                <div class="brand-subtitle">Administration</div>
+            </div>
+        </div>
+
+        <nav class="side-nav">
+            <a href="admin-dashboard.html" class="nav-link active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"></rect><rect x="14" y="3" width="7" height="5" rx="1"></rect><rect x="14" y="12" width="7" height="9" rx="1"></rect><rect x="3" y="16" width="7" height="5" rx="1"></rect></svg>
+                Dashboard
+            </a>
+            <a href="staff-management.html" class="nav-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                Staff Management
+            </a>
+            <a href="parts-inventory.html" class="nav-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                Parts Inventory
+            </a>
+            <a href="purchase-invoice-list.html" class="nav-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                Purchase Invoices
+            </a>
+            <a href="vendors.html" class="nav-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                Vendor Management
+            </a>
+            <a href="financial-reports.html" class="nav-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                Financial Reports
+            </a>
+        </nav>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <h1 class="page-title">Main Dashboard</h1>
+            
+            <div class="top-actions">
+                <button class="icon-btn" id="notificationBtn" aria-label="Notifications">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                    <span class="notification-dot" id="notificationDot" style="display:none;"></span>
+                </button>
+                <div style="width:1px; height:24px; background:var(--border);"></div>
+                <span class="welcome" id="welcomeText">Admin</span>
+                <button class="logout-btn" id="logoutButton">Log Out</button>
+            </div>
+        </header>
+
+        <!-- Notification Dropdown -->
+        <div id="notificationModal">
+            <h3>Alerts & Notifications</h3>
+            <div id="notificationList" style="font-size:13px; color:var(--text-muted); font-weight:500;">Everything looks good!</div>
+        </div>
+
+        <section class="content">
+            <!-- Welcome Banner -->
+            <div class="welcome-banner">
+                <div class="welcome-text">
+                    <h2 id="welcomeHeading">Welcome back!</h2>
+                    <p>DriveSewa Administration Control Center. Monitor your stock levels, manage staff permissions, and process purchase invoices from a single workspace.</p>
+                </div>
             </div>
 
-            <nav class="side-nav">
-                <a class="nav-link active" href="admin-dashboard.html" aria-current="page">
-                    <span class="nav-icon">AD</span>
-                    <span>
-                        <span class="nav-title">Admin Dashboard</span>
-                        <span class="nav-desc">Overview and module access</span>
-                    </span>
-                </a>
-                <a class="nav-link" href="staff-management.html">
-                    <span class="nav-icon">SM</span>
-                    <span>
-                        <span class="nav-title">Staff Management</span>
-                        <span class="nav-desc">Manage staff registration and roles</span>
-                    </span>
-                </a>
-                <a class="nav-link" href="parts-inventory.html">
-                    <span class="nav-icon">PI</span>
-                    <span>
-                        <span class="nav-title">Parts Inventory</span>
-                        <span class="nav-desc">Manage vehicle parts</span>
-                    </span>
-                </a>
-                <a class="nav-link" href="purchase-invoice-list.html">
-                    <span class="nav-icon">IN</span>
-                    <span>
-                        <span class="nav-title">Purchase Invoices</span>
-                        <span class="nav-desc">Create invoices and update stock</span>
-                    </span>
-                </a>
-            </nav>
-        </aside>
-
-        <main class="main">
-            <header class="topbar">
-                <h1 class="page-title">Admin Dashboard</h1>
-                <div class="top-actions">
-                    <span class="welcome" id="welcomeText">Welcome, Admin</span>
-                    <button class="icon-button" type="button" title="Notifications" aria-label="Notifications">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <path d="M15 17H9M18 10.5C18 7.2 15.3 4.5 12 4.5C8.7 4.5 6 7.2 6 10.5V14L4.5 16.5H19.5L18 14V10.5Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-                            <path d="M10 19C10.4 19.6 11.1 20 12 20C12.9 20 13.6 19.6 14 19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-                        </svg>
-                        <span class="notification-dot"></span>
-                    </button>
-                    <button class="logout-btn" type="button" id="logoutButton">Logout</button>
+            <!-- Summary Cards -->
+            <div class="summary-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                <div class="module-card" style="padding: 20px;">
+                    <div style="font-size: 13px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 8px;">Total Sales</div>
+                    <div id="statSales" style="font-size: 24px; font-weight: 800; color: var(--primary);">Loading...</div>
                 </div>
-            </header>
+                <div class="module-card" style="padding: 20px;">
+                    <div style="font-size: 13px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 8px;">Total Purchases</div>
+                    <div id="statPurchases" style="font-size: 24px; font-weight: 800; color: var(--danger);">Loading...</div>
+                </div>
+                <div class="module-card" style="padding: 20px;">
+                    <div style="font-size: 13px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 8px;">Total Profit</div>
+                    <div id="statProfit" style="font-size: 24px; font-weight: 800; color: var(--success);">Loading...</div>
+                </div>
+                <div class="module-card" style="padding: 20px;">
+                    <div style="font-size: 13px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 8px;">Total Staff</div>
+                    <div id="statStaff" style="font-size: 24px; font-weight: 800; color: var(--secondary);">Loading...</div>
+                </div>
+                <div class="module-card" style="padding: 20px;">
+                    <div style="font-size: 13px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 8px;">Total Customers</div>
+                    <div id="statCustomers" style="font-size: 24px; font-weight: 800; color: var(--secondary);">Loading...</div>
+                </div>
+                <div class="module-card" style="padding: 20px;">
+                    <div style="font-size: 13px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 8px;">Total Vendors</div>
+                    <div id="statVendors" style="font-size: 24px; font-weight: 800; color: var(--secondary);">Loading...</div>
+                </div>
+                <div class="module-card" style="padding: 20px; border-left: 4px solid var(--danger);">
+                    <div style="font-size: 13px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 8px;">Low Stock Parts</div>
+                    <div id="statLowStock" style="font-size: 24px; font-weight: 800; color: var(--danger);">Loading...</div>
+                </div>
+                <div class="module-card" style="padding: 20px; border-left: 4px solid var(--warning);">
+                    <div style="font-size: 13px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 8px;">Pending Credits</div>
+                    <div id="statPending" style="font-size: 24px; font-weight: 800; color: #E5B200;">Loading...</div>
+                </div>
+            </div>
 
-            <section class="content">
-                <div class="welcome-panel">
-                    <div>
-                        <h2 id="welcomeHeading">Welcome back, Admin</h2>
-                        <p>Use this dashboard to open the core administration modules for staff, parts stock, and purchase invoices.</p>
+            <!-- Chart Section -->
+            <div class="card" style="background: var(--surface); padding: 24px; border-radius: 20px; box-shadow: var(--shadow-soft); margin-bottom: 30px;">
+                <h3 style="font-size: 20px; font-weight: 700; color: var(--secondary); margin-bottom: 20px;">Financial Overview</h3>
+                <div style="height: 300px; width: 100%;">
+                    <canvas id="financialChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Modules Grid -->
+            <div class="module-grid">
+                
+                <a href="staff-management.html" class="module-card">
+                    <div class="card-header">
+                        <div class="card-icon-wrapper c-purple">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        </div>
+                        <svg class="arrow-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                     </div>
-                    <span class="status-pill">Admin Access</span>
-                </div>
+                    <h3>Staff Management</h3>
+                    <p>Register new employees, update details, and manage system access roles.</p>
+                </a>
 
-                <div class="module-grid" aria-label="Admin modules">
-                    <a class="module-card" href="staff-management.html">
-                        <div class="card-top">
-                            <span class="card-icon">SM</span>
-                            <span class="open-label">Open</span>
+                <a href="parts-inventory.html" class="module-card">
+                    <div class="card-header">
+                        <div class="card-icon-wrapper c-orange">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
                         </div>
-                        <h3>Staff Management</h3>
-                        <p>Manage staff registration and roles</p>
-                    </a>
-
-                    <a class="module-card" href="parts-inventory.html">
-                        <div class="card-top">
-                            <span class="card-icon">PI</span>
-                            <span class="open-label">Open</span>
-                        </div>
-                        <h3>Parts Inventory</h3>
-                        <p>Add, edit, delete, and manage vehicle parts</p>
-                    </a>
-
-                    <a class="module-card" href="purchase-invoice-list.html">
-                        <div class="card-top">
-                            <span class="card-icon">IN</span>
-                            <span class="open-label">Open</span>
-                        </div>
-                        <h3>Purchase Invoices</h3>
-                        <p>Create purchase invoices and update stock</p>
-                    </a>
-                </div>
-
-                <div class="table-card">
-                    <div class="table-header">
-                        <h2>Administration Modules</h2>
-                        <span>Active menu: Admin Dashboard</span>
+                        <svg class="arrow-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                     </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Module</th>
-                                <th>Description</th>
-                                <th>Page</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Staff Management</td>
-                                <td>Manage staff registration and roles</td>
-                                <td><a class="table-link" href="staff-management.html">Open Staff Management</a></td>
-                            </tr>
-                            <tr>
-                                <td>Parts Inventory</td>
-                                <td>Add, edit, delete, and manage vehicle parts</td>
-                                <td><a class="table-link" href="parts-inventory.html">Open Parts Inventory</a></td>
-                            </tr>
-                            <tr>
-                                <td>Purchase Invoices</td>
-                                <td>Create purchase invoices and update stock</td>
-                                <td><a class="table-link" href="purchase-invoice-list.html">Open Purchase Invoices</a></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-        </main>
-    </div>
+                    <h3>Parts Inventory</h3>
+                    <p>Track stock quantities, update pricing, and monitor critical inventory levels.</p>
+                </a>
+
+                <a href="purchase-invoice-list.html" class="module-card">
+                    <div class="card-header">
+                        <div class="card-icon-wrapper c-green">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        </div>
+                        <svg class="arrow-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </div>
+                    <h3>Purchase Invoices</h3>
+                    <p>Process vendor orders, replenish low stock, and generate billing documents.</p>
+                </a>
+
+                <a href="financial-reports.html" class="module-card">
+                    <div class="card-header">
+                        <div class="card-icon-wrapper c-red">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                        </div>
+                        <svg class="arrow-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </div>
+                    <h3>Financial Reports</h3>
+                    <p>Analyze revenue streams, profit margins, and detailed financial performance data.</p>
+                </a>
+
+            </div>
+        </section>
+    </main>
 
     <script>
         (function () {
             const loginPage = "/public/login.html";
             const userData = localStorage.getItem("driveSewaUser");
 
-            function redirectToLogin() {
-                window.location.href = loginPage;
-            }
+            function redirectToLogin() { window.location.href = loginPage; }
 
-            if (!userData) {
-                redirectToLogin();
-                return;
-            }
+            if (!userData) { redirectToLogin(); return; }
 
             let user;
             try {
@@ -581,15 +517,92 @@
             }
 
             const adminName = user.fullName || user.name || "Admin";
-            document.getElementById("welcomeText").textContent = "Welcome, " + adminName;
-            document.getElementById("welcomeHeading").textContent = "Welcome back, " + adminName;
+            document.getElementById("welcomeText").textContent = adminName;
+            document.getElementById("welcomeHeading").textContent = "Welcome back, " + adminName.split(' ')[0] + "!";
 
             document.getElementById("logoutButton").addEventListener("click", function () {
                 localStorage.removeItem("driveSewaUser");
                 redirectToLogin();
             });
+
+            // Dashboard Summary Logic
+            async function fetchSummary() {
+                try {
+                    const res = await fetch('http://localhost:5178/api/admin-dashboard/summary', {
+                        headers: { 'Authorization': `Bearer ${user.token}` }
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        document.getElementById('statSales').textContent = `Rs. ${data.totalSales.toFixed(2)}`;
+                        document.getElementById('statPurchases').textContent = `Rs. ${data.totalPurchases.toFixed(2)}`;
+                        document.getElementById('statProfit').textContent = `Rs. ${data.totalProfit.toFixed(2)}`;
+                        document.getElementById('statStaff').textContent = data.totalStaff;
+                        document.getElementById('statCustomers').textContent = data.totalCustomers;
+                        document.getElementById('statVendors').textContent = data.totalVendors;
+                        document.getElementById('statLowStock').textContent = data.lowStockCount;
+                        document.getElementById('statPending').textContent = data.pendingCreditsCount;
+
+                        // Render Chart
+                        const ctx = document.getElementById('financialChart').getContext('2d');
+                        new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: ['Total Sales', 'Total Purchases', 'Total Profit'],
+                                datasets: [{
+                                    label: 'Financials (Rs.)',
+                                    data: [data.totalSales, data.totalPurchases, data.totalProfit],
+                                    backgroundColor: ['rgba(67, 24, 255, 0.7)', 'rgba(238, 93, 80, 0.7)', 'rgba(1, 181, 116, 0.7)'],
+                                    borderColor: ['#4318FF', '#EE5D50', '#01B574'],
+                                    borderWidth: 1,
+                                    borderRadius: 6
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                scales: { y: { beginAtZero: true } },
+                                plugins: { legend: { display: false } }
+                            }
+                        });
+                    }
+                } catch (e) { console.error('Failed to load dashboard summary', e); }
+            }
+
+            // Notifications Logic
+            async function fetchNotifications() {
+                try {
+                    const res = await fetch('http://localhost:5178/api/notifications/low-stock', {
+                        headers: { 'Authorization': `Bearer ${user.token}` }
+                    });
+                    if (res.ok) {
+                        const notifications = await res.json();
+                        const dot = document.getElementById('notificationDot');
+                        const list = document.getElementById('notificationList');
+                        
+                        if (notifications.length > 0) {
+                            dot.style.display = 'block';
+                            list.innerHTML = notifications.map(n => `<div class="noti-item"><strong>${n.partName}</strong><span>Only ${n.stockQuantity} left in stock!</span></div>`).join('');
+                        } else {
+                            dot.style.display = 'none';
+                            list.innerHTML = 'All stock levels are sufficient.';
+                        }
+                    }
+                } catch (e) { console.error('Failed to load notifications', e); }
+            }
+
+            const modal = document.getElementById('notificationModal');
+            document.getElementById('notificationBtn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                modal.style.display = modal.style.display === 'none' || modal.style.display === '' ? 'block' : 'none';
+            });
+            
+            document.body.addEventListener('click', () => { modal.style.display = 'none'; });
+            modal.addEventListener('click', (e) => e.stopPropagation());
+
+            fetchNotifications();
+            fetchSummary();
+            setInterval(fetchNotifications, 60000);
         })();
     </script>
 </body>
-
 </html>

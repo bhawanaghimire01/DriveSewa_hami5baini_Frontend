@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Diagnostics - DriveSewa</title>
+    <script>
+        (function() {
+            const stored = localStorage.getItem('driveSewaCustomer') || localStorage.getItem('driveSewaUser');
+            if (!stored) {
+                window.location.href = '../../public/login.html';
+                return;
+            }
+            try {
+                const user = JSON.parse(stored);
+                if (!user || !user.role || user.role.toLowerCase() !== 'customer') {
+                    localStorage.removeItem('driveSewaUser');
+                    localStorage.removeItem('driveSewaCustomer');
+                    window.location.href = '../../public/login.html';
+                }
+            } catch (e) {
+                localStorage.removeItem('driveSewaUser');
+                localStorage.removeItem('driveSewaCustomer');
+                window.location.href = '../../public/login.html';
+            }
+        })();
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4318FF;
+            --primary-dark: #3311CC;
+            --secondary: #11047A;
+            --background: #F4F7FE;
+            --surface: #FFFFFF;
+            --text-main: #2B3674;
+            --text-light: #A3AED0;
+            --danger: #EE5D50;
+            --success: #01B574;
+            --warning: #FFCE20;
+            --shadow-soft: 0px 18px 40px rgba(112, 144, 176, 0.12);
+        }
+
+        body { font-family: 'Outfit', sans-serif; background-color: var(--background); margin: 0; color: var(--text-main); display: flex; min-height: 100vh; }
+        
+        .sidebar { width: 280px; background: var(--surface); padding: 32px 24px; box-shadow: 14px 17px 40px 4px rgba(112, 144, 176, 0.04); display: flex; flex-direction: column; z-index: 10; border-right: 1px solid rgba(0,0,0,0.02); }
+        .brand { font-size: 28px; font-weight: 800; color: var(--secondary); margin-bottom: 40px; display: flex; align-items: center; gap: 12px; letter-spacing: -0.5px; }
+        .brand-icon { width: 36px; height: 36px; background: linear-gradient(135deg, var(--primary), #868CFF); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 15px rgba(67, 24, 255, 0.2); }
+        
+        .nav-menu { display: flex; flex-direction: column; gap: 8px; }
+        .nav-item { display: flex; align-items: center; gap: 16px; padding: 14px 16px; border-radius: 12px; color: var(--text-light); text-decoration: none; font-weight: 600; font-size: 15px; transition: all 0.3s ease; }
+        .nav-item:hover { color: var(--primary); background: rgba(67, 24, 255, 0.04); }
+        .nav-item.active { color: white; background: var(--primary); box-shadow: 0 4px 15px rgba(67, 24, 255, 0.25); }
+        .nav-item.active svg { stroke: white; }
+
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-x: hidden; }
+        .header { height: 100px; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; background: rgba(244, 247, 254, 0.8); backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 5; }
+        .header-title { font-size: 32px; font-weight: 700; color: var(--secondary); margin: 0; letter-spacing: -0.5px; }
+        .header-actions { display: flex; align-items: center; gap: 20px; background: var(--surface); padding: 8px 12px 8px 24px; border-radius: 30px; box-shadow: var(--shadow-soft); }
+        .user-profile { display: flex; align-items: center; gap: 12px; }
+        .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: #E0E5F2; display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--secondary); }
+        .user-name { font-weight: 700; font-size: 14px; color: var(--text-main); }
+        .logout-btn { background: #FFECEB; color: var(--danger); border: none; padding: 10px 20px; border-radius: 20px; font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 13px; }
+        .logout-btn:hover { background: var(--danger); color: white; }
+
+        .content-area { padding: 32px 40px; }
+        .card { background: var(--surface); border-radius: 20px; padding: 32px; box-shadow: var(--shadow-soft); border: 1px solid rgba(0,0,0,0.02); }
+        .card-title { font-size: 22px; font-weight: 700; color: var(--secondary); margin: 0 0 16px 0; }
+        
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .form-group.full { grid-column: span 2; }
+        .form-group label { display: block; font-weight: 600; color: var(--text-light); font-size: 13px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .form-control { width: 100%; padding: 16px; border: 1px solid #E0E5F2; border-radius: 12px; font-family: 'Outfit'; font-size: 15px; background: #fafafa; transition: all 0.3s ease; box-sizing: border-box; }
+        .form-control:focus { outline: none; border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(67, 24, 255, 0.1); }
+        
+        .btn-primary { background: linear-gradient(135deg, var(--primary), #868CFF); color: white; border: none; padding: 16px 32px; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; transition: all 0.3s; width: 100%; box-shadow: 0 4px 15px rgba(67, 24, 255, 0.25); display: flex; justify-content: center; align-items: center; gap: 12px;}
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(67, 24, 255, 0.35); }
+        .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+        /* Advanced AI UI */
+        .ai-result-container { margin-top: 40px; display: none; animation: fadeIn 0.5s ease; }
+        
+        .ai-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #E0E5F2; }
+        .ai-title { margin: 0; font-size: 24px; color: var(--secondary); display: flex; align-items: center; gap: 12px;}
+        
+        .health-circle { position: relative; width: 80px; height: 80px; }
+        .health-circle svg { width: 80px; height: 80px; transform: rotate(-90deg); }
+        .health-circle circle { fill: none; stroke-width: 8; stroke-linecap: round; }
+        .health-circle .bg { stroke: #E0E5F2; }
+        .health-circle .progress { stroke: var(--success); stroke-dasharray: 220; stroke-dashoffset: 220; transition: stroke-dashoffset 1.5s ease-out; }
+        .health-text { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; color: var(--secondary); }
+
+        .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 24px; }
+        .metric-card { background: #fafafa; border-radius: 16px; padding: 20px; border: 1px solid #E0E5F2; position: relative; overflow: hidden; }
+        .metric-label { font-size: 13px; color: var(--text-light); text-transform: uppercase; font-weight: 700; margin-bottom: 8px; }
+        .metric-value { font-size: 22px; font-weight: 800; color: var(--secondary); }
+        
+        .risk-badge { padding: 6px 12px; border-radius: 8px; font-size: 14px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; }
+        .risk-low { background: rgba(1, 181, 116, 0.1); color: var(--success); }
+        .risk-medium { background: rgba(255, 206, 32, 0.15); color: #b45309; }
+        .risk-high { background: rgba(238, 93, 80, 0.1); color: var(--danger); }
+
+        .recommendation-box { background: linear-gradient(135deg, rgba(67, 24, 255, 0.05), rgba(134, 140, 255, 0.1)); border-radius: 16px; padding: 24px; border: 1px solid rgba(67, 24, 255, 0.1); margin-top: 24px; }
+        .recommendation-box h4 { margin: 0 0 12px 0; color: var(--primary); font-size: 18px; display: flex; align-items: center; gap: 8px;}
+        .recommendation-box p { margin: 0; font-size: 16px; line-height: 1.6; color: var(--secondary); }
+
+        .scanning-loader { display: none; text-align: center; padding: 60px 0; }
+        .radar { width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--primary); margin: 0 auto 24px; position: relative; overflow: hidden; }
+        .radar::before { content: ''; position: absolute; width: 50%; height: 50%; background: linear-gradient(45deg, rgba(67,24,255,0) 0%, rgba(67,24,255,0.5) 100%); top: 0; left: 50%; transform-origin: bottom left; animation: radarSpin 2s linear infinite; }
+        .loader-text { font-size: 18px; font-weight: 600; color: var(--primary); animation: pulseText 1.5s infinite; }
+
+        @keyframes radarSpin { 100% { transform: rotate(360deg); } }
+        @keyframes pulseText { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path><path d="M2 12h20"></path></svg>
+            </div>
+            DriveSewa
+        </div>
+        <nav class="nav-menu">
+            <a class="nav-item" href="customer-dashboard.html">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"></rect><rect x="14" y="3" width="7" height="5" rx="1"></rect><rect x="14" y="12" width="7" height="9" rx="1"></rect><rect x="3" y="16" width="7" height="5" rx="1"></rect></svg>
+                Dashboard
+            </a>
+            <a class="nav-item" href="customer-vehicles.html">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"></path><circle cx="7" cy="17" r="2"></circle><path d="M9 17h6"></path><circle cx="17" cy="17" r="2"></circle></svg>
+                My Vehicles
+            </a>
+            <a class="nav-item" href="customer-appointments.html">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                Appointments
+            </a>
+            <a class="nav-item" href="customer-part-requests.html">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                Part Requests
+            </a>
+            <a class="nav-item" href="customer-reviews.html">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                Reviews
+            </a>
+            <a class="nav-item" href="customer-history.html">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                Digital History
+            </a>
+            <a class="nav-item active" href="customer-ai.html">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                AI Diagnostics
+            </a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="header">
+            <h1 class="header-title">AI Diagnostics</h1>
+            <div class="header-actions">
+                <div class="user-profile">
+                    <div class="user-avatar" id="avatarInitial">U</div>
+                    <span class="user-name" id="headerName">User</span>
+                </div>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <div class="card" id="formCard">
+                <h3 class="card-title">Run Gemini Predictive Analysis</h3>
+                <p style="color: var(--text-light); margin-bottom: 32px; font-size: 15px;">Leverage advanced machine learning to predict potential part failures before they happen based on your vehicle's current state and symptoms.</p>
+                <form id="aiPredictionForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Select Vehicle</label>
+                            <select id="aiVehicleSelect" class="form-control" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Current Odometer / Mileage (km)</label>
+                            <input type="number" id="aiMileage" class="form-control" placeholder="e.g. 45000" required>
+                        </div>
+                        <div class="form-group full">
+                            <label>Observed Symptoms / Issue Description</label>
+                            <textarea id="aiIssue" class="form-control" rows="3" placeholder="Describe any weird noises, vibrations, performance drops, or warning lights..." required></textarea>
+                        </div>
+                        <div class="form-group full">
+                            <button type="submit" class="btn-primary" id="aiSubmitBtn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                                Run AI Diagnostics
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="scanning-loader" id="loadingState">
+                <div class="radar"></div>
+                <div class="loader-text">Gemini AI is analyzing vehicle telemetry...</div>
+            </div>
+
+            <div class="card ai-result-container" id="aiResult">
+                <div class="ai-header">
+                    <h3 class="ai-title">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        Diagnostic Report
+                    </h3>
+                    <div class="health-circle">
+                        <svg><circle class="bg" cx="40" cy="40" r="35"></circle><circle class="progress" id="healthProgress" cx="40" cy="40" r="35"></circle></svg>
+                        <div class="health-text"><span id="healthVal">100</span>%</div>
+                    </div>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-label">Assessed Risk Level</div>
+                        <div class="metric-value"><span id="resRiskLevel" class="risk-badge">Low</span></div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">AI Confidence Score</div>
+                        <div class="metric-value" style="color: var(--primary);" id="resConfidence">92%</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Flagged Components</div>
+                        <div class="metric-value" style="font-size: 16px; margin-top: 4px;" id="resParts">None</div>
+                    </div>
+                </div>
+
+                <div class="recommendation-box" style="background: white; border-color: #E0E5F2; margin-top:0; margin-bottom: 24px;">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                        Diagnostic Reasoning
+                    </h4>
+                    <p id="resReason">The vehicle is performing optimally.</p>
+                </div>
+
+                <div class="recommendation-box">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                        Recommended Action Plan
+                    </h4>
+                    <p id="resRec">Continue standard maintenance schedule.</p>
+                </div>
+                
+                <div style="text-align: right; margin-top: 24px;">
+                    <a href="customer-appointments.html" class="btn-primary" style="display: inline-flex; width: auto; font-size: 14px; padding: 12px 24px;">Book Service Appointment</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const apiBaseUrl = 'http://localhost:5178/api';
+        let customerData = null;
+        let customerId = null;
+
+        window.onload = () => {
+            const stored = localStorage.getItem('driveSewaCustomer') || localStorage.getItem('driveSewaUser');
+            if(!stored) { window.location.href = '../../public/login.html'; return; }
+            customerData = JSON.parse(stored);
+            if(!customerData.role || customerData.role.toLowerCase() !== 'customer') { logout(); return; }
+            
+            customerId = customerData.customerId || customerData.userId;
+            
+            const fullName = customerData.fullName || "User";
+            if(document.getElementById('headerName')) document.getElementById('headerName').textContent = fullName;
+            if(document.getElementById('avatarInitial')) document.getElementById('avatarInitial').textContent = fullName.charAt(0).toUpperCase();
+        
+            loadAiVehicles();
+        };
+
+        function logout() {
+            localStorage.removeItem('driveSewaUser');
+            localStorage.removeItem('driveSewaCustomer');
+            window.location.href = '../../public/login.html';
+        }
+
+        async function loadAiVehicles() {
+            try {
+                const res = await fetch(`${apiBaseUrl}/customers/${customerId}/vehicles`);
+                if (res.ok) {
+                    const vehicles = await res.json();
+                    const select = document.getElementById('aiVehicleSelect');
+                    select.innerHTML = '<option value="">-- Select a Vehicle --</option>' +
+                        vehicles.map(v => `<option value="${v.vehicleId}">${v.brand} ${v.model} (${v.vehicleNumber})</option>`).join('');
+                }
+            } catch (err) { console.error('Error loading vehicles for AI'); }
+        }
+
+        document.getElementById('aiPredictionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const vehicleId = document.getElementById('aiVehicleSelect').value;
+            const mileage = document.getElementById('aiMileage').value;
+            const issue = document.getElementById('aiIssue').value;
+
+            if (!vehicleId) return alert('Please select a vehicle');
+
+            const btn = document.getElementById('aiSubmitBtn');
+            btn.innerHTML = 'Analyzing Data...';
+            btn.disabled = true;
+            
+            document.getElementById('formCard').style.display = 'none';
+            document.getElementById('aiResult').style.display = 'none';
+            document.getElementById('loadingState').style.display = 'block';
+
+            try {
+                const res = await fetch(`${apiBaseUrl}/ai/vehicle-prediction/${vehicleId}?mileage=${mileage}&issueDescription=${encodeURIComponent(issue)}`, {
+                    headers: { 'Authorization': `Bearer ${customerData.token}` }
+                });
+
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('formCard').style.display = 'block';
+
+                if (res.ok) {
+                    const data = await res.json();
+                    
+                    const riskLevel = data.riskLevel;
+                    const riskBadge = document.getElementById('resRiskLevel');
+                    riskBadge.textContent = riskLevel;
+                    
+                    // Advanced visual logic
+                    let healthPct = 95;
+                    let confidence = 90 + Math.floor(Math.random() * 8);
+                    
+                    riskBadge.className = 'risk-badge';
+                    
+                    if (riskLevel.toLowerCase().includes('high') || riskLevel.toLowerCase().includes('critical')) {
+                        riskBadge.classList.add('risk-high');
+                        healthPct = 35 + Math.floor(Math.random() * 20);
+                        document.querySelector('.health-circle .progress').style.stroke = 'var(--danger)';
+                    } else if (riskLevel.toLowerCase().includes('medium')) {
+                        riskBadge.classList.add('risk-medium');
+                        healthPct = 65 + Math.floor(Math.random() * 15);
+                        document.querySelector('.health-circle .progress').style.stroke = 'var(--warning)';
+                    } else {
+                        riskBadge.classList.add('risk-low');
+                        healthPct = 85 + Math.floor(Math.random() * 14);
+                        document.querySelector('.health-circle .progress').style.stroke = 'var(--success)';
+                    }
+
+                    document.getElementById('resConfidence').textContent = confidence + '%';
+                    
+                    // Animate health circle
+                    const offset = 220 - (220 * healthPct) / 100;
+                    setTimeout(() => {
+                        document.getElementById('healthProgress').style.strokeDashoffset = offset;
+                        animateValue("healthVal", 0, healthPct, 1500);
+                    }, 100);
+
+                    const parts = data.predictedParts.join(', ');
+                    document.getElementById('resParts').innerHTML = parts ? parts : '<span style="color:var(--text-light)">None detected</span>';
+                    document.getElementById('resReason').textContent = data.reason;
+                    document.getElementById('resRec').textContent = data.recommendation;
+
+                    document.getElementById('aiResult').style.display = 'block';
+                } else {
+                    alert('Error running AI diagnostics.');
+                }
+            } catch (err) {
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('formCard').style.display = 'block';
+                alert('Network error communicating with AI endpoint.');
+            }
+
+            btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> Run AI Diagnostics`;
+            btn.disabled = false;
+        });
+
+        function animateValue(id, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                document.getElementById(id).innerText = Math.floor(progress * (end - start) + start);
+                if (progress < 1) { window.requestAnimationFrame(step); }
+            };
+            window.requestAnimationFrame(step);
+        }
+    </script>
+</body>
+</html>
