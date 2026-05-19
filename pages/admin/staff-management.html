@@ -1,0 +1,1040 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveSewa - Staff Management</title>
+    <link rel="stylesheet" href="../../styles/main.css">
+    <style>
+        :root {
+            --bg: #f5f7fb;
+            --surface: #ffffff;
+            --surface-soft: #f8fafc;
+            --primary: #174ea6;
+            --primary-dark: #123f84;
+            --text: #172033;
+            --muted: #667085;
+            --border: #dfe5ef;
+            --danger: #c62828;
+            --success: #087443;
+            --shadow: 0 16px 36px rgba(23, 32, 51, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 24px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 26px;
+        }
+
+        .brand {
+            padding: 0 10px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand-title {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .brand-subtitle {
+            margin: 6px 0 0;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .side-nav {
+            display: grid;
+            gap: 10px;
+        }
+
+        .nav-link {
+            display: grid;
+            grid-template-columns: 38px 1fr;
+            gap: 12px;
+            align-items: center;
+            padding: 13px 12px;
+            border-radius: 8px;
+            color: var(--text);
+            text-decoration: none;
+            border: 1px solid transparent;
+            transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        }
+
+            .nav-link:hover {
+                background: var(--surface-soft);
+                border-color: var(--border);
+            }
+
+            .nav-link.active {
+                background: #eaf2ff;
+                border-color: #b8d2ff;
+                color: var(--primary);
+            }
+
+        .nav-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            background: var(--surface-soft);
+            color: currentColor;
+            font-weight: 800;
+        }
+
+        .nav-title {
+            display: block;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .nav-desc {
+            display: block;
+            margin-top: 3px;
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.35;
+        }
+
+        .main {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .topbar {
+            height: 76px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+        }
+
+        .page-title {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .welcome {
+            color: var(--muted);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .icon-button {
+            width: 42px;
+            height: 42px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--surface);
+            color: var(--text);
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            position: relative;
+        }
+
+        .notification-dot {
+            position: absolute;
+            top: 9px;
+            right: 10px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--danger);
+            border: 2px solid var(--surface);
+        }
+
+        .logout-btn {
+            border: 1px solid #f1b9b9;
+            background: #fff5f5;
+            color: var(--danger);
+            border-radius: 8px;
+            padding: 11px 16px;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+            .logout-btn:hover {
+                background: var(--danger);
+                border-color: var(--danger);
+                color: #ffffff;
+            }
+
+        .content {
+            padding: 32px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+            .btn-primary:hover {
+                background: var(--primary-dark);
+            }
+
+        .btn-secondary {
+            background: var(--surface-soft);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+            .btn-secondary:hover {
+                background: var(--surface);
+            }
+
+        .btn-danger {
+            background: #fff5f5;
+            color: var(--danger);
+            border: 1px solid #f1b9b9;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+            .btn-danger:hover {
+                background: var(--danger);
+                border-color: var(--danger);
+                color: #ffffff;
+            }
+
+        .form-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 26px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+            .form-group:last-child {
+                margin-bottom: 0;
+            }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            color: var(--text);
+            background: var(--surface);
+            transition: border-color 0.2s ease;
+        }
+
+            .form-input:focus,
+            .form-select:focus {
+                outline: none;
+                border-color: var(--primary);
+                box-shadow: 0 0 0 3px rgba(23, 78, 166, 0.1);
+            }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .table-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 28px rgba(23, 32, 51, 0.05);
+        }
+
+        .table-header {
+            padding: 18px 22px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+            .table-header h2 {
+                margin: 0;
+                font-size: 18px;
+                font-weight: 800;
+            }
+
+            .table-header span {
+                color: var(--muted);
+                font-size: 13px;
+                font-weight: 600;
+            }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 16px 22px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+            vertical-align: top;
+        }
+
+        th {
+            background: var(--surface-soft);
+            color: var(--muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            font-weight: 700;
+        }
+
+        tr:last-child td {
+            border-bottom: 0;
+        }
+
+        tbody tr:hover {
+            background: #fafbfd;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            background: #ecfdf3;
+            color: var(--success);
+            border: 1px solid #b7e4c7;
+        }
+
+        .action-cell {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .edit-btn {
+            background: #eaf2ff;
+            color: var(--primary);
+            border: none;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+            .edit-btn:hover {
+                background: #d4e4ff;
+            }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            align-items: center;
+            justify-content: center;
+        }
+
+            .modal.show {
+                display: flex;
+            }
+
+        .modal-content {
+            background-color: var(--surface);
+            padding: 28px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+            .modal-header h2 {
+                margin: 0;
+                font-size: 20px;
+                font-weight: 800;
+            }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--muted);
+        }
+
+            .modal-close:hover {
+                color: var(--text);
+            }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--muted);
+        }
+
+            .empty-state p {
+                margin: 0;
+                line-height: 1.6;
+            }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--muted);
+        }
+
+        .error-message {
+            background: #fff5f5;
+            border: 1px solid #f1b9b9;
+            color: var(--danger);
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+        }
+
+        .success-message {
+            background: #ecfdf3;
+            border: 1px solid #b7e4c7;
+            color: var(--success);
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                border-right: 0;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .topbar,
+            .section-header {
+                align-items: flex-start;
+                flex-direction: column;
+                height: auto;
+                gap: 12px;
+            }
+
+            .topbar {
+                padding: 20px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .table-card {
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 720px;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard">
+        <aside class="sidebar" aria-label="Admin navigation">
+            <div class="brand">
+                <h2 class="brand-title">DriveSewa</h2>
+                <p class="brand-subtitle">Administration workspace</p>
+            </div>
+
+            <nav class="side-nav">
+                <a class="nav-link" href="admin-dashboard.html">
+                    <span class="nav-icon">AD</span>
+                    <span>
+                        <span class="nav-title">Admin Dashboard</span>
+                        <span class="nav-desc">Overview and module access</span>
+                    </span>
+                </a>
+                <a class="nav-link active" href="staff-management.html" aria-current="page">
+                    <span class="nav-icon">SM</span>
+                    <span>
+                        <span class="nav-title">Staff Management</span>
+                        <span class="nav-desc">Manage staff registration and roles</span>
+                    </span>
+                </a>
+                <a class="nav-link" href="parts-inventory.html">
+                    <span class="nav-icon">PI</span>
+                    <span>
+                        <span class="nav-title">Parts Inventory</span>
+                        <span class="nav-desc">Manage vehicle parts</span>
+                    </span>
+                </a>
+                <a class="nav-link" href="purchase-invoice-list.html">
+                    <span class="nav-icon">IN</span>
+                    <span>
+                        <span class="nav-title">Purchase Invoices</span>
+                        <span class="nav-desc">Create invoices and update stock</span>
+                    </span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <h1 class="page-title">Staff Management</h1>
+                <div class="top-actions">
+                    <span class="welcome" id="welcomeText">Welcome, Admin</span>
+                    <button class="icon-button" type="button" title="Notifications" aria-label="Notifications">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M15 17H9M18 10.5C18 7.2 15.3 4.5 12 4.5C8.7 4.5 6 7.2 6 10.5V14L4.5 16.5H19.5L18 14V10.5Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M10 19C10.4 19.6 11.1 20 12 20C12.9 20 13.6 19.6 14 19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                        </svg>
+                        <span class="notification-dot"></span>
+                    </button>
+                    <button class="logout-btn" type="button" id="logoutButton">Logout</button>
+                </div>
+            </header>
+
+            <section class="content">
+                <div class="section-header">
+                    <h2 class="section-title">Add New Staff</h2>
+                </div>
+
+                <div id="messageContainer"></div>
+
+                <div class="form-card">
+                    <form id="staffForm" autocomplete="off">
+                        <input type="text" name="fake_username" autocomplete="username" style="display:none" tabindex="-1" aria-hidden="true">
+                        <input type="password" name="fake_password" autocomplete="current-password" style="display:none" tabindex="-1" aria-hidden="true">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="fullName">Full Name *</label>
+                                <input class="form-input" type="text" id="fullName" name="staffFullName" required placeholder="Enter full name" autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="email">Email *</label>
+                                <input class="form-input" type="email" id="email" name="staffEmail" required placeholder="Enter email address" autocomplete="off" autocapitalize="off" spellcheck="false">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="phone">Phone *</label>
+                                <input class="form-input" type="tel" id="phone" name="staffPhone" required placeholder="Enter phone number" autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="position">Position *</label>
+                                <select class="form-input" id="position" name="staffPosition" required autocomplete="off">
+                                    <option value="">Select a position</option>
+                                    <option value="Manager">Manager</option>
+                                    <option value="Mechanic">Mechanic</option>
+                                    <option value="Supervisor">Supervisor</option>
+                                    <option value="Workshop Supervisor">Workshop Supervisor</option>
+                                    <option value="Customer Support">Customer Support</option>
+                                    <option value="Parts Manager">Parts Manager</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="password">Password *</label>
+                            <input class="form-input" type="password" id="password" name="staffPassword" required placeholder="Enter password" autocomplete="new-password">
+                        </div>
+
+                        <div class="form-actions">
+                            <button class="btn-secondary" type="reset">Clear</button>
+                            <button class="btn-primary" type="submit">Add Staff Member</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="section-header">
+                    <h2 class="section-title">Staff List</h2>
+                    <span id="staffCount" style="color: var(--muted); font-size: 13px;">Loading staff members...</span>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-header">
+                        <h2>All Staff Members</h2>
+                        <span id="tableStatus">Loading...</span>
+                    </div>
+                    <div id="tableContainer">
+                        <div class="loading">
+                            <p>Loading staff members...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Edit Staff Modal -->
+    <div id="editStaffModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Staff Member</h2>
+                <button class="modal-close" type="button" aria-label="Close modal">&times;</button>
+            </div>
+            <form id="editStaffForm">
+                <input type="hidden" id="editStaffId">
+                <div class="form-group">
+                    <label class="form-label" for="editFullName">Full Name *</label>
+                    <input class="form-input" type="text" id="editFullName" name="fullName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="editEmail">Email *</label>
+                    <input class="form-input" type="email" id="editEmail" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="editPhone">Phone *</label>
+                    <input class="form-input" type="tel" id="editPhone" name="phone" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="editPosition">Position *</label>
+                    <select class="form-input" id="editPosition" name="position" required>
+                        <option value="">Select a position</option>
+                        <option value="Manager">Manager</option>
+                        <option value="Mechanic">Mechanic</option>
+                        <option value="Supervisor">Supervisor</option>
+                        <option value="Workshop Supervisor">Workshop Supervisor</option>
+                        <option value="Customer Support">Customer Support</option>
+                        <option value="Parts Manager">Parts Manager</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="editPassword">Password (leave blank to keep current)</label>
+                    <input class="form-input" type="password" id="editPassword" name="password">
+                </div>
+                <div class="form-actions">
+                    <button class="btn-secondary" type="button" id="cancelEditBtn">Cancel</button>
+                    <button class="btn-primary" type="submit">Update Staff Member</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_CANDIDATES = [
+            `${window.location.origin}/api`,
+            `https://localhost:7011/api`,
+            `http://localhost:5019/api`,
+            `http://localhost:5178/api`
+        ].filter((value, index, self) => self.indexOf(value) === index);
+
+        async function apiRequest(path, options = {}) {
+            let lastError = null;
+
+            for (const apiBase of API_BASE_CANDIDATES) {
+                try {
+                    const response = await fetch(`${apiBase}${path}`, options);
+                    const raw = await response.text();
+                    let data = null;
+
+                    if (raw) {
+                        try {
+                            data = JSON.parse(raw);
+                        } catch {
+                            data = null;
+                        }
+                    }
+
+                    if (response.ok) {
+                        return data;
+                    }
+
+                    const errorMessage = (data && data.message) || `Request failed (${response.status})`;
+                    lastError = new Error(errorMessage);
+                } catch (error) {
+                    lastError = error;
+                }
+            }
+
+            throw lastError || new Error("Unable to connect to backend API.");
+        }
+
+        let allStaff = [];
+        let currentEditingStaffId = null;
+
+        function clearAddStaffForm() {
+            const staffForm = document.getElementById("staffForm");
+            if (!staffForm) return;
+
+            staffForm.reset();
+            document.getElementById("fullName").value = "";
+            document.getElementById("email").value = "";
+            document.getElementById("phone").value = "";
+            document.getElementById("position").value = "";
+            document.getElementById("password").value = "";
+        }
+
+        // Authentication check
+        (function () {
+            const loginPage = "/public/login.html";
+            const userData = localStorage.getItem("driveSewaUser");
+
+            function redirectToLogin() {
+                window.location.href = loginPage;
+            }
+
+            if (!userData) {
+                redirectToLogin();
+                return;
+            }
+
+            let user;
+            try {
+                user = JSON.parse(userData);
+            } catch (error) {
+                localStorage.removeItem("driveSewaUser");
+                redirectToLogin();
+                return;
+            }
+
+            if (!user || user.role !== "Admin") {
+                redirectToLogin();
+                return;
+            }
+
+            const adminName = user.fullName || user.name || "Admin";
+            document.getElementById("welcomeText").textContent = "Welcome, " + adminName;
+
+            clearAddStaffForm();
+            setTimeout(clearAddStaffForm, 0);
+            setTimeout(clearAddStaffForm, 150);
+        })();
+
+        window.addEventListener("pageshow", clearAddStaffForm);
+
+        // Logout functionality
+        document.getElementById("logoutButton").addEventListener("click", function () {
+            localStorage.removeItem("driveSewaUser");
+            window.location.href = "/public/login.html";
+        });
+
+        // Load staff on page load
+        document.addEventListener("DOMContentLoaded", loadStaff);
+
+        // Form submission for adding staff
+        document.getElementById("staffForm").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const formData = {
+                fullName: document.getElementById("fullName").value,
+                email: document.getElementById("email").value,
+                phone: document.getElementById("phone").value,
+                position: document.getElementById("position").value,
+                password: document.getElementById("password").value
+            };
+
+            try {
+                await apiRequest("/staff", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                showMessage("Staff member added successfully!", "success");
+                document.getElementById("staffForm").reset();
+                document.getElementById("fullName").value = "";
+                document.getElementById("email").value = "";
+                document.getElementById("phone").value = "";
+                document.getElementById("position").value = "";
+                document.getElementById("password").value = "";
+                loadStaff();
+            } catch (error) {
+                showMessage(error.message || "Failed to add staff member. Please try again.", "error");
+                console.error("Error:", error);
+            }
+        });
+
+        // Edit staff form submission
+        document.getElementById("editStaffForm").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const staffId = document.getElementById("editStaffId").value;
+            const formData = {
+                fullName: document.getElementById("editFullName").value,
+                email: document.getElementById("editEmail").value,
+                phone: document.getElementById("editPhone").value,
+                position: document.getElementById("editPosition").value
+            };
+
+            if (document.getElementById("editPassword").value) {
+                formData.password = document.getElementById("editPassword").value;
+            }
+
+            try {
+                await apiRequest(`/staff/${staffId}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                showMessage("Staff member updated successfully!", "success");
+                closeEditModal();
+                loadStaff();
+            } catch (error) {
+                showMessage(error.message || "Failed to update staff member. Please try again.", "error");
+                console.error("Error:", error);
+            }
+        });
+
+        // Modal controls
+        const editModal = document.getElementById("editStaffModal");
+        document.querySelector(".modal-close").addEventListener("click", closeEditModal);
+        document.getElementById("cancelEditBtn").addEventListener("click", closeEditModal);
+
+        editModal.addEventListener("click", function (e) {
+            if (e.target === editModal) {
+                closeEditModal();
+            }
+        });
+
+        function closeEditModal() {
+            document.getElementById("editStaffModal").classList.remove("show");
+            document.getElementById("editStaffForm").reset();
+        }
+
+        function openEditModal(staff) {
+            document.getElementById("editStaffId").value = staff.staffId;
+            document.getElementById("editFullName").value = staff.fullName;
+            document.getElementById("editEmail").value = staff.email;
+            document.getElementById("editPhone").value = staff.phone;
+            document.getElementById("editPosition").value = staff.position;
+            document.getElementById("editPassword").value = "";
+            document.getElementById("editStaffModal").classList.add("show");
+        }
+
+        async function loadStaff() {
+            try {
+                allStaff = await apiRequest("/staff");
+                renderStaffTable();
+            } catch (error) {
+                document.getElementById("tableContainer").innerHTML = `
+                    <div class="empty-state">
+                        <p>Failed to load staff members. ${escapeHtml(error.message || "Please try again.")}</p>
+                    </div>
+                `;
+                console.error("Error loading staff:", error);
+            }
+        }
+
+        function renderStaffTable() {
+            const container = document.getElementById("tableContainer");
+
+            // Filter out Admin users - only show Staff
+            const staffList = allStaff.filter(staff => staff.role && staff.role.toLowerCase() === 'staff');
+
+            if (staffList.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <p>No staff members found. Add a new staff member to get started.</p>
+                    </div>
+                `;
+                document.getElementById("staffCount").textContent = "0 staff members";
+                document.getElementById("tableStatus").textContent = "No staff members";
+                return;
+            }
+
+            let tableHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Full Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Position</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            staffList.forEach(staff => {
+                tableHTML += `
+                    <tr>
+                        <td>${escapeHtml(staff.fullName)}</td>
+                        <td>${escapeHtml(staff.email)}</td>
+                        <td>${escapeHtml(staff.phone)}</td>
+                        <td>${escapeHtml(staff.position)}</td>
+                        <td><span class="status-badge">Active</span></td>
+                        <td>
+                            <div class="action-cell">
+                                <button class="edit-btn" type="button" onclick="openEditModal(${JSON.stringify(staff).replace(/"/g, '&quot;')})">Edit</button>
+                                <button class="btn-danger" type="button" onclick="deleteStaff(${staff.staffId})">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+
+            container.innerHTML = tableHTML;
+            document.getElementById("staffCount").textContent = `${staffList.length} staff member${staffList.length !== 1 ? 's' : ''}`;
+            document.getElementById("tableStatus").textContent = `Showing ${staffList.length} staff member${staffList.length !== 1 ? 's' : ''}`;
+        }
+
+        async function deleteStaff(staffId) {
+            if (!confirm("Are you sure you want to delete this staff member?")) {
+                return;
+            }
+
+            try {
+                await apiRequest(`/staff/${staffId}`, {
+                    method: "DELETE"
+                });
+
+                showMessage("Staff member deleted successfully!", "success");
+                loadStaff();
+            } catch (error) {
+                showMessage(error.message || "Failed to delete staff member. Please try again.", "error");
+                console.error("Error:", error);
+            }
+        }
+
+        function showMessage(message, type) {
+            const container = document.getElementById("messageContainer");
+            const messageClass = type === "success" ? "success-message" : "error-message";
+            const messageHTML = `<div class="${messageClass}">${escapeHtml(message)}</div>`;
+
+            container.innerHTML = messageHTML;
+
+            setTimeout(() => {
+                container.innerHTML = "";
+            }, 5000);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement("div");
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+
+</html>
