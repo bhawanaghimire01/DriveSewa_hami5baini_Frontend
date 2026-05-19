@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - DriveSewa</title>
+    <style>
+        :root {
+            --bg: #f5f7fb;
+            --surface: #ffffff;
+            --surface-soft: #f8fafc;
+            --primary: #174ea6;
+            --primary-dark: #123f84;
+            --text: #172033;
+            --muted: #667085;
+            --border: #dfe5ef;
+            --danger: #c62828;
+            --shadow: 0 16px 36px rgba(23, 32, 51, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 24px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 26px;
+        }
+
+        .brand {
+            padding: 0 10px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand-title {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .brand-subtitle {
+            margin: 6px 0 0;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .side-nav {
+            display: grid;
+            gap: 10px;
+        }
+
+        .nav-link {
+            display: grid;
+            grid-template-columns: 38px 1fr;
+            gap: 12px;
+            align-items: center;
+            padding: 13px 12px;
+            border-radius: 8px;
+            color: var(--text);
+            text-decoration: none;
+            border: 1px solid transparent;
+            transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            background: var(--surface-soft);
+            border-color: var(--border);
+        }
+
+        .nav-link.active {
+            background: #eaf2ff;
+            border-color: #b8d2ff;
+            color: var(--primary);
+        }
+
+        .nav-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            background: var(--surface-soft);
+            color: currentColor;
+            font-weight: 800;
+        }
+
+        .nav-title {
+            display: block;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .nav-desc {
+            display: block;
+            margin-top: 3px;
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.35;
+        }
+
+        .main {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .topbar {
+            height: 76px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+        }
+
+        .page-title {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .welcome {
+            color: var(--muted);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .icon-button {
+            width: 42px;
+            height: 42px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--surface);
+            color: var(--text);
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            position: relative;
+        }
+
+        .notification-dot {
+            position: absolute;
+            top: 9px;
+            right: 10px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--danger);
+            border: 2px solid var(--surface);
+        }
+
+        .logout-btn {
+            border: 1px solid #f1b9b9;
+            background: #fff5f5;
+            color: var(--danger);
+            border-radius: 8px;
+            padding: 11px 16px;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background: var(--danger);
+            border-color: var(--danger);
+            color: #ffffff;
+        }
+
+        .content {
+            padding: 32px;
+        }
+
+        .welcome-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .welcome-panel h2 {
+            margin: 0 0 8px;
+            font-size: 22px;
+        }
+
+        .welcome-panel p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .status-pill {
+            flex: 0 0 auto;
+            border-radius: 999px;
+            background: #ecfdf3;
+            color: #087443;
+            border: 1px solid #b7e4c7;
+            padding: 9px 14px;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .module-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 22px;
+            color: inherit;
+            text-decoration: none;
+            box-shadow: 0 10px 28px rgba(23, 32, 51, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .module-card:hover {
+            transform: translateY(-3px);
+            border-color: #9bc2ff;
+            box-shadow: var(--shadow);
+        }
+
+        .card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .card-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            background: #eaf2ff;
+            color: var(--primary);
+            font-size: 18px;
+            font-weight: 900;
+        }
+
+        .open-label {
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .module-card h3 {
+            margin: 0 0 8px;
+            font-size: 18px;
+        }
+
+        .module-card p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.55;
+            font-size: 14px;
+        }
+
+        .table-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 18px 22px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .table-header h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .table-header span {
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 16px 22px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+            vertical-align: top;
+        }
+
+        th {
+            background: var(--surface-soft);
+            color: var(--muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .table-link {
+            color: var(--primary);
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+        .table-link:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                border-right: 0;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .side-nav,
+            .module-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 760px) {
+            .topbar,
+            .welcome-panel {
+                align-items: flex-start;
+                flex-direction: column;
+                height: auto;
+            }
+
+            .topbar {
+                padding: 20px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .side-nav,
+            .module-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome {
+                width: 100%;
+            }
+
+            .table-card {
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 720px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard">
+        <aside class="sidebar" aria-label="Admin navigation">
+            <div class="brand">
+                <h2 class="brand-title">DriveSewa</h2>
+                <p class="brand-subtitle">Administration workspace</p>
+            </div>
+
+            <nav class="side-nav">
+                <a class="nav-link active" href="admin-dashboard.html" aria-current="page">
+                    <span class="nav-icon">AD</span>
+                    <span>
+                        <span class="nav-title">Admin Dashboard</span>
+                        <span class="nav-desc">Overview and module access</span>
+                    </span>
+                </a>
+                <a class="nav-link" href="staff-management.html">
+                    <span class="nav-icon">SM</span>
+                    <span>
+                        <span class="nav-title">Staff Management</span>
+                        <span class="nav-desc">Manage staff registration and roles</span>
+                    </span>
+                </a>
+                <a class="nav-link" href="parts-inventory.html">
+                    <span class="nav-icon">PI</span>
+                    <span>
+                        <span class="nav-title">Parts Inventory</span>
+                        <span class="nav-desc">Manage vehicle parts</span>
+                    </span>
+                </a>
+                <a class="nav-link" href="purchase-invoice-list.html">
+                    <span class="nav-icon">IN</span>
+                    <span>
+                        <span class="nav-title">Purchase Invoices</span>
+                        <span class="nav-desc">Create invoices and update stock</span>
+                    </span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <h1 class="page-title">Admin Dashboard</h1>
+                <div class="top-actions">
+                    <span class="welcome" id="welcomeText">Welcome, Admin</span>
+                    <button class="icon-button" type="button" title="Notifications" aria-label="Notifications">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M15 17H9M18 10.5C18 7.2 15.3 4.5 12 4.5C8.7 4.5 6 7.2 6 10.5V14L4.5 16.5H19.5L18 14V10.5Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M10 19C10.4 19.6 11.1 20 12 20C12.9 20 13.6 19.6 14 19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                        </svg>
+                        <span class="notification-dot"></span>
+                    </button>
+                    <button class="logout-btn" type="button" id="logoutButton">Logout</button>
+                </div>
+            </header>
+
+            <section class="content">
+                <div class="welcome-panel">
+                    <div>
+                        <h2 id="welcomeHeading">Welcome back, Admin</h2>
+                        <p>Use this dashboard to open the core administration modules for staff, parts stock, and purchase invoices.</p>
+                    </div>
+                    <span class="status-pill">Admin Access</span>
+                </div>
+
+                <div class="module-grid" aria-label="Admin modules">
+                    <a class="module-card" href="staff-management.html">
+                        <div class="card-top">
+                            <span class="card-icon">SM</span>
+                            <span class="open-label">Open</span>
+                        </div>
+                        <h3>Staff Management</h3>
+                        <p>Manage staff registration and roles</p>
+                    </a>
+
+                    <a class="module-card" href="parts-inventory.html">
+                        <div class="card-top">
+                            <span class="card-icon">PI</span>
+                            <span class="open-label">Open</span>
+                        </div>
+                        <h3>Parts Inventory</h3>
+                        <p>Add, edit, delete, and manage vehicle parts</p>
+                    </a>
+
+                    <a class="module-card" href="purchase-invoice-list.html">
+                        <div class="card-top">
+                            <span class="card-icon">IN</span>
+                            <span class="open-label">Open</span>
+                        </div>
+                        <h3>Purchase Invoices</h3>
+                        <p>Create purchase invoices and update stock</p>
+                    </a>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-header">
+                        <h2>Administration Modules</h2>
+                        <span>Active menu: Admin Dashboard</span>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Module</th>
+                                <th>Description</th>
+                                <th>Page</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Staff Management</td>
+                                <td>Manage staff registration and roles</td>
+                                <td><a class="table-link" href="staff-management.html">Open Staff Management</a></td>
+                            </tr>
+                            <tr>
+                                <td>Parts Inventory</td>
+                                <td>Add, edit, delete, and manage vehicle parts</td>
+                                <td><a class="table-link" href="parts-inventory.html">Open Parts Inventory</a></td>
+                            </tr>
+                            <tr>
+                                <td>Purchase Invoices</td>
+                                <td>Create purchase invoices and update stock</td>
+                                <td><a class="table-link" href="purchase-invoice-list.html">Open Purchase Invoices</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        (function () {
+            const loginPage = "/public/login.html";
+            const userData = localStorage.getItem("driveSewaUser");
+
+            function redirectToLogin() {
+                window.location.href = loginPage;
+            }
+
+            if (!userData) {
+                redirectToLogin();
+                return;
+            }
+
+            let user;
+            try {
+                user = JSON.parse(userData);
+            } catch (error) {
+                localStorage.removeItem("driveSewaUser");
+                redirectToLogin();
+                return;
+            }
+
+            if (!user || user.role !== "Admin") {
+                redirectToLogin();
+                return;
+            }
+
+            const adminName = user.fullName || user.name || "Admin";
+            document.getElementById("welcomeText").textContent = "Welcome, " + adminName;
+            document.getElementById("welcomeHeading").textContent = "Welcome back, " + adminName;
+
+            document.getElementById("logoutButton").addEventListener("click", function () {
+                localStorage.removeItem("driveSewaUser");
+                redirectToLogin();
+            });
+        })();
+    </script>
+</body>
+
+</html>

@@ -1,2 +1,207 @@
-﻿body {
+﻿/* DriveSewa Premium Split-Screen Authentication Styles */
+
+/* Reset & Base */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f7f6;
+    height: 100vh;
+    overflow-x: hidden;
+}
+
+.auth-wrapper {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* Left Panel - Imagery & Branding */
+.auth-left {
+    flex: 1;
+    background: linear-gradient(rgba(0, 33, 71, 0.7), rgba(0, 33, 71, 0.8)), url('https://images.unsplash.com/photo-1486262715619-6729c0bf11a0?auto=format&fit=crop&q=80&w=1920') center/cover no-repeat;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    padding: 40px;
+    text-align: center;
+    position: relative;
+}
+
+.auth-left h1 {
+    font-size: 3.5rem;
+    margin-bottom: 15px;
+    letter-spacing: 2px;
+    animation: fadeInDown 1s ease;
+    font-weight: bold;
+}
+
+.auth-left p {
+    font-size: 1.2rem;
+    max-width: 80%;
+    line-height: 1.6;
+    opacity: 0;
+    animation: fadeInUp 1s ease 0.3s forwards;
+}
+
+/* Right Panel - Form */
+.auth-right {
+    flex: 1.2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ffffff;
+    position: relative;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 480px;
+    padding: 50px;
+    animation: slideInRight 0.8s ease;
+    border-radius: 12px;
+    box-sizing: border-box;
+    box-shadow: none; /* Removed shadow for right-panel blend */
+}
+
+.auth-card h2 {
+    color: #1a1a1a;
+    font-size: 2.2rem;
+    margin-bottom: 30px;
+    font-weight: 700;
+    text-align: center;
+}
+
+/* Form Elements */
+.form-group {
+    margin-bottom: 22px;
+    position: relative;
+}
+
+.form-control {
+    width: 100%;
+    padding: 15px 20px;
+    border: 2px solid #e1e5eb;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background-color: #f8f9fa;
+    box-sizing: border-box;
+}
+
+.form-control:focus {
+    border-color: #0056b3;
+    background-color: #ffffff;
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(0, 86, 179, 0.1);
+}
+
+/* Buttons */
+.btn-primary, .btn-success {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #0056b3, #007BFF);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 15px;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #1e7e34, #28a745);
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.btn-primary:hover, .btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary:active, .btn-success:active {
+    transform: translateY(1px);
+}
+
+/* Messages */
+.error-msg, .success-msg {
+    font-size: 15px;
+    display: none;
+    margin-bottom: 20px;
+    padding: 14px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.error-msg {
+    color: #842029;
+    background: #f8d7da;
+    border: 1px solid #f5c2c7;
+}
+
+.success-msg {
+    color: #0f5132;
+    background: #d1e7dd;
+    border: 1px solid #badbcc;
+}
+
+/* Links */
+.auth-links {
+    margin-top: 30px;
+    font-size: 15px;
+    color: #6c757d;
+    text-align: center;
+}
+
+.auth-links a {
+    color: #007BFF;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.auth-links a:hover {
+    color: #0056b3;
+}
+
+/* Animations */
+@keyframes fadeInDown {
+    0% { opacity: 0; transform: translateY(-30px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+    0% { opacity: 0; transform: translateX(40px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .auth-wrapper {
+        flex-direction: column;
+    }
+    .auth-left {
+        display: none; /* Hide image on mobile for clear form view */
+    }
+    .auth-right {
+        flex: 1;
+        padding: 20px;
+        background-color: #f4f7f6;
+    }
+    .auth-card {
+        box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+        border-radius: 12px;
+        background-color: #ffffff;
+        padding: 30px;
+    }
 }

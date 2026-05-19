@@ -278,5 +278,412 @@
     </main>
 
     <script src="../../assets/Js/sales-invoice.js"></script>
+    <title>Create Sales Invoice - DriveSewa Staff</title>
+    <style>
+        :root {
+            --bg: #f5f7fb;
+            --surface: #ffffff;
+            --surface-soft: #f8fafc;
+            --primary: #174ea6;
+            --primary-dark: #123f84;
+            --text: #172033;
+            --muted: #667085;
+            --border: #dfe5ef;
+            --danger: #c62828;
+            --success: #10b981;
+            --shadow: 0 16px 36px rgba(23, 32, 51, 0.08);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .dashboard { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
+
+        .sidebar { background: var(--surface); border-right: 1px solid var(--border); padding: 24px 18px; display: flex; flex-direction: column; gap: 26px; }
+        .brand { padding: 0 10px 20px; border-bottom: 1px solid var(--border); }
+        .brand-title { margin: 0; font-size: 24px; font-weight: 800; color: var(--primary); }
+        .brand-subtitle { margin: 6px 0 0; font-size: 13px; color: var(--muted); }
+        .side-nav { display: grid; gap: 10px; }
+        .nav-link { display: grid; grid-template-columns: 38px 1fr; gap: 12px; align-items: center; padding: 13px 12px; border-radius: 8px; color: var(--text); text-decoration: none; border: 1px solid transparent; }
+        .nav-link:hover { background: var(--surface-soft); border-color: var(--border); }
+        .nav-link.active { background: #eaf2ff; border-color: #b8d2ff; color: var(--primary); }
+        .nav-icon { width: 38px; height: 38px; border-radius: 8px; display: grid; place-items: center; background: var(--surface-soft); font-weight: 800; }
+        .nav-title { display: block; font-size: 15px; font-weight: 700; }
+        .nav-desc { display: block; margin-top: 3px; font-size: 12px; color: var(--muted); }
+
+        .main { display: flex; flex-direction: column; min-width: 0; }
+        .topbar { height: 76px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; }
+        .page-title { margin: 0; font-size: 24px; font-weight: 800; }
+        .top-actions { display: flex; align-items: center; gap: 14px; }
+        .logout-btn { border: 1px solid #f1b9b9; background: #fff5f5; color: var(--danger); border-radius: 8px; padding: 11px 16px; font-size: 14px; font-weight: 800; cursor: pointer; }
+        .logout-btn:hover { background: var(--danger); color: #fff; }
+
+        .content { padding: 32px; flex: 1; display: flex; flex-direction: column; }
+
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 24px; box-shadow: var(--shadow); margin-bottom: 24px; }
+        .card h2 { margin: 0 0 20px; font-size: 18px; color: var(--primary); }
+        
+        .form-row { display: flex; gap: 20px; margin-bottom: 16px; }
+        .form-group { flex: 1; }
+        .form-group label { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 600; color: var(--muted); }
+        .form-group select, .form-group input { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; font-family: inherit; }
+        .form-group select:focus, .form-group input:focus { outline: none; border-color: var(--primary); }
+
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
+        th { background: var(--surface-soft); color: var(--muted); font-size: 12px; text-transform: uppercase; }
+        tr:last-child td { border-bottom: 0; }
+        
+        .btn-primary { background: var(--primary); color: #fff; border: none; padding: 10px 18px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-primary:disabled { background: #94a3b8; cursor: not-allowed; }
+
+        .btn-add { background: #eaf2ff; color: var(--primary); border: 1px solid #b8d2ff; padding: 8px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px; }
+        .btn-add:hover { background: #d3e4ff; }
+
+        .btn-delete { color: var(--danger); background: #fff5f5; border: 1px solid #f1b9b9; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 12px; }
+
+        .totals-section { display: flex; flex-direction: column; align-items: flex-end; margin-top: 20px; font-size: 16px; gap: 8px; }
+        .totals-row { display: flex; justify-content: space-between; width: 250px; }
+        .grand-total { font-size: 20px; font-weight: 800; color: var(--success); }
+        .discount-row { color: var(--danger); font-weight: 600; display: none; } /* Hidden by default */
+
+        .actions-bar { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 24px; margin-top: 24px; }
+        .btn-back { color: var(--muted); text-decoration: none; font-weight: 600; font-size: 14px; }
+        .btn-back:hover { color: var(--text); }
+
+        .message { padding: 12px; border-radius: 6px; margin-bottom: 20px; font-size: 14px; display: none; }
+        .message.error { background: #fef2f2; color: #b91c1c; border: 1px solid #fca5a5; }
+        .message.success { background: #f0fdf4; color: #15803d; border: 1px solid #86efac; }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="brand">
+                <h2 class="brand-title">DriveSewa</h2>
+                <p class="brand-subtitle">Staff Operations Workspace</p>
+            </div>
+            <nav class="side-nav">
+                <a class="nav-link" href="staff-dashboard.html">
+                    <span class="nav-icon">🏠</span>
+                    <span><span class="nav-title">Dashboard</span></span>
+                </a>
+                <a class="nav-link" href="register-customer.html">
+                    <span class="nav-icon">👤</span>
+                    <span><span class="nav-title">Customers</span></span>
+                </a>
+                <a class="nav-link active" href="sales-invoice-list.html">
+                    <span class="nav-icon">💰</span>
+                    <span><span class="nav-title">Sales</span></span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <h1 class="page-title">Create Sales Invoice</h1>
+                <div class="top-actions">
+                    <span class="welcome" id="welcomeText">Welcome, Staff</span>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </header>
+
+            <section class="content">
+                <div id="alertMsg" class="message"></div>
+
+                <form id="invoiceForm">
+                    <div class="card">
+                        <h2>Invoice Details</h2>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Select Customer *</label>
+                                <select id="customerSelect" required>
+                                    <option value="">-- Loading customers... --</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h2 style="margin: 0;">Cart Items</h2>
+                            <button type="button" class="btn-add" onclick="addNewRow()">+ Add Part Item</button>
+                        </div>
+                        
+                        <table id="itemsTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 35%">Select Part</th>
+                                    <th style="width: 15%">Quantity</th>
+                                    <th style="width: 20%">Unit Price ($)</th>
+                                    <th style="width: 20%">Total ($)</th>
+                                    <th style="width: 10%">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="itemsBody">
+                                <!-- Rows will be injected here -->
+                            </tbody>
+                        </table>
+
+                        <div class="totals-section">
+                            <div class="totals-row">
+                                <span>Subtotal:</span>
+                                <strong id="subTotalDisplay">$0.00</strong>
+                            </div>
+                            <div class="totals-row discount-row" id="discountContainer">
+                                <span>Loyalty Discount (10%):</span>
+                                <strong id="discountDisplay">-$0.00</strong>
+                            </div>
+                            <div class="totals-row">
+                                <span>Grand Total:</span>
+                                <span class="grand-total" id="grandTotalDisplay">$0.00</span>
+                            </div>
+                        </div>
+
+                        <div class="actions-bar">
+                            <a href="sales-invoice-list.html" class="btn-back">← Back to Invoices</a>
+                            <button type="submit" class="btn-primary" id="saveBtn">Complete Sale & Reduce Stock</button>
+                        </div>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5178/api';
+        let authToken = '';
+        let partsList = [];
+
+        window.onload = async () => {
+            const userData = localStorage.getItem("driveSewaUser");
+            if (!userData) { window.location.href = "../../public/login.html"; return; }
+            const user = JSON.parse(userData);
+            if (!user || user.role !== "Staff") { window.location.href = "../../public/login.html"; return; }
+            
+            document.getElementById("welcomeText").textContent = "Welcome, " + (user.fullName || "Staff");
+            authToken = user.token || ''; 
+            
+            await Promise.all([loadCustomers(), loadParts()]);
+            addNewRow(); // Start with one empty row
+        };
+
+        function logout() {
+            localStorage.removeItem("driveSewaUser");
+            window.location.href = "../../public/login.html";
+        }
+
+        function getHeaders() {
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
+            };
+        }
+
+        function showMessage(msg, type) {
+            const alertMsg = document.getElementById('alertMsg');
+            alertMsg.textContent = msg;
+            alertMsg.className = 'message ' + type;
+            alertMsg.style.display = 'block';
+            if(type !== 'error') {
+                setTimeout(() => { alertMsg.style.display = 'none'; }, 4000);
+            }
+        }
+
+        async function loadCustomers() {
+            try {
+                const res = await fetch(`${API_URL}/customer`, { headers: getHeaders() });
+                const customers = await res.json();
+                const sel = document.getElementById('customerSelect');
+                sel.innerHTML = '<option value="">-- Select a Customer --</option>';
+                customers.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.id;
+                    opt.textContent = `${c.fullName} (${c.phone})`;
+                    sel.appendChild(opt);
+                });
+            } catch (e) {
+                document.getElementById('customerSelect').innerHTML = '<option value="">Error loading customers</option>';
+            }
+        }
+
+        async function loadParts() {
+            try {
+                const res = await fetch(`${API_URL}/parts`, { headers: getHeaders() });
+                partsList = await res.json();
+            } catch (e) {
+                console.error("Could not load parts.");
+            }
+        }
+
+        function generatePartsOptions() {
+            return partsList.map(p => {
+                const isOutOfStock = p.stockQuantity <= 0;
+                return `<option value="${p.id}" data-price="${p.price}" data-stock="${p.stockQuantity}" ${isOutOfStock ? 'disabled' : ''}>
+                    ${p.partName} (Stock: ${p.stockQuantity}) - $${p.price}
+                </option>`;
+            }).join('');
+        }
+
+        function addNewRow() {
+            const tbody = document.getElementById('itemsBody');
+            const rowId = 'row_' + Date.now();
+            const tr = document.createElement('tr');
+            tr.id = rowId;
+            tr.innerHTML = `
+                <td>
+                    <select class="item-part" required onchange="handlePartSelection('${rowId}')">
+                        <option value="">-- Select Part --</option>
+                        ${generatePartsOptions()}
+                    </select>
+                </td>
+                <td>
+                    <input type="number" class="item-qty" min="1" step="1" value="1" required onchange="calculateRow('${rowId}')" onkeyup="calculateRow('${rowId}')">
+                    <small class="stock-warning" style="color:var(--danger); display:block; font-size:11px;"></small>
+                </td>
+                <td>
+                    <input type="number" class="item-price" min="0" step="0.01" value="0.00" required onchange="calculateRow('${rowId}')" onkeyup="calculateRow('${rowId}')">
+                </td>
+                <td>
+                    <strong class="item-total" style="color:var(--primary)">$0.00</strong>
+                </td>
+                <td>
+                    <button type="button" class="btn-delete" onclick="removeRow('${rowId}')">Remove</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+            calculateGrandTotal();
+        }
+
+        function handlePartSelection(rowId) {
+            const row = document.getElementById(rowId);
+            const select = row.querySelector('.item-part');
+            const option = select.options[select.selectedIndex];
+            
+            if(option && option.value) {
+                const price = option.getAttribute('data-price');
+                const stock = option.getAttribute('data-stock');
+                row.querySelector('.item-price').value = parseFloat(price).toFixed(2);
+                row.querySelector('.item-qty').max = stock;
+            }
+            calculateRow(rowId);
+        }
+
+        function removeRow(rowId) {
+            const row = document.getElementById(rowId);
+            if(row) row.remove();
+            calculateGrandTotal();
+        }
+
+        function calculateRow(rowId) {
+            const row = document.getElementById(rowId);
+            if(!row) return;
+            const select = row.querySelector('.item-part');
+            const option = select.options[select.selectedIndex];
+            const maxStock = option && option.value ? parseInt(option.getAttribute('data-stock')) : 999999;
+            
+            let qty = parseInt(row.querySelector('.item-qty').value) || 0;
+            const price = parseFloat(row.querySelector('.item-price').value) || 0;
+            const warning = row.querySelector('.stock-warning');
+
+            if(qty > maxStock) {
+                warning.textContent = `Max stock is ${maxStock}`;
+                qty = maxStock;
+                row.querySelector('.item-qty').value = maxStock;
+            } else {
+                warning.textContent = '';
+            }
+
+            const total = qty * price;
+            row.querySelector('.item-total').textContent = '$' + total.toFixed(2);
+            calculateGrandTotal();
+        }
+
+        function calculateGrandTotal() {
+            let subTotal = 0;
+            document.querySelectorAll('#itemsBody tr').forEach(row => {
+                const qty = parseInt(row.querySelector('.item-qty').value) || 0;
+                const price = parseFloat(row.querySelector('.item-price').value) || 0;
+                subTotal += (qty * price);
+            });
+
+            document.getElementById('subTotalDisplay').textContent = '$' + subTotal.toFixed(2);
+
+            let discount = 0;
+            const discountContainer = document.getElementById('discountContainer');
+            
+            if(subTotal > 5000) {
+                discount = subTotal * 0.10;
+                discountContainer.style.display = 'flex';
+                document.getElementById('discountDisplay').textContent = '-$' + discount.toFixed(2);
+            } else {
+                discountContainer.style.display = 'none';
+            }
+
+            const grandTotal = subTotal - discount;
+            document.getElementById('grandTotalDisplay').textContent = '$' + grandTotal.toFixed(2);
+        }
+
+        document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('saveBtn');
+            const customerId = document.getElementById('customerSelect').value;
+            
+            const rows = document.querySelectorAll('#itemsBody tr');
+            if(rows.length === 0) {
+                showMessage('Please add at least one part to the cart.', 'error');
+                return;
+            }
+
+            const items = [];
+            for(let row of rows) {
+                const partId = row.querySelector('.item-part').value;
+                const qty = parseInt(row.querySelector('.item-qty').value);
+                const price = parseFloat(row.querySelector('.item-price').value);
+
+                if(!partId) { showMessage('Please select a part in all rows.', 'error'); return; }
+                if(qty <= 0) { showMessage('Quantity must be greater than zero.', 'error'); return; }
+                if(price < 0) { showMessage('Price cannot be negative.', 'error'); return; }
+
+                items.push({ partId: parseInt(partId), quantity: qty, unitPrice: price });
+            }
+
+            const payload = { customerId: parseInt(customerId), items: items };
+
+            btn.disabled = true;
+            btn.textContent = 'Processing Sale...';
+
+            try {
+                const res = await fetch(`${API_URL}/sales-invoices`, {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify(payload)
+                });
+
+                if(res.ok) {
+                    showMessage('Sale completed successfully! Stock updated.', 'success');
+                    setTimeout(() => { window.location.href = 'sales-invoice-list.html'; }, 1500);
+                } else {
+                    const err = await res.text();
+                    showMessage('Error: ' + err, 'error');
+                    btn.disabled = false;
+                    btn.textContent = 'Complete Sale & Reduce Stock';
+                }
+            } catch(e) {
+                showMessage('Network error. Is the backend running?', 'error');
+                btn.disabled = false;
+                btn.textContent = 'Complete Sale & Reduce Stock';
+            }
+        });
+    </script>
 </body>
 </html>

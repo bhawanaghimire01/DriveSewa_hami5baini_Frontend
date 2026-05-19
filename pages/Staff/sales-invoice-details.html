@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Invoice Details - DriveSewa Staff</title>
+    <style>
+        :root {
+            --bg: #f5f7fb;
+            --surface: #ffffff;
+            --surface-soft: #f8fafc;
+            --primary: #174ea6;
+            --primary-dark: #123f84;
+            --text: #172033;
+            --muted: #667085;
+            --border: #dfe5ef;
+            --danger: #c62828;
+            --success: #10b981;
+            --shadow: 0 16px 36px rgba(23, 32, 51, 0.08);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .dashboard { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
+
+        .sidebar { background: var(--surface); border-right: 1px solid var(--border); padding: 24px 18px; display: flex; flex-direction: column; gap: 26px; }
+        .brand { padding: 0 10px 20px; border-bottom: 1px solid var(--border); }
+        .brand-title { margin: 0; font-size: 24px; font-weight: 800; color: var(--primary); }
+        .brand-subtitle { margin: 6px 0 0; font-size: 13px; color: var(--muted); }
+        .side-nav { display: grid; gap: 10px; }
+        .nav-link { display: grid; grid-template-columns: 38px 1fr; gap: 12px; align-items: center; padding: 13px 12px; border-radius: 8px; color: var(--text); text-decoration: none; border: 1px solid transparent; }
+        .nav-link:hover { background: var(--surface-soft); border-color: var(--border); }
+        .nav-link.active { background: #eaf2ff; border-color: #b8d2ff; color: var(--primary); }
+        .nav-icon { width: 38px; height: 38px; border-radius: 8px; display: grid; place-items: center; background: var(--surface-soft); font-weight: 800; }
+        .nav-title { display: block; font-size: 15px; font-weight: 700; }
+        .nav-desc { display: block; margin-top: 3px; font-size: 12px; color: var(--muted); }
+
+        .main { display: flex; flex-direction: column; min-width: 0; }
+        .topbar { height: 76px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; }
+        .page-title { margin: 0; font-size: 24px; font-weight: 800; }
+        .top-actions { display: flex; align-items: center; gap: 14px; }
+        .logout-btn { border: 1px solid #f1b9b9; background: #fff5f5; color: var(--danger); border-radius: 8px; padding: 11px 16px; font-size: 14px; font-weight: 800; cursor: pointer; }
+        .logout-btn:hover { background: var(--danger); color: #fff; }
+
+        .content { padding: 32px; flex: 1; display: flex; flex-direction: column; }
+
+        .invoice-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 32px; box-shadow: var(--shadow); margin-bottom: 24px; }
+        
+        .invoice-header-info { display: flex; justify-content: space-between; margin-bottom: 30px; border-bottom: 2px dashed var(--border); padding-bottom: 20px; }
+        .invoice-title { font-size: 28px; color: var(--primary); margin: 0 0 10px 0; }
+        .info-block strong { display: block; font-size: 13px; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
+        .info-block span { font-size: 16px; font-weight: 600; }
+
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { padding: 16px 20px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
+        th { background: var(--surface-soft); color: var(--muted); font-size: 12px; text-transform: uppercase; }
+        tr:last-child td { border-bottom: 0; }
+
+        .totals-section { display: flex; flex-direction: column; align-items: flex-end; padding-top: 20px; font-size: 16px; border-top: 2px dashed var(--border); gap: 8px; }
+        .totals-row { display: flex; justify-content: space-between; width: 250px; }
+        .grand-total { font-size: 20px; font-weight: 800; color: var(--primary); }
+        .discount-row { color: var(--danger); font-weight: 600; }
+
+        .actions-bar { margin-top: 24px; }
+        .btn-back { color: var(--muted); text-decoration: none; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; padding: 10px 16px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); }
+        .btn-back:hover { background: var(--surface-soft); color: var(--text); }
+        .btn-print { background: var(--primary); color: #fff; border: none; padding: 10px 18px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px; margin-left: 10px; }
+        .btn-print:hover { background: var(--primary-dark); }
+        
+        @media print {
+            .sidebar, .topbar, .actions-bar { display: none !important; }
+            .dashboard { display: block; }
+            .content { padding: 0; }
+            .invoice-card { border: none; box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="brand">
+                <h2 class="brand-title">DriveSewa</h2>
+                <p class="brand-subtitle">Staff Operations Workspace</p>
+            </div>
+            <nav class="side-nav">
+                <a class="nav-link" href="staff-dashboard.html">
+                    <span class="nav-icon">🏠</span>
+                    <span><span class="nav-title">Dashboard</span></span>
+                </a>
+                <a class="nav-link" href="register-customer.html">
+                    <span class="nav-icon">👤</span>
+                    <span><span class="nav-title">Customers</span></span>
+                </a>
+                <a class="nav-link active" href="sales-invoice-list.html">
+                    <span class="nav-icon">💰</span>
+                    <span><span class="nav-title">Sales</span></span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <h1 class="page-title">Sales Invoice Details</h1>
+                <div class="top-actions">
+                    <span class="welcome" id="welcomeText">Welcome, Staff</span>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </header>
+
+            <section class="content">
+                <div class="invoice-card">
+                    <div class="invoice-header-info">
+                        <div>
+                            <h2 class="invoice-title" id="invTitle">Invoice #...</h2>
+                            <div class="info-block">
+                                <strong>Date Issued</strong>
+                                <span id="invDate">Loading...</span>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div class="info-block" style="margin-bottom: 15px;">
+                                <strong>Billed To Customer</strong>
+                                <span id="invCustomer">Loading...</span>
+                            </div>
+                            <div class="info-block">
+                                <strong>Payment Status</strong>
+                                <span style="color:var(--success); background:#ecfdf3; padding: 4px 10px; border-radius: 4px;" id="invStatus">Paid</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Item #</th>
+                                <th>Part Name</th>
+                                <th>Quantity</th>
+                                <th>Unit Price</th>
+                                <th>Total Price</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoiceItemsBody">
+                            <tr><td colspan="5" style="text-align: center;">Loading items...</td></tr>
+                        </tbody>
+                    </table>
+
+                    <div class="totals-section">
+                        <div class="totals-row">
+                            <span>Subtotal:</span>
+                            <span id="invSubTotal">$0.00</span>
+                        </div>
+                        <div class="totals-row discount-row" id="discountContainer" style="display:none;">
+                            <span>Loyalty Discount (10%):</span>
+                            <span id="invDiscount">-$0.00</span>
+                        </div>
+                        <div class="totals-row">
+                            <span style="font-size: 18px; font-weight:800;">Grand Total:</span>
+                            <span class="grand-total" id="invTotal">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions-bar">
+                    <a href="sales-invoice-list.html" class="btn-back">← Back to Invoice List</a>
+                    <button class="btn-print" onclick="window.print()">🖨️ Print Invoice</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5178/api/sales-invoices';
+        let authToken = '';
+
+        window.onload = async () => {
+            const userData = localStorage.getItem("driveSewaUser");
+            if (!userData) { window.location.href = "../../public/login.html"; return; }
+            const user = JSON.parse(userData);
+            if (!user || user.role !== "Staff") { window.location.href = "../../public/login.html"; return; }
+            
+            document.getElementById("welcomeText").textContent = "Welcome, " + (user.fullName || "Staff");
+            authToken = user.token || ''; 
+            
+            const params = new URLSearchParams(window.location.search);
+            const invoiceId = params.get('id');
+            if(!invoiceId) {
+                alert("No invoice ID provided.");
+                window.location.href = "sales-invoice-list.html";
+                return;
+            }
+
+            loadInvoiceDetails(invoiceId);
+        };
+
+        function logout() {
+            localStorage.removeItem("driveSewaUser");
+            window.location.href = "../../public/login.html";
+        }
+
+        async function loadInvoiceDetails(id) {
+            try {
+                const res = await fetch(`${API_URL}/${id}`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if(!res.ok) {
+                    document.querySelector('.invoice-card').innerHTML = `<h3 style="color:red; text-align:center;">Invoice not found or error loading.</h3>`;
+                    return;
+                }
+
+                const inv = await res.json();
+                
+                document.getElementById('invTitle').textContent = `Sales Receipt #SAL-${inv.invoiceId.toString().padStart(4, '0')}`;
+                document.getElementById('invCustomer').textContent = inv.customerName;
+                document.getElementById('invStatus').textContent = inv.paymentStatus;
+                
+                const d = new Date(inv.saleDate);
+                document.getElementById('invDate').textContent = d.toLocaleDateString() + ' at ' + d.toLocaleTimeString();
+                
+                document.getElementById('invSubTotal').textContent = '$' + inv.totalAmount.toFixed(2);
+                document.getElementById('invTotal').textContent = '$' + inv.finalAmount.toFixed(2);
+
+                if(inv.discountAmount > 0) {
+                    document.getElementById('discountContainer').style.display = 'flex';
+                    document.getElementById('invDiscount').textContent = '-$' + inv.discountAmount.toFixed(2);
+                }
+
+                const tbody = document.getElementById('invoiceItemsBody');
+                if(inv.items && inv.items.length > 0) {
+                    tbody.innerHTML = inv.items.map((item, index) => `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td><strong>${item.partName}</strong></td>
+                            <td>${item.quantity} units</td>
+                            <td>$${item.unitPrice.toFixed(2)}</td>
+                            <td>$${item.totalPrice.toFixed(2)}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No items found.</td></tr>`;
+                }
+                
+            } catch(e) {
+                document.querySelector('.invoice-card').innerHTML = `<h3 style="color:red; text-align:center;">Network Error. Is Backend Running?</h3>`;
+            }
+        }
+    </script>
+</body>
+</html>

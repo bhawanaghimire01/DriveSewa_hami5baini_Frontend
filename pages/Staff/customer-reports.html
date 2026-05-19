@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Reports - Staff Portal</title>
+    <style>
+        :root {
+            --primary: #8b5cf6;
+            --primary-dark: #7c3aed;
+            --bg: #f3f4f6;
+            --surface: #ffffff;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --danger: #ef4444;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 24px 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand {
+            padding: 0 24px 24px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 24px;
+        }
+
+        .brand h2 { margin: 0; color: var(--primary); font-weight: 800; }
+        
+        .nav-item {
+            padding: 12px 24px; color: var(--muted); text-decoration: none;
+            font-weight: 600; font-size: 15px; display: flex; align-items: center;
+            border-left: 4px solid transparent; cursor: pointer;
+        }
+
+        .nav-item:hover { background: #f9fafb; }
+        .nav-item.active { color: var(--primary); background: #f5f3ff; border-left-color: var(--primary); }
+
+        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+        .header {
+            height: 70px; background: var(--surface); border-bottom: 1px solid var(--border);
+            padding: 0 32px; display: flex; align-items: center; justify-content: space-between;
+        }
+
+        .content { flex: 1; padding: 32px; overflow-y: auto; }
+
+        .card {
+            background: var(--surface); border-radius: 12px; padding: 24px;
+            box-shadow: var(--shadow); border: 1px solid var(--border);
+        }
+
+        .tabs { display: flex; gap: 8px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+        .tab {
+            padding: 10px 20px; font-weight: 600; cursor: pointer;
+            border-bottom: 2px solid transparent; color: var(--muted); font-size: 14px;
+        }
+        .tab:hover { color: var(--primary); }
+        .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+        .filters { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .btn-export {
+            background: #10b981; color: white; border: none; padding: 8px 16px;
+            border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px;
+        }
+        .btn-export:hover { background: #059669; }
+
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background: var(--bg); color: var(--muted); font-size: 13px; text-transform: uppercase; }
+        
+        .pending-amt { color: var(--danger); font-weight: 600; }
+        .empty-state { text-align: center; padding: 40px; color: var(--muted); font-style: italic; }
+
+        @media print {
+            .sidebar, .header, .tabs, .filters { display: none !important; }
+            .card { border: none; box-shadow: none; padding: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="brand">
+            <h2>DriveSewa</h2>
+            <p style="margin:4px 0 0; font-size:13px; color:var(--muted);">Staff Portal</p>
+        </div>
+        <a class="nav-item" href="staff-dashboard.html">Dashboard</a>
+        <a class="nav-item" href="customer-list.html">Customer Directory</a>
+        <a class="nav-item active" href="customer-reports.html">Customer Reports</a>
+        <a class="nav-item" href="sales-invoice-list.html">Sales Invoices</a>
+    </aside>
+
+    <div class="main">
+        <div class="header">
+            <h1 style="margin:0; font-size: 20px;">Customer Analytics & Reports</h1>
+            <button style="background:transparent; border:1px solid var(--primary); color:var(--primary); padding:8px 16px; border-radius:6px; cursor:pointer;" onclick="logout()">Logout</button>
+        </div>
+        
+        <div class="content">
+            <div class="card">
+                <div class="tabs">
+                    <div class="tab active" onclick="switchTab('regular', this)">Regular Customers</div>
+                    <div class="tab" onclick="switchTab('high-spenders', this)">High Spenders</div>
+                    <div class="tab" onclick="switchTab('pending-credits', this)">Pending Credits</div>
+                </div>
+
+                <div class="filters">
+                    <h3 id="reportTitle" style="margin:0; font-size: 18px; color: var(--text);">Regular Customers</h3>
+                    <button class="btn-export" onclick="window.print()">🖨️ Print Report</button>
+                </div>
+
+                <div id="tableContainer">Loading report...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5178/api/reports';
+        let authToken = '';
+        let currentTab = 'regular';
+
+        window.onload = () => {
+            const stored = localStorage.getItem('driveSewaUser');
+            if(!stored) { window.location.href = '../../public/login.html'; return; }
+            const user = JSON.parse(stored);
+            if(user.role !== 'Admin' && user.role !== 'Staff') { window.location.href = '../../public/login.html'; return; }
+            
+            authToken = user.token || '';
+            loadReport('regular');
+        };
+
+        function logout() {
+            localStorage.removeItem('driveSewaUser');
+            window.location.href = '../../public/login.html';
+        }
+
+        function switchTab(type, element) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            element.classList.add('active');
+            
+            const titles = {
+                'regular': 'Regular Customers (> 1 Purchase)',
+                'high-spenders': 'High Spenders (> Rs. 5,000 Total)',
+                'pending-credits': 'Customers with Pending Credits'
+            };
+            
+            document.getElementById('reportTitle').textContent = titles[type];
+            currentTab = type;
+            loadReport(type);
+        }
+
+        async function loadReport(type) {
+            const container = document.getElementById('tableContainer');
+            container.innerHTML = '<p style="padding: 20px; color: #6b7280;">Generating report...</p>';
+
+            let endpoint = '';
+            if (type === 'regular') endpoint = '/regular-customers?threshold=2';
+            else if (type === 'high-spenders') endpoint = '/high-spenders?threshold=5000';
+            else if (type === 'pending-credits') endpoint = '/pending-credits';
+
+            try {
+                const res = await fetch(`${API_URL}${endpoint}`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if (!res.ok) throw new Error('Failed to fetch data');
+                const data = await res.json();
+                renderTable(data, type);
+            } catch (err) {
+                container.innerHTML = `<p style="color: red; padding: 20px;">Error generating report. Check backend connection.</p>`;
+            }
+        }
+
+        function renderTable(data, type) {
+            const container = document.getElementById('tableContainer');
+            if(data.length === 0) {
+                container.innerHTML = `<div class="empty-state">No data available for this report criteria.</div>`;
+                return;
+            }
+
+            const showPending = type === 'pending-credits';
+            
+            const rows = data.map(item => `
+                <tr>
+                    <td style="font-weight:600;">${item.name}</td>
+                    <td>${item.phone}</td>
+                    <td>${item.totalPurchases}</td>
+                    <td style="color:#059669; font-weight:600;">Rs. ${item.totalAmount.toFixed(2)}</td>
+                    ${showPending ? `<td class="pending-amt">Rs. ${item.pendingAmount.toFixed(2)}</td>` : ''}
+                </tr>
+            `).join('');
+
+            container.innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Customer Name</th>
+                            <th>Phone</th>
+                            <th>Total Purchases</th>
+                            <th>Total Amount</th>
+                            ${showPending ? `<th>Pending Amount</th>` : ''}
+                        </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>
+            `;
+        }
+    </script>
+</body>
+</html>
